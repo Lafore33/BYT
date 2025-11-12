@@ -14,7 +14,6 @@ public class Appointment {
 
     private List<String> notes;
 
-    @NotNull
     private PaymentMethod paymentMethod;
 
     @Min(0)
