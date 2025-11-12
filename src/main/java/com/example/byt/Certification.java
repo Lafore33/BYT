@@ -43,9 +43,10 @@ public class Certification {
     }
 
     public void setIssueDate(LocalDate issueDate) {
-        if (issueDate.isAfter(expiryDate)) {
+        if (expiryDate != null && issueDate.isAfter(expiryDate)) {
             throw new IllegalArgumentException("expiryDate must be after issueDate");
         }
         this.issueDate = issueDate;
     }
+
 }
