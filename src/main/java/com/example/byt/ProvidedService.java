@@ -8,7 +8,6 @@ public class ProvidedService {
     @Max(5)
     private int rating;
     private String comment;
-    @Min(0)
     private LocalDateTime time;
     @Min(0)
     private double price;
