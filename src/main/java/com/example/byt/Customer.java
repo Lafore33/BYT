@@ -1,9 +1,6 @@
 package com.example.byt;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 enum CustomerStatus {
     GOOD, BAD
@@ -12,7 +9,6 @@ enum CustomerStatus {
 public class Customer extends Person {
 
     @Email
-    @NotBlank
     private String emailAddress;
 
     @NotNull
@@ -24,6 +20,12 @@ public class Customer extends Person {
     public Customer(String name, String surname, String phoneNumber, String emailAddress, int age) {
         super(name, surname, phoneNumber);
         this.emailAddress = emailAddress;
+        this.age = age;
+        this.customerStatus = CustomerStatus.GOOD;
+    }
+
+    public Customer(String name, String surname, String phoneNumber, int age) {
+        super(name, surname, phoneNumber);
         this.age = age;
         this.customerStatus = CustomerStatus.GOOD;
     }
