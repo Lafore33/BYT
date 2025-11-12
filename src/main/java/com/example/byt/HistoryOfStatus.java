@@ -1,12 +1,20 @@
 package com.example.byt;
 
-import java.util.Date;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+
+import java.time.LocalDate;
 
 public class HistoryOfStatus {
-    private AppointmentStatus status;
-    private Date dateOfChangingStatus;
 
-    public HistoryOfStatus(AppointmentStatus status, Date dateOfChangingStatus) {
+    @NotNull
+    private AppointmentStatus status;
+
+    @NotNull
+    @PastOrPresent
+    private LocalDate dateOfChangingStatus;
+
+    public HistoryOfStatus(AppointmentStatus status, LocalDate dateOfChangingStatus) {
         this.status = status;
         this.dateOfChangingStatus = dateOfChangingStatus;
     }
