@@ -11,7 +11,6 @@ public class HairService extends Service{
     private HairServiceType type;
 
     @NotEmpty
-    @NotNull
     private List<String> hairTypes;
 
     public HairService(int id, String name, double regularPrice, String description, double duration, HairServiceType type, List<String> hairTypes) {
@@ -25,6 +24,8 @@ public class HairService extends Service{
     }
 
     public void setHairTypes(List<String> hairTypes) {
+        if(hairTypes == null) //TODO: check cases for null lists
+            throw new IllegalArgumentException("hairTypes cannot be null");
         if (hairTypes.stream().anyMatch(t -> t == null || t.trim().isBlank())) {
             throw new IllegalArgumentException("hairTypes can't contain null or empty elements");
         }
