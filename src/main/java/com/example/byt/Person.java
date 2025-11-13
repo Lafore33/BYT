@@ -29,10 +29,7 @@ abstract class Person {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
-        if (!isBirthDateValid(birthDate)) {
-            throw new IllegalArgumentException("User should be at least 18 years old");
-        }
-        this.birthDate = birthDate;
+        setBirthDate(birthDate);
     }
 
     private boolean isBirthDateValid(LocalDate birthDate) {
