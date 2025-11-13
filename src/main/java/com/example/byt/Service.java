@@ -29,13 +29,11 @@ public class Service {
     private double totalPrice;
 
     public Service(int id, String name, double regularPrice, String description,
-                   double duration, double rating, double totalPrice) {
+                   double duration) {
         this.id = id;
         this.name = name;
         this.regularPrice = regularPrice;
         this.description = description;
         this.duration = duration;
-        this.rating = rating;
-        this.totalPrice = totalPrice;
     }
 }

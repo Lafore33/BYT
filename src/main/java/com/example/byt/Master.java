@@ -15,4 +15,8 @@ public class Master extends Worker {
         super(name, surname, phoneNumber, birthDate);
         this.experience = experience;
     }
+
+    public static int getMinExperienceForTop(){
+        return minExperienceForTop;
+    }
 }

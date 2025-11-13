@@ -35,6 +35,15 @@ public class Certification {
         setExpiryDate(expiryDate);
     }
 
+    public Certification(String name, String certificationNumber, String description,
+                         String organization, LocalDate issueDate) {
+        this.name = name;
+        this.certificationNumber = certificationNumber;
+        this.description = description;
+        this.organization = organization;
+        this.issueDate = issueDate;
+    }
+
     public void setExpiryDate(LocalDate expiryDate) {
         if (expiryDate != null && issueDate.isAfter(expiryDate)) {
             throw new IllegalArgumentException("expiryDate must be after issueDate");
