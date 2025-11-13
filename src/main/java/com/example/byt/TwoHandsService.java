@@ -7,4 +7,8 @@ public class TwoHandsService extends Service {
                            double duration) {
         super(id, name, regularPrice, description, duration);
     }
+
+    public static int getNumOfSpecialistsRequired(){
+        return numOfSpecialistsRequired;
+    }
 }
