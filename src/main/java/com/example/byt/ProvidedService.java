@@ -34,6 +34,9 @@ public class ProvidedService {
         private LocalDateTime time;
 
         public Builder(LocalDateTime time){
+            if (time == null) {
+                throw new NullPointerException("time is required");
+            }
             this.time = time;
         }
 
@@ -50,5 +53,25 @@ public class ProvidedService {
         public ProvidedService build() {
             return new ProvidedService(this);
         }
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

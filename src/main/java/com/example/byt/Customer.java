@@ -31,4 +31,12 @@ public class Customer extends Person {
     public int getAge() {
         return Period.between(getBirthDate(), LocalDate.now()).getYears();
     }
+
+    public CustomerStatus getCustomerStatus() {
+        return customerStatus;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
 }

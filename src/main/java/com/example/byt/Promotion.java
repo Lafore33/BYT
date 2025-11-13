@@ -45,4 +45,24 @@ public class Promotion {
         }
         this.startDate = startDate;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPercentage() {
+        return percentage;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }
