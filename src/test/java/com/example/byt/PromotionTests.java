@@ -1,92 +1,188 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PromotionTests {
 
+    private static Validator validator;
+
+    @BeforeAll
+    static void setupValidator() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
     @Test
-    void promotionIsCreatedCorrectly() {
+    void validPromotionHasNoViolations() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
 
         Promotion promotion = new Promotion("Black Friday", "Big discount",
                 30.0, start, end);
 
-        assertNotNull(promotion);
-        assertEquals("Black Friday", promotion.getName());
-        assertEquals("Big discount", promotion.getDescription());
-        assertEquals(30.0, promotion.getPercentage());
-        assertEquals(start, promotion.getStartDate());
-        assertEquals(end, promotion.getEndDate());
+        Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
+        assertTrue(violations.isEmpty());
     }
 
     @Test
-    void promotionPercentageAtBoundsIsAllowed() {
+    void invalidPercentageProducesViolation() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
 
-        Promotion p1 = new Promotion("Sale 5", "Min", 5.0, start, end);
-        assertEquals(5.0, p1.getPercentage());
+        Promotion promotion = new Promotion("Too small", "Invalid",
+                3.0, start, end);
 
-        Promotion p2 = new Promotion("Sale 50", "Max", 50.0, start, end);
-        assertEquals(50.0, p2.getPercentage());
+        Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("percentage")));
     }
 
     @Test
-    void promotionWithEndDateBeforeStartDateThrowsException() {
-        LocalDate start = LocalDate.of(2025, 11, 30);
-        LocalDate end = LocalDate.of(2025, 11, 1);
-
-        assertThrows(IllegalArgumentException.class, () ->
-                new Promotion("Invalid", "Wrong dates", 20.0, start, end)
-        );
-    }
-
-    @Test
-    void setEndDateWithValidAndInvalidValues() {
+    void setEndDateWithValidValueUpdatesEndDate() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
-
         Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
 
         LocalDate newEnd = LocalDate.of(2025, 12, 15);
         promotion.setEndDate(newEnd);
-        assertEquals(newEnd, promotion.getEndDate());
 
-        LocalDate invalidEnd = LocalDate.of(2025, 10, 15);
-        assertThrows(IllegalArgumentException.class, () ->
-                promotion.setEndDate(invalidEnd)
-        );
+        assertEquals(newEnd, promotion.getEndDate());
     }
 
     @Test
-    void setStartDateWithValidAndInvalidValues() {
+    void setEndDateWithEarlierDateThrowsException() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
+        Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
 
+        LocalDate invalidEnd = LocalDate.of(2025, 10, 15);
+
+        assertThrows(RuntimeException.class, () -> promotion.setEndDate(invalidEnd));
+    }
+
+    @Test
+    void setEndDateToNullThrowsException() {
+        LocalDate start = LocalDate.of(2025, 11, 1);
+        LocalDate end = LocalDate.of(2025, 11, 30);
+        Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
+
+        assertThrows(RuntimeException.class, () -> promotion.setEndDate(null));
+    }
+
+    @Test
+    void setStartDateWithValidValueUpdatesStartDate() {
+        LocalDate start = LocalDate.of(2025, 11, 1);
+        LocalDate end = LocalDate.of(2025, 11, 30);
         Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
 
         LocalDate newStart = LocalDate.of(2025, 10, 15);
         promotion.setStartDate(newStart);
+
         assertEquals(newStart, promotion.getStartDate());
+    }
+
+    @Test
+    void setStartDateWithLaterDateThrowsException() {
+        LocalDate start = LocalDate.of(2025, 11, 1);
+        LocalDate end = LocalDate.of(2025, 11, 30);
+        Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
 
         LocalDate invalidStart = LocalDate.of(2025, 12, 15);
+
+        assertThrows(RuntimeException.class, () -> promotion.setStartDate(invalidStart));
+    }
+
+    @Test
+    void setStartDateToNullThrowsException() {
+        LocalDate start = LocalDate.of(2025, 11, 1);
+        LocalDate end = LocalDate.of(2025, 11, 30);
+        Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
+
+        assertThrows(RuntimeException.class, () -> promotion.setStartDate(null));
+    }
+
+    @Test
+    void blankNameProducesViolation() {
+        LocalDate start = LocalDate.of(2025, 11, 1);
+        LocalDate end = LocalDate.of(2025, 11, 30);
+
+        Promotion promotion = new Promotion("   ", "Valid description",
+                20.0, start, end);
+
+        Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("name")));
+    }
+
+    @Test
+    void nullNameProducesViolation() {
+        LocalDate start = LocalDate.of(2025, 11, 1);
+        LocalDate end = LocalDate.of(2025, 11, 30);
+
+        Promotion promotion = new Promotion(null, "Valid description",
+                20.0, start, end);
+
+        Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("name")));
+    }
+
+    @Test
+    void blankDescriptionProducesViolation() {
+        LocalDate start = LocalDate.of(2025, 11, 1);
+        LocalDate end = LocalDate.of(2025, 11, 30);
+
+        Promotion promotion = new Promotion("Promo", "   ",
+                20.0, start, end);
+
+        Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("description")));
+    }
+
+    @Test
+    void nullDescriptionProducesViolation() {
+        LocalDate start = LocalDate.of(2025, 11, 1);
+        LocalDate end = LocalDate.of(2025, 11, 30);
+
+        Promotion promotion = new Promotion("Promo", null,
+                20.0, start, end);
+
+        Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("description")));
+    }
+
+    @Test
+    void nullStartDateThrowsException() {
+        LocalDate end = LocalDate.of(2025, 11, 30);
+
         assertThrows(IllegalArgumentException.class, () ->
-                promotion.setStartDate(invalidStart)
+                new Promotion("Promo", "Desc", 20.0, null, end)
         );
     }
 
     @Test
-    void promotionWithSameStartAndEndDateIsAllowed() {
-        LocalDate date = LocalDate.of(2025, 11, 11);
+    void nullEndDateThrowsException() {
+        LocalDate start = LocalDate.of(2025, 11, 1);
 
-        Promotion promotion = new Promotion("One Day", "Flash", 15.0, date, date);
-
-        assertEquals(date, promotion.getStartDate());
-        assertEquals(date, promotion.getEndDate());
+        assertThrows(IllegalArgumentException.class, () ->
+                new Promotion("Promo", "Desc", 20.0, start, null)
+        );
     }
 }

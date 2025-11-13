@@ -35,8 +35,4 @@ public class Customer extends Person {
     public CustomerStatus getCustomerStatus() {
         return customerStatus;
     }
-
-    public String getEmailAddress() {
-        return emailAddress;
-    }
 }
