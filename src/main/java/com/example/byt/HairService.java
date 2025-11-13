@@ -11,19 +11,26 @@ public class HairService extends Service{
     private HairServiceType type;
 
     @NotEmpty
+    @NotNull
     private List<String> hairTypes;
 
     public HairService(int id, String name, double regularPrice, String description, double duration, HairServiceType type, List<String> hairTypes) {
         super(id, name, regularPrice, description, duration);
         this.type = type;
+        if (hairTypes.stream().anyMatch(t -> t == null || t.trim().isBlank())) {
+            throw new IllegalArgumentException("hairTypes can't contain null or empty elements");
+        }
         this.hairTypes = new ArrayList<>(hairTypes);
     }
 
     public List<String> getHairTypes() {
-        return hairTypes == null ? null : new ArrayList<>(hairTypes);
+        return new ArrayList<>(hairTypes);
     }
 
     public void setHairTypes(List<String> hairTypes) {
-        this.hairTypes = hairTypes == null ? null : new ArrayList<>(hairTypes);
+        if (hairTypes.stream().anyMatch(t -> t == null || t.trim().isBlank())) {
+            throw new IllegalArgumentException("hairTypes can't contain null or empty elements");
+        }
+        this.hairTypes = new ArrayList<>(hairTypes);
     }
 }

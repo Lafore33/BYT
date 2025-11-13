@@ -9,4 +9,8 @@ public class FourHandsService extends Service{
         super(id, name, regularPrice, description, duration);
         this.isExpressService = isExpressService;
     }
+
+    public static int getNumOfSpecialistsRequired(){
+        return numOfSpecialistsRequired;
+    }
 }

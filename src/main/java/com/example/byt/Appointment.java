@@ -31,7 +31,14 @@ public class Appointment {
     }
 
     public void setNotes(List<String> notes) {
-        this.notes = notes == null ? null : new ArrayList<>(notes);
+        if (notes == null) {
+            this.notes = null;
+            return;
+        }
+        if (notes.stream().anyMatch(n -> n == null || n.trim().isBlank())) {
+            throw new IllegalArgumentException("notes can't contain null or empty elements");
+        }
+        this.notes = new ArrayList<>(notes);
     }
 
     public static class Builder {
@@ -47,6 +54,13 @@ public class Appointment {
         }
 
         public Builder notes(List<String> notes) {
+            if (notes == null) {
+                this.notes = null;
+                return this;
+            }
+            if (notes.stream().anyMatch(n -> n == null || n.trim().isBlank())) {
+                throw new IllegalArgumentException("notes can't contain null or empty elements");
+            }
             this.notes = new ArrayList<>(notes);
             return this;
         }
