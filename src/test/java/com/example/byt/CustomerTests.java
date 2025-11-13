@@ -50,10 +50,13 @@ public class CustomerTests {
         LocalDate birthDate = LocalDate.of(2000, 1, 1);
         Customer customer = new Customer("John", "Doe", "123456789",
                 "john@example.com", birthDate);
+
         assertNotNull(customer);
         assertEquals("John", customer.getName());
+        assertEquals("john@example.com", customer.getEmailAddress());
         assertEquals(CustomerStatus.GOOD, customer.getCustomerStatus());
     }
+
 
     @Test
     void customerWithoutEmailIsCreatedCorrectly() {
