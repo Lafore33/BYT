@@ -43,7 +43,13 @@ public class ProvidedService {
         }
 
         public Builder comment(String comment) {
-            this.comment = comment;
+            if (comment == null) {
+                this.comment = null;
+            } else if (comment.trim().isEmpty()) {
+                this.comment = null;
+            } else {
+                this.comment = comment;
+            }
             return this;
         }
 
