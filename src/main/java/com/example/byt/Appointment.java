@@ -74,4 +74,12 @@ public class Appointment {
             return new Appointment(this);
         }
     }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
 }

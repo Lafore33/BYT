@@ -43,12 +43,30 @@ public class ProvidedService {
         }
 
         public Builder comment(String comment) {
-            this.comment = comment;
+            if (comment == null) {
+                this.comment = null;
+            } else if (comment.trim().isEmpty()) {
+                this.comment = null;
+            } else {
+                this.comment = comment;
+            }
             return this;
         }
 
         public ProvidedService build() {
             return new ProvidedService(this);
         }
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
     }
 }

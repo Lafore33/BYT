@@ -18,31 +18,51 @@ public class Promotion {
     @Max(50)
     private double percentage;
 
-    @NotNull
     private LocalDate startDate;
 
-    @NotNull
     private LocalDate endDate;
 
     public Promotion(String name, String description, double percentage, LocalDate startDate, LocalDate endDate) {
         this.name = name;
         this.description = description;
         this.percentage = percentage;
-        this.startDate = startDate;
+        setStartDate(startDate);
         setEndDate(endDate);
     }
 
+    public void setStartDate(LocalDate startDate) {
+        if (startDate == null) {
+            throw new IllegalArgumentException("startDate cannot be null");
+        }
+        if (endDate != null && startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("startDate must not be after endDate");
+        }
+        this.startDate = startDate;
+    }
+
     public void setEndDate(LocalDate endDate) {
+        if (endDate == null) {
+            throw new IllegalArgumentException("endDate cannot be null");
+        }
+        if (startDate == null) {
+            throw new IllegalArgumentException("startDate must be set before endDate");
+        }
         if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("expiryDate must be after issueDate");
+            throw new IllegalArgumentException("endDate must not be before startDate");
         }
         this.endDate = endDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("expiryDate must be after issueDate");
-        }
-        this.startDate = startDate;
+    public String getName() {
+        return name;
     }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
 }
