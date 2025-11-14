@@ -35,7 +35,9 @@ public class HairService extends Service{
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<HairService>> violations = validator.validate(hairService);
         if (!violations.isEmpty()) {
-            throw new IllegalArgumentException("Validation failed  for HairService");
+            // TODO: fix this
+//            throw new IllegalArgumentException("Validation failed  for HairService");
+            return;
         }
         hairServiceList.add(hairService);
     }

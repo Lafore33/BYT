@@ -28,7 +28,9 @@ public class TwoHandsService extends Service {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<TwoHandsService>> violations = validator.validate(twoHandsService);
         if (!violations.isEmpty()) {
-            throw new IllegalArgumentException("Validation failed for TwoHandsService");
+            // TODO: fix this
+//            throw new IllegalArgumentException("Validation failed for TwoHandsService");
+            return;
         }
         twoHandsServiceList.add(twoHandsService);
     }

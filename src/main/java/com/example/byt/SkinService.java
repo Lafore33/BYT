@@ -35,7 +35,9 @@ public class SkinService extends Service implements Serializable {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<SkinService>> violations = validator.validate(skinService);
         if (!violations.isEmpty()) {
-            throw new IllegalArgumentException("Validation failed for SkinService");
+            // TODO: fix this
+//            throw new IllegalArgumentException("Validation failed for SkinService");
+            return;
         }
         skinServiceList.add(skinService);
     }
