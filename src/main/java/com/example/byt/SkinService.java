@@ -1,10 +1,15 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotBlank;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 public class SkinService extends Service implements Serializable {
@@ -25,6 +30,12 @@ public class SkinService extends Service implements Serializable {
     private static void addSkinService(SkinService skinService){
         if (skinService == null){
             throw new NullPointerException("SkinService cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<SkinService>> violations = validator.validate(skinService);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("Validation failed for SkinService");
         }
         skinServiceList.add(skinService);
     }

@@ -1,10 +1,15 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Min;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Master extends Worker {
 
@@ -24,6 +29,12 @@ public class Master extends Worker {
     private static void addMaster(Master master){
         if (master == null){
             throw new NullPointerException("Master cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Master>> violations = validator.validate(master);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("Validation failed  for Master");
         }
         masterList.add(master);
     }

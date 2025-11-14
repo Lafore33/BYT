@@ -1,10 +1,15 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Receptionist extends Worker {
 
@@ -22,6 +27,12 @@ public class Receptionist extends Worker {
     private static void addReceptionist(Receptionist receptionist){
         if (receptionist == null){
             throw new NullPointerException("Receptionist cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Receptionist>> violations = validator.validate(receptionist);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("Validation failed for Receptionist");
         }
         receptionistList.add(receptionist);
     }

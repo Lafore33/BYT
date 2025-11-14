@@ -1,9 +1,14 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class NailService extends Service {
     @NotNull
@@ -24,6 +29,12 @@ public class NailService extends Service {
     private static void addNailService(NailService nailService){
         if (nailService == null){
             throw new NullPointerException("NailService cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<NailService>> violations = validator.validate(nailService);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("Validation failed for NailService");
         }
         nailServiceList.add(nailService);
     }

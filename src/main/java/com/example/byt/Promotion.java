@@ -1,5 +1,9 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -7,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Promotion {
     @NotBlank
@@ -37,6 +42,12 @@ public class Promotion {
     private static void addPromotion(Promotion promotion){
         if (promotion == null){
             throw new NullPointerException("Promotion cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("Validation failed for Promotion");
         }
         promotionList.add(promotion);
     }

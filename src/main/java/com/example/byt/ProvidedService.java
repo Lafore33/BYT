@@ -1,9 +1,14 @@
 package com.example.byt;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ProvidedService {
 
@@ -29,8 +34,14 @@ public class ProvidedService {
     }
 
     private static void addProvidedService(ProvidedService providedService){
-        if (providedService == null){
+        if (providedService == null) {
             throw new NullPointerException("ProvidedService cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<ProvidedService>> violations = validator.validate(providedService);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("Validation failed for ProvidedService");
         }
         providedServiceList.add(providedService);
     }

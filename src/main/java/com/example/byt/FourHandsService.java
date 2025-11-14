@@ -1,7 +1,13 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class FourHandsService extends Service{
     private boolean isExpressService;
@@ -18,6 +24,12 @@ public class FourHandsService extends Service{
     private static void addFourHandsService(FourHandsService fourHandsService){
         if (fourHandsService == null){
             throw new NullPointerException("FourHandsService cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<FourHandsService>> violations = validator.validate(fourHandsService);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("Validation failed for FourHandsService");
         }
         fourHandsServiceList.add(fourHandsService);
     }

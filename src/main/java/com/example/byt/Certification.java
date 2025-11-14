@@ -1,5 +1,9 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -7,6 +11,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Certification {
     @NotBlank
@@ -35,7 +40,7 @@ public class Certification {
         this.certificationNumber = certificationNumber;
         this.description = description;
         this.organization = organization;
-        this.issueDate = issueDate;
+        setIssueDate(issueDate);
         setExpiryDate(expiryDate);
         addCertification(this);
     }
@@ -47,13 +52,19 @@ public class Certification {
         this.certificationNumber = certificationNumber;
         this.description = description;
         this.organization = organization;
-        this.issueDate = issueDate;
+        setIssueDate(issueDate);
         addCertification(this);
     }
 
     private static void addCertification(Certification certification) {
         if (certification == null) {
             throw new NullPointerException("certification cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("Validation failed for Certification");
         }
         certifications.add(certification);
     }
@@ -66,6 +77,9 @@ public class Certification {
     }
 
     public void setIssueDate(LocalDate issueDate) {
+        if (issueDate == null) {
+            throw new IllegalArgumentException("issueDate cannot be null");
+        }
         if (expiryDate != null && issueDate.isAfter(expiryDate)) {
             throw new IllegalArgumentException("expiryDate must be after issueDate");
         }

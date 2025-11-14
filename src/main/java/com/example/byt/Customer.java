@@ -1,11 +1,16 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 enum CustomerStatus {
     GOOD, BAD
@@ -37,6 +42,12 @@ public class Customer extends Person {
     private static void addCustomer(Customer customer) {
         if (customer == null) {
             throw new NullPointerException("customer cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("Validation failed for Customer");
         }
         customers.add(customer);
     }
