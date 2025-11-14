@@ -1,8 +1,15 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Min;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class Master extends Worker {
 
@@ -11,9 +18,27 @@ public class Master extends Worker {
 
     private final static int minExperienceForTop = 3;
 
+    private static List<Master> masterList = new ArrayList<>();
+
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
         super(name, surname, phoneNumber, birthDate);
         this.experience = experience;
+        addMaster(this);
+    }
+
+    private static void addMaster(Master master){
+        if (master == null){
+            throw new NullPointerException("Master cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Master>> violations = validator.validate(master);
+        if (!violations.isEmpty()) {
+            // TODO: fix this
+//            throw new IllegalArgumentException("Validation failed  for Master");
+            return;
+        }
+        masterList.add(master);
     }
 
     public static int getMinExperienceForTop(){

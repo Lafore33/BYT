@@ -1,11 +1,16 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Appointment {
     // as the appointment might be completed, so the date will be in the past
@@ -20,10 +25,28 @@ public class Appointment {
     @Min(0)
     private double totalPrice;
 
+    private static List<Appointment> appointments = new ArrayList<>();;
+
     public Appointment(Builder builder) {
         this.date = builder.date;
         this.notes = builder.notes;
         this.paymentMethod = builder.paymentMethod;
+        addAppointment(this);
+    }
+
+    private static void addAppointment(Appointment appointment) {
+        if (appointment == null) {
+            throw new NullPointerException("Appointment cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
+        if (!violations.isEmpty()) {
+            // TODO: fix this
+//            throw new IllegalArgumentException("Validation failed for Appointment");
+            return;
+        }
+        appointments.add(appointment);
     }
 
     public List<String> getNotes() {

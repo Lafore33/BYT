@@ -1,7 +1,14 @@
 package com.example.byt;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class ProvidedService {
 
@@ -17,10 +24,28 @@ public class ProvidedService {
     @Min(0)
     private double price;
 
-    public ProvidedService(Builder builder) {
+    private static List<ProvidedService> providedServiceList = new ArrayList<>();
+
+    private ProvidedService(Builder builder) {
         this.rating = builder.rating;
         this.comment = builder.comment;
         this.time = builder.time;
+        addProvidedService(this);
+    }
+
+    private static void addProvidedService(ProvidedService providedService){
+        if (providedService == null) {
+            throw new NullPointerException("ProvidedService cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<ProvidedService>> violations = validator.validate(providedService);
+        if (!violations.isEmpty()) {
+            // TODO: fix this
+//            throw new IllegalArgumentException("Validation failed for ProvidedService");
+            return;
+        }
+        providedServiceList.add(providedService);
     }
 
     public static class Builder {

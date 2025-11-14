@@ -1,10 +1,17 @@
 package com.example.byt;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class Certification {
     @NotBlank
@@ -25,15 +32,19 @@ public class Certification {
 
     private LocalDate expiryDate;
 
+    private static List<Certification> certifications = new ArrayList<>();
+
     public Certification(String name, String certificationNumber, String description,
                          String organization, LocalDate issueDate, LocalDate expiryDate) {
         this.name = name;
         this.certificationNumber = certificationNumber;
         this.description = description;
         this.organization = organization;
-        this.issueDate = issueDate;
+        setIssueDate(issueDate);
         setExpiryDate(expiryDate);
+        addCertification(this);
     }
+
 
     public Certification(String name, String certificationNumber, String description,
                          String organization, LocalDate issueDate) {
@@ -41,7 +52,23 @@ public class Certification {
         this.certificationNumber = certificationNumber;
         this.description = description;
         this.organization = organization;
-        this.issueDate = issueDate;
+        setIssueDate(issueDate);
+        addCertification(this);
+    }
+
+    private static void addCertification(Certification certification) {
+        if (certification == null) {
+            throw new NullPointerException("certification cannot be null");
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
+        if (!violations.isEmpty()) {
+            // TODO: fix this
+//            throw new IllegalArgumentException("Validation failed for Certification");
+            return;
+        }
+        certifications.add(certification);
     }
 
     public void setExpiryDate(LocalDate expiryDate) {
@@ -52,6 +79,9 @@ public class Certification {
     }
 
     public void setIssueDate(LocalDate issueDate) {
+        if (issueDate == null) {
+            throw new IllegalArgumentException("issueDate cannot be null");
+        }
         if (expiryDate != null && issueDate.isAfter(expiryDate)) {
             throw new IllegalArgumentException("expiryDate must be after issueDate");
         }

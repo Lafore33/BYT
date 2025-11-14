@@ -148,15 +148,16 @@ class CertificationTest {
 
     @Test
     void nullIssueDateShouldFailValidation() {
-        Certification certification = new Certification(
-                "Course",
-                "CERT-123",
-                "Description",
-                "Organization",
-                null,
-                null
-        );
-        assertTrue(containsViolationFor(validator.validate(certification), "issueDate"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Certification(
+                    "Course",
+                    "CERT-123",
+                    "Description",
+                    "Organization",
+                    null,
+                    null
+            );
+        });
     }
 
     @Test
