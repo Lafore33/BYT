@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Certification {
     @NotBlank
@@ -25,6 +27,8 @@ public class Certification {
 
     private LocalDate expiryDate;
 
+    private static List<Certification> certifications = new ArrayList<>();
+
     public Certification(String name, String certificationNumber, String description,
                          String organization, LocalDate issueDate, LocalDate expiryDate) {
         this.name = name;
@@ -33,7 +37,9 @@ public class Certification {
         this.organization = organization;
         this.issueDate = issueDate;
         setExpiryDate(expiryDate);
+        addCertification(this);
     }
+
 
     public Certification(String name, String certificationNumber, String description,
                          String organization, LocalDate issueDate) {
@@ -42,6 +48,14 @@ public class Certification {
         this.description = description;
         this.organization = organization;
         this.issueDate = issueDate;
+        addCertification(this);
+    }
+
+    private static void addCertification(Certification certification) {
+        if (certification == null) {
+            throw new NullPointerException("certification cannot be null");
+        }
+        certifications.add(certification);
     }
 
     public void setExpiryDate(LocalDate expiryDate) {

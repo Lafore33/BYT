@@ -13,10 +13,20 @@ public class HairService extends Service{
     @NotEmpty
     private List<String> hairTypes;
 
+    private static List<HairService> hairServiceList = new ArrayList<>();
+
     public HairService(int id, String name, double regularPrice, String description, double duration, HairServiceType type, List<String> hairTypes) {
         super(id, name, regularPrice, description, duration);
         this.type = type;
         setHairTypes(hairTypes);
+        addHairService(this);
+    }
+
+    private static void addHairService(HairService hairService){
+        if (hairService == null){
+            throw new NullPointerException("HairService cannot be null");
+        }
+        hairServiceList.add(hairService);
     }
 
     public List<String> getHairTypes() {

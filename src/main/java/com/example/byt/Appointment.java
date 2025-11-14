@@ -20,10 +20,20 @@ public class Appointment {
     @Min(0)
     private double totalPrice;
 
+    private static List<Appointment> appointments = new ArrayList<>();;
+
     public Appointment(Builder builder) {
         this.date = builder.date;
         this.notes = builder.notes;
         this.paymentMethod = builder.paymentMethod;
+        addAppointment(this);
+    }
+
+    private static void addAppointment(Appointment appointment) {
+        if (appointment == null) {
+            throw new NullPointerException("Appointment cannot be null");
+        }
+        appointments.add(appointment);
     }
 
     public List<String> getNotes() {

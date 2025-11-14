@@ -3,9 +3,10 @@ package com.example.byt;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Promotion {
     @NotBlank
@@ -22,13 +23,24 @@ public class Promotion {
 
     private LocalDate endDate;
 
+    private static List<Promotion> promotionList = new ArrayList<>();
+
     public Promotion(String name, String description, double percentage, LocalDate startDate, LocalDate endDate) {
         this.name = name;
         this.description = description;
         this.percentage = percentage;
         setStartDate(startDate);
         setEndDate(endDate);
+        addPromotion(this);
     }
+
+    private static void addPromotion(Promotion promotion){
+        if (promotion == null){
+            throw new NullPointerException("Promotion cannot be null");
+        }
+        promotionList.add(promotion);
+    }
+
 
     public void setStartDate(LocalDate startDate) {
         if (startDate == null) {

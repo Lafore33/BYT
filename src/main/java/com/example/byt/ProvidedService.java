@@ -2,6 +2,8 @@ package com.example.byt;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProvidedService {
 
@@ -17,10 +19,20 @@ public class ProvidedService {
     @Min(0)
     private double price;
 
-    public ProvidedService(Builder builder) {
+    private static List<ProvidedService> providedServiceList = new ArrayList<>();
+
+    private ProvidedService(Builder builder) {
         this.rating = builder.rating;
         this.comment = builder.comment;
         this.time = builder.time;
+        addProvidedService(this);
+    }
+
+    private static void addProvidedService(ProvidedService providedService){
+        if (providedService == null){
+            throw new NullPointerException("ProvidedService cannot be null");
+        }
+        providedServiceList.add(providedService);
     }
 
     public static class Builder {
