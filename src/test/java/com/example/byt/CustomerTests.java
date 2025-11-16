@@ -29,7 +29,8 @@ public class CustomerTests {
                 "john@example.com", birthDate);
 
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
-        assertTrue(violations.isEmpty());
+        assertTrue(violations.isEmpty(),
+                "Expected no validation violations for valid customer with email");
     }
 
     @Test
@@ -39,10 +40,8 @@ public class CustomerTests {
                 "not-an-email", birthDate);
 
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
-
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("emailAddress")));
+        assertTrue(containsViolationFor(violations, "emailAddress"),
+                "Expected violation for 'emailAddress' field");
     }
 
     @Test
@@ -80,5 +79,10 @@ public class CustomerTests {
         Customer customer = new Customer("Age", "Test", "555", birthDate);
 
         assertEquals(25, customer.getAge());
+    }
+
+    private boolean containsViolationFor(Set<ConstraintViolation<Customer>> violations, String fieldName) {
+        return violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals(fieldName));
     }
 }
