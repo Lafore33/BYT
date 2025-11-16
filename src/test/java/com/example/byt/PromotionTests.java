@@ -31,7 +31,8 @@ public class PromotionTests {
                 30.0, start, end);
 
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
-        assertTrue(violations.isEmpty());
+        assertTrue(violations.isEmpty(),
+                "Expected no validation violations for valid promotion");
     }
 
     @Test
@@ -43,9 +44,8 @@ public class PromotionTests {
                 3.0, start, end);
 
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("percentage")));
+        assertTrue(containsViolationFor(violations, "percentage"),
+                "Expected violation for 'percentage' field");
     }
 
     @Test
@@ -121,9 +121,8 @@ public class PromotionTests {
                 20.0, start, end);
 
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("name")));
+        assertTrue(containsViolationFor(violations, "name"),
+                "Expected violation for 'name' field");
     }
 
     @Test
@@ -135,9 +134,8 @@ public class PromotionTests {
                 20.0, start, end);
 
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("name")));
+        assertTrue(containsViolationFor(violations, "name"),
+                "Expected violation for 'name' field");
     }
 
     @Test
@@ -149,9 +147,8 @@ public class PromotionTests {
                 20.0, start, end);
 
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("description")));
+        assertTrue(containsViolationFor(violations, "description"),
+                "Expected violation for 'description' field");
     }
 
     @Test
@@ -163,9 +160,8 @@ public class PromotionTests {
                 20.0, start, end);
 
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("description")));
+        assertTrue(containsViolationFor(violations, "description"),
+                "Expected violation for 'description' field");
     }
 
     @Test
@@ -184,5 +180,10 @@ public class PromotionTests {
         assertThrows(IllegalArgumentException.class, () ->
                 new Promotion("Promo", "Desc", 20.0, start, null)
         );
+    }
+
+    private boolean containsViolationFor(Set<ConstraintViolation<Promotion>> violations, String fieldName) {
+        return violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals(fieldName));
     }
 }

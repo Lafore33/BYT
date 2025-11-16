@@ -144,9 +144,12 @@ public class AppointmentTests {
         Appointment appointment = new Appointment.Builder(null).build();
 
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
+        assertTrue(containsViolationFor(violations, "date"),
+                "Expected violation for 'date' field");
+    }
 
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("date")));
+    private boolean containsViolationFor(Set<ConstraintViolation<Appointment>> violations, String fieldName) {
+        return violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals(fieldName));
     }
 }

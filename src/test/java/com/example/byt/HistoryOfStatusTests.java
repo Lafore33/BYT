@@ -23,46 +23,49 @@ public class HistoryOfStatusTests {
     }
 
     @Test
-    void validHistoryOfStatusHasNoViolations() {
-        LocalDate date = LocalDate.now();
+    void validHistoryOfStatusShouldHaveNoViolations() {
+        LocalDate date = LocalDate.now().minusDays(1);
         HistoryOfStatus history = new HistoryOfStatus(AppointmentStatus.SCHEDULED, date);
-
         Set<ConstraintViolation<HistoryOfStatus>> violations = validator.validate(history);
-        assertTrue(violations.isEmpty());
+        assertTrue(violations.isEmpty(),
+                "Expected no validation violations for a valid HistoryOfStatus, but got: " + violations);
     }
 
     @Test
-    void nullStatusProducesViolation() {
-        LocalDate date = LocalDate.now();
+    void nullStatusShouldFailValidation() {
+        LocalDate date = LocalDate.now().minusDays(1);
         HistoryOfStatus history = new HistoryOfStatus(null, date);
-
         Set<ConstraintViolation<HistoryOfStatus>> violations = validator.validate(history);
-
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("status")));
+        assertFalse(violations.isEmpty(),
+                "Expected validation violations for null 'status', but got none");
+        assertTrue(containsViolationFor(violations, "status"),
+                "Expected violation for field 'status', but got: " + violations);
     }
 
     @Test
-    void nullDateProducesViolation() {
+    void nullDateShouldFailValidation() {
         HistoryOfStatus history = new HistoryOfStatus(AppointmentStatus.SCHEDULED, null);
 
         Set<ConstraintViolation<HistoryOfStatus>> violations = validator.validate(history);
-
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("dateOfChangingStatus")));
+        assertFalse(violations.isEmpty(),
+                "Expected validation violations for null 'dateOfChangingStatus', but got none");
+        assertTrue(containsViolationFor(violations, "dateOfChangingStatus"),
+                "Expected violation for field 'dateOfChangingStatus', but got: " + violations);
     }
 
     @Test
-    void futureDateProducesViolation() {
+    void futureDateShouldFailValidation() {
         LocalDate future = LocalDate.now().plusDays(1);
         HistoryOfStatus history = new HistoryOfStatus(AppointmentStatus.SCHEDULED, future);
-
         Set<ConstraintViolation<HistoryOfStatus>> violations = validator.validate(history);
+        assertFalse(violations.isEmpty(),
+                "Expected validation violations for future 'dateOfChangingStatus', but got none");
+        assertTrue(containsViolationFor(violations, "dateOfChangingStatus"),
+                "Expected violation for field 'dateOfChangingStatus', but got: " + violations);
+    }
 
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("dateOfChangingStatus")));
+    private boolean containsViolationFor(Set<ConstraintViolation<HistoryOfStatus>> violations, String fieldName) {
+        return violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals(fieldName));
     }
 }

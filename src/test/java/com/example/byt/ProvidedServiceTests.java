@@ -32,7 +32,8 @@ public class ProvidedServiceTests {
                 .build();
 
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
-        assertTrue(violations.isEmpty());
+        assertTrue(violations.isEmpty(),
+                "Expected no validation violations for valid ProvidedService");
     }
 
     @Test
@@ -46,7 +47,8 @@ public class ProvidedServiceTests {
         assertNull(service.getComment());
 
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
-        assertTrue(violations.isEmpty());
+        assertTrue(violations.isEmpty(),
+                "Expected no validation violations for ProvidedService without optional fields");
     }
 
     @Test
@@ -105,10 +107,8 @@ public class ProvidedServiceTests {
         ProvidedService service = new ProvidedService.Builder(null).build();
 
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
-
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("time")));
+        assertTrue(containsViolationFor(violations, "time"),
+                "Expected violation for 'time' field");
     }
 
     @Test
@@ -120,9 +120,8 @@ public class ProvidedServiceTests {
                 .build();
 
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
-
-        assertTrue(violations.stream()
-                .noneMatch(v -> v.getPropertyPath().toString().equals("rating")));
+        assertTrue(violations.isEmpty(),
+                "Rating within valid range should have no violations");
     }
 
     @Test
@@ -134,9 +133,12 @@ public class ProvidedServiceTests {
                 .build();
 
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
+        assertTrue(containsViolationFor(violations, "rating"),
+                "Expected violation for 'rating' field");
+    }
 
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("rating")));
+    private boolean containsViolationFor(Set<ConstraintViolation<ProvidedService>> violations, String fieldName) {
+        return violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals(fieldName));
     }
 }
