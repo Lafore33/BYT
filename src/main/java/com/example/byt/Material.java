@@ -38,5 +38,8 @@ public class Material {
         }
         materialList.add(material);
     }
+    public static List<Material> getMaterialList() {
+        return new ArrayList<>(materialList);
+    }
 
 }

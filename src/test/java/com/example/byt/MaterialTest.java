@@ -7,8 +7,10 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MaterialTest {
@@ -28,6 +30,8 @@ public class MaterialTest {
 
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for a valid Material, but got: " + violations);
+        List<Material> materialList = Material.getMaterialList();
+        assertTrue(materialList.contains(material), "The valid material should be added to the list");
     }
 
     @Test
@@ -38,6 +42,8 @@ public class MaterialTest {
 
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for blank 'name', but got: " + violations);
+        List<Material> materialList = Material.getMaterialList();
+        assertFalse(materialList.contains(material), "The invalid material should be added to the list");
     }
 
     @Test
@@ -48,6 +54,8 @@ public class MaterialTest {
 
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for null 'name', but got: " + violations);
+        List<Material> materialList = Material.getMaterialList();
+        assertFalse(materialList.contains(material), "The invalid material should be added to the list");
     }
 
     @Test
@@ -58,6 +66,8 @@ public class MaterialTest {
 
         assertTrue(containsViolationFor(violations, "producer"),
                 "Expected violation for blank 'producer', but got: " + violations);
+        List<Material> materialList = Material.getMaterialList();
+        assertFalse(materialList.contains(material), "The invalid material should be added to the list");
     }
 
     @Test
@@ -68,6 +78,18 @@ public class MaterialTest {
 
         assertTrue(containsViolationFor(violations, "producer"),
                 "Expected violation for null 'producer', but got: " + violations);
+        List<Material> materialList = Material.getMaterialList();
+        assertFalse(materialList.contains(material), "The invalid material should be added to the list");
+    }
+
+    @Test
+    void getMaterialListShouldReturnCopy(){
+        Material material = new Material("Nail Polish", "OPI");
+        List<Material> listCopy = Material.getMaterialList();
+        listCopy.clear();
+
+        List<Material> originalList = Material.getMaterialList();
+        assertTrue(originalList.contains(material), "The original list should not be modified");
     }
 
     private boolean containsViolationFor(Set<ConstraintViolation<Material>> violations, String fieldName) {

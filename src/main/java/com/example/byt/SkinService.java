@@ -84,6 +84,6 @@ public class SkinService extends Service implements Serializable {
     }
 
     public static List<SkinService> getSkinServiceList() {
-        return skinServiceList;
+        return new ArrayList<>(skinServiceList);
     }
 }

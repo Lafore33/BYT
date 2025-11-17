@@ -7,6 +7,7 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,6 +36,25 @@ public class TwoHandsServiceTest {
 
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for a valid TwoHandsService, but got: " + violations);
+        List<TwoHandsService> serviceList = TwoHandsService.getTwoHandsServiceList();
+        assertTrue(serviceList.contains(service), "The valid service should be added to the list");
+    }
+
+    @Test
+    void getServiceListShouldReturnCopy() {
+        TwoHandsService service = new TwoHandsService(
+                1,
+                "Massage",
+                80.0,
+                "Full body massage with two hands",
+                60.0
+        );
+
+        List<TwoHandsService> listCopy = TwoHandsService.getTwoHandsServiceList();
+        listCopy.clear();
+
+        List<TwoHandsService> originalList = TwoHandsService.getTwoHandsServiceList();
+        assertTrue(originalList.contains(service), "The original list should not be modified");
     }
 
     @Test

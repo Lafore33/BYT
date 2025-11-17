@@ -67,4 +67,7 @@ public class Service {
         }
         serviceList.add(service);
     }
+    public static List<Service> getServiceList() {
+        return new ArrayList<>(serviceList);
+    }
 }
