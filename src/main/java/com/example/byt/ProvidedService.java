@@ -94,4 +94,8 @@ public class ProvidedService {
     public LocalDateTime getTime() {
         return time;
     }
+
+    public static List<ProvidedService> getExtent() {
+        return new ArrayList<>(providedServiceList);
+    }
 }

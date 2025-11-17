@@ -44,4 +44,8 @@ public class HistoryOfStatus {
         historyOfStatusList.add(historyOfStatus);
     }
 
+    public static List<HistoryOfStatus> getExtent() {
+        return new ArrayList<>(historyOfStatusList);
+    }
+
 }

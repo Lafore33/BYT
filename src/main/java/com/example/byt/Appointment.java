@@ -105,4 +105,8 @@ public class Appointment {
     public LocalDate getDate() {
         return date;
     }
+
+    public static List<Appointment> getExtent() {
+        return new ArrayList<>(appointments);
+    }
 }

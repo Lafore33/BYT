@@ -90,4 +90,8 @@ public class Promotion {
         return endDate;
     }
 
+    public static List<Promotion> getExtent() {
+        return new ArrayList<>(promotionList);
+    }
+
 }
