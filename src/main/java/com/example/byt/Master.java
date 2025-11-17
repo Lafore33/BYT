@@ -34,8 +34,7 @@ public class Master extends Worker {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Master>> violations = validator.validate(master);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed  for Master");
+            System.out.println("Validation failed, the master cannot be added to the list");
             return;
         }
         masterList.add(master);

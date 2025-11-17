@@ -47,8 +47,7 @@ public class Customer extends Person {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed for Customer");
+            System.out.println("Validation failed, the customer cannot be added to the list");
             return;
         }
         customers.add(customer);

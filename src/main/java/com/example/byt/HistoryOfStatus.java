@@ -37,8 +37,7 @@ public class HistoryOfStatus {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<HistoryOfStatus>> violations = validator.validate(historyOfStatus);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed for HistoryOfStatus");
+            System.out.println("Validation failed, the history cannot be added to the list");
             return;
         }
         historyOfStatusList.add(historyOfStatus);

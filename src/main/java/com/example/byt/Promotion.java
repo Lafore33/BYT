@@ -47,8 +47,7 @@ public class Promotion {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed for Promotion");
+            System.out.println("Validation failed, the promotion cannot be added to the list");
             return;
         }
         promotionList.add(promotion);

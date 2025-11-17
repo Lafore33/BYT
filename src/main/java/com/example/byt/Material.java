@@ -32,8 +32,7 @@ public class Material {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Material>> violations = validator.validate(material);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed for Material");
+            System.out.println("Validation failed, the material cannot be added to the list");
             return;
         }
         materialList.add(material);

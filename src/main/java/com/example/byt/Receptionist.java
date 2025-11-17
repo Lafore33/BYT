@@ -32,8 +32,7 @@ public class Receptionist extends Worker {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Receptionist>> violations = validator.validate(receptionist);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed for Receptionist");
+            System.out.println("Validation failed, the receptionist cannot be added to the list");
             return;
         }
         receptionistList.add(receptionist);

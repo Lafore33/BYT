@@ -61,8 +61,7 @@ public class Service {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed for Service");
+            System.out.println("Validation failed, the service cannot be added to the list");
             return;
         }
         serviceList.add(service);
