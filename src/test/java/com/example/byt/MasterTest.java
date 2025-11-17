@@ -17,16 +17,6 @@ class MasterTest {
 
     private static Validator validator;
 
-    private static class TestMaster extends Master {
-        public TestMaster(String name,
-                          String surname,
-                          String phoneNumber,
-                          LocalDate birthDate,
-                          int experience) {
-            super(name, surname, phoneNumber, birthDate, experience);
-        }
-    }
-
     @BeforeAll
     static void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -35,49 +25,48 @@ class MasterTest {
 
     @Test
     void validMasterShouldHaveNoViolations() {
-        TestMaster master = new TestMaster(
+        Master master = new Master(
                 "Yelizaveta",
                 "Gaiduk",
                 "+48123456789",
                 LocalDate.now().minusYears(25),
                 5
         );
-        Set<ConstraintViolation<TestMaster>> violations = validator.validate(master);
+        Set<ConstraintViolation<Master>> violations = validator.validate(master);
         assertTrue(violations.isEmpty(),
-                "Valid master should have no validation violations");
+                "Valid master should have no validation violations, but got: " + violations);
     }
 
     @Test
     void zeroExperienceShouldBeValid() {
-        TestMaster master = new TestMaster(
+        Master master = new Master(
                 "Yelizaveta",
                 "Gaiduk",
                 "+48123456789",
                 LocalDate.now().minusYears(25),
                 0
         );
-        Set<ConstraintViolation<TestMaster>> violations = validator.validate(master);
-        assertTrue(violations.isEmpty(), "experience = 0 should satisfy @Min(0)");
+        Set<ConstraintViolation<Master>> violations = validator.validate(master);
+        assertTrue(violations.isEmpty(), "Valid master should have no validation violations, but got: " + violations);
     }
 
     @Test
     void negativeExperienceShouldFailValidation() {
-        TestMaster master = new TestMaster(
+        Master master = new Master(
                 "Yelizaveta",
                 "Gaiduk",
                 "+48123456789",
                 LocalDate.now().minusYears(25),
                 -1
         );
-        Set<ConstraintViolation<TestMaster>> violations = validator.validate(master);
-        assertFalse(violations.isEmpty(), "Negative experience must fail validation");
+        Set<ConstraintViolation<Master>> violations = validator.validate(master);
         assertTrue(containsViolationFor(violations, "experience"),
-                "Expected violation for 'experience', but got: " + violations);
+                "Expected violation for negative 'experience', but got: " + violations);
     }
 
     @Test
     void constructorSetsExperienceCorrectly() throws Exception {
-        TestMaster master = new TestMaster(
+        Master master = new Master(
                 "Yelizaveta",
                 "Gaiduk",
                 "+48123456789",
@@ -90,7 +79,7 @@ class MasterTest {
         assertEquals(7, experienceField.get(master),
                 "Constructor should assign correct experience value");
     }
-    private boolean containsViolationFor(Set<ConstraintViolation<TestMaster>> violations,
+    private boolean containsViolationFor(Set<ConstraintViolation<Master>> violations,
                                          String fieldName) {
         return violations.stream().anyMatch(v ->
                 v.getPropertyPath().toString().equals(fieldName));
