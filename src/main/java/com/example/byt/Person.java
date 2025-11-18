@@ -20,7 +20,6 @@ abstract class Person {
     @NotBlank
     private String phoneNumber;
 
-    @NotNull
     @Past
     private LocalDate birthDate;
 
@@ -33,10 +32,13 @@ abstract class Person {
     }
 
     private boolean isBirthDateValid(LocalDate birthDate) {
-        return birthDate.plusYears(18).isBefore(LocalDate.now());
+        return birthDate != null && birthDate.plusYears(18).isBefore(LocalDate.now());
     }
 
     public void setBirthDate(LocalDate birthDate) {
+        if(birthDate == null){
+            throw new IllegalArgumentException("Birth date cannot be null");
+        }
         if (!isBirthDateValid(birthDate)) {
             throw new IllegalArgumentException("User should be at least 18 years old");
         }

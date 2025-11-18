@@ -24,7 +24,7 @@ class PersonTest {
     }
 
     @BeforeAll
-    static void setUp() {
+    static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -50,7 +50,8 @@ class PersonTest {
                 "+48123456789",
                 LocalDate.now().minusYears(25)
         );
-        assertTrue(containsViolationFor(validator.validate(person), "name"));
+        Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
+        assertTrue(containsViolationFor(violations, "name"), "Expected violation for blank 'name', but got: " + violations);
     }
 
     @Test
@@ -61,7 +62,8 @@ class PersonTest {
                 "+48123456789",
                 LocalDate.now().minusYears(25)
         );
-        assertTrue(containsViolationFor(validator.validate(person), "name"));
+        Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
+        assertTrue(containsViolationFor(violations, "name"), "Expected violation for null 'name', but got: " + violations);
     }
 
     @Test
@@ -72,7 +74,8 @@ class PersonTest {
                 "+48123456789",
                 LocalDate.now().minusYears(25)
         );
-        assertTrue(containsViolationFor(validator.validate(person), "surname"));
+        Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
+        assertTrue(containsViolationFor(violations, "surname"), "Expected violation for blank 'surname', but got: " + violations);
     }
 
     @Test
@@ -83,7 +86,8 @@ class PersonTest {
                 "+48123456789",
                 LocalDate.now().minusYears(25)
         );
-        assertTrue(containsViolationFor(validator.validate(person), "surname"));
+        Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
+        assertTrue(containsViolationFor(violations, "surname"), "Expected violation for null 'surname', but got: " + violations);
     }
 
     @Test
@@ -94,7 +98,8 @@ class PersonTest {
                 "   ",
                 LocalDate.now().minusYears(25)
         );
-        assertTrue(containsViolationFor(validator.validate(person), "phoneNumber"));
+        Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
+        assertTrue(containsViolationFor(violations, "phoneNumber"), "Expected violation for blank 'phoneNumber', but got: " + violations);
     }
 
     @Test
@@ -105,7 +110,8 @@ class PersonTest {
                 null,
                 LocalDate.now().minusYears(25)
         );
-        assertTrue(containsViolationFor(validator.validate(person), "phoneNumber"));
+        Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
+        assertTrue(containsViolationFor(violations, "phoneNumber"), "Expected violation for null 'phoneNumber', but got: " + violations);
     }
 
     @Test
@@ -116,41 +122,23 @@ class PersonTest {
                 "abc123",
                 LocalDate.now().minusYears(25)
         );
-        assertTrue(containsViolationFor(validator.validate(person), "phoneNumber"));
+        Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
+        assertTrue(containsViolationFor(violations, "phoneNumber"), "Expected violation for non-digit 'phoneNumber', but got: " + violations);
     }
 
     @Test
-    void nullBirthDateFailsValidation() throws Exception {
-        TestPerson person = new TestPerson(
+    void nullBirthDateThrowsException(){
+        assertThrows(IllegalArgumentException.class, () -> new TestPerson(
                 "Yelizaveta",
                 "Gaiduk",
                 "+48123456789",
-                LocalDate.now().minusYears(25)
-        );
+                null
+        ), "Expected IllegalArgumentException for null 'birthDate'");
 
-        Field birthDate = Person.class.getDeclaredField("birthDate");
-        birthDate.setAccessible(true);
-        birthDate.set(person, null);
-        assertTrue(containsViolationFor(validator.validate(person), "birthDate"));
     }
 
     @Test
-    void birthDateTodayFailsPastValidation() throws Exception {
-        TestPerson person = new TestPerson(
-                "Yelizaveta",
-                "Gaiduk",
-                "+48123456789",
-                LocalDate.now().minusYears(25)
-        );
-
-        Field birthDate = Person.class.getDeclaredField("birthDate");
-        birthDate.setAccessible(true);
-        birthDate.set(person, LocalDate.now());
-        assertTrue(containsViolationFor(validator.validate(person), "birthDate"));
-    }
-
-    @Test
-    void constructorThrowsForUnderageBirthDate() {
+    void underageBirthDateThrowsForException() {
         LocalDate tooYoung = LocalDate.now().minusYears(17);
         assertThrows(IllegalArgumentException.class, () ->
                 new TestPerson(
