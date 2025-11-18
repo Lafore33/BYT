@@ -31,7 +31,7 @@ public class PromotionTests {
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for valid promotion");
-        assertTrue(Promotion.getExtent().contains(promotion),
+        assertTrue(Promotion.getPromotionList().contains(promotion),
                 "Valid promotion should be added to extent");
     }
 
@@ -44,7 +44,7 @@ public class PromotionTests {
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "percentage"),
                 "Expected violation for 'percentage' field");
-        assertFalse(Promotion.getExtent().contains(promotion),
+        assertFalse(Promotion.getPromotionList().contains(promotion),
                 "Invalid promotion should NOT be added to extent");
     }
 
@@ -111,7 +111,7 @@ public class PromotionTests {
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for 'name' field");
-        assertFalse(Promotion.getExtent().contains(promotion),
+        assertFalse(Promotion.getPromotionList().contains(promotion),
                 "Invalid promotion should NOT be added to extent");
     }
 
@@ -124,7 +124,7 @@ public class PromotionTests {
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for 'name' field");
-        assertFalse(Promotion.getExtent().contains(promotion),
+        assertFalse(Promotion.getPromotionList().contains(promotion),
                 "Invalid promotion should NOT be added to extent");
     }
 
@@ -137,7 +137,7 @@ public class PromotionTests {
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "description"),
                 "Expected violation for 'description' field");
-        assertFalse(Promotion.getExtent().contains(promotion),
+        assertFalse(Promotion.getPromotionList().contains(promotion),
                 "Invalid promotion should NOT be added to extent");
     }
 
@@ -150,7 +150,7 @@ public class PromotionTests {
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "description"),
                 "Expected violation for 'description' field");
-        assertFalse(Promotion.getExtent().contains(promotion),
+        assertFalse(Promotion.getPromotionList().contains(promotion),
                 "Invalid promotion should NOT be added to extent");
     }
 

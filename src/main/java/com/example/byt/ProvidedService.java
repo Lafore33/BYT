@@ -95,7 +95,7 @@ public class ProvidedService {
         return time;
     }
 
-    public static List<ProvidedService> getExtent() {
+    public static List<ProvidedService> getProvidedServiceList() {
         return new ArrayList<>(providedServiceList);
     }
 }

@@ -34,7 +34,7 @@ public class AppointmentTests {
         assertNull(appointment.getPaymentMethod());
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
         assertTrue(violations.isEmpty());
-        assertTrue(Appointment.getExtent().contains(appointment),
+        assertTrue(Appointment.getAppointmentList().contains(appointment),
                 "Valid appointment should be added to extent");
     }
 
@@ -47,7 +47,7 @@ public class AppointmentTests {
                 .build();
         assertNotNull(appointment.getNotes());
         assertEquals(2, appointment.getNotes().size());
-        assertTrue(Appointment.getExtent().contains(appointment),
+        assertTrue(Appointment.getAppointmentList().contains(appointment),
                 "Valid appointment should be added to extent");
     }
 
@@ -115,7 +115,7 @@ public class AppointmentTests {
         LocalDate date = LocalDate.of(2025, 12, 1);
         Appointment appointment = new Appointment.Builder(date).build();
         assertNull(appointment.getPaymentMethod());
-        assertTrue(Appointment.getExtent().contains(appointment),
+        assertTrue(Appointment.getAppointmentList().contains(appointment),
                 "Valid appointment should be added to extent");
     }
 
@@ -126,7 +126,7 @@ public class AppointmentTests {
                 .paymentMethod(PaymentMethod.CASH)
                 .build();
         assertEquals(PaymentMethod.CASH, appointment.getPaymentMethod());
-        assertTrue(Appointment.getExtent().contains(appointment),
+        assertTrue(Appointment.getAppointmentList().contains(appointment),
                 "Valid appointment should be added to extent");
     }
 
@@ -136,7 +136,7 @@ public class AppointmentTests {
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
         assertTrue(containsViolationFor(violations, "date"),
                 "Expected violation for 'date' field");
-        assertFalse(Appointment.getExtent().contains(appointment),
+        assertFalse(Appointment.getAppointmentList().contains(appointment),
                 "Invalid appointment should NOT be added to extent");
     }
 

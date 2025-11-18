@@ -106,7 +106,7 @@ public class Appointment {
         return date;
     }
 
-    public static List<Appointment> getExtent() {
+    public static List<Appointment> getAppointmentList() {
         return new ArrayList<>(appointments);
     }
 }

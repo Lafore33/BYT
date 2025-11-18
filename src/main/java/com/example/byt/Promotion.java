@@ -90,7 +90,7 @@ public class Promotion {
         return endDate;
     }
 
-    public static List<Promotion> getExtent() {
+    public static List<Promotion> getPromotionList() {
         return new ArrayList<>(promotionList);
     }
 

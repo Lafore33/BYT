@@ -41,7 +41,4 @@ public class FourHandsServiceTest {
         assertEquals(2, FourHandsService.getNumOfSpecialistsRequired(),
                 "Expected numOfSpecialistsRequired to return 2");
     }
-
-
-
 }

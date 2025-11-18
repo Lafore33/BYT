@@ -29,7 +29,7 @@ public class HistoryOfStatusTests {
         Set<ConstraintViolation<HistoryOfStatus>> violations = validator.validate(history);
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for a valid HistoryOfStatus, but got: " + violations);
-        assertTrue(HistoryOfStatus.getExtent().contains(history),
+        assertTrue(HistoryOfStatus.getHistoryOfStatusList().contains(history),
                 "Valid HistoryOfStatus should be added to extent");
     }
 
@@ -42,7 +42,7 @@ public class HistoryOfStatusTests {
                 "Expected validation violations for null 'status', but got none");
         assertTrue(containsViolationFor(violations, "status"),
                 "Expected violation for field 'status', but got: " + violations);
-        assertFalse(HistoryOfStatus.getExtent().contains(history),
+        assertFalse(HistoryOfStatus.getHistoryOfStatusList().contains(history),
                 "Invalid HistoryOfStatus should NOT be added to extent");
     }
 
@@ -54,7 +54,7 @@ public class HistoryOfStatusTests {
                 "Expected validation violations for null 'dateOfChangingStatus', but got none");
         assertTrue(containsViolationFor(violations, "dateOfChangingStatus"),
                 "Expected violation for field 'dateOfChangingStatus', but got: " + violations);
-        assertFalse(HistoryOfStatus.getExtent().contains(history),
+        assertFalse(HistoryOfStatus.getHistoryOfStatusList().contains(history),
                 "Invalid HistoryOfStatus should NOT be added to extent");
     }
 
@@ -67,7 +67,7 @@ public class HistoryOfStatusTests {
                 "Expected validation violations for future 'dateOfChangingStatus', but got none");
         assertTrue(containsViolationFor(violations, "dateOfChangingStatus"),
                 "Expected violation for field 'dateOfChangingStatus', but got: " + violations);
-        assertFalse(HistoryOfStatus.getExtent().contains(history),
+        assertFalse(HistoryOfStatus.getHistoryOfStatusList().contains(history),
                 "Invalid HistoryOfStatus should NOT be added to extent");
     }
 

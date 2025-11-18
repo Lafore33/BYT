@@ -32,7 +32,7 @@ public class ProvidedServiceTests {
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for valid ProvidedService");
-        assertTrue(ProvidedService.getExtent().contains(service),
+        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
                 "Valid ProvidedService should be added to extent");
     }
 
@@ -46,7 +46,7 @@ public class ProvidedServiceTests {
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for ProvidedService without optional fields");
-        assertTrue(ProvidedService.getExtent().contains(service),
+        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
                 "Valid ProvidedService should be added to extent");
     }
 
@@ -55,7 +55,7 @@ public class ProvidedServiceTests {
         LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
         ProvidedService service = new ProvidedService.Builder(time).build();
         assertNull(service.getRating());
-        assertTrue(ProvidedService.getExtent().contains(service),
+        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
                 "Valid ProvidedService should be added to extent");
     }
 
@@ -66,7 +66,7 @@ public class ProvidedServiceTests {
                 .rating(4)
                 .build();
         assertEquals(4, service.getRating());
-        assertTrue(ProvidedService.getExtent().contains(service),
+        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
                 "Valid ProvidedService should be added to extent");
     }
 
@@ -75,7 +75,7 @@ public class ProvidedServiceTests {
         LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
         ProvidedService service = new ProvidedService.Builder(time).build();
         assertNull(service.getComment());
-        assertTrue(ProvidedService.getExtent().contains(service),
+        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
                 "Valid ProvidedService should be added to extent");
     }
 
@@ -87,7 +87,7 @@ public class ProvidedServiceTests {
                 .build();
 
         assertEquals("Good", service.getComment());
-        assertTrue(ProvidedService.getExtent().contains(service),
+        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
                 "Valid ProvidedService should be added to extent");
     }
 
@@ -98,7 +98,7 @@ public class ProvidedServiceTests {
                 .comment("   ")
                 .build();
         assertNull(service.getComment());
-        assertTrue(ProvidedService.getExtent().contains(service),
+        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
                 "Valid ProvidedService should be added to extent");
     }
 
@@ -108,7 +108,7 @@ public class ProvidedServiceTests {
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "time"),
                 "Expected violation for 'time' field");
-        assertFalse(ProvidedService.getExtent().contains(service),
+        assertFalse(ProvidedService.getProvidedServiceList().contains(service),
                 "Invalid ProvidedService should NOT be added to extent");
     }
 
@@ -121,7 +121,7 @@ public class ProvidedServiceTests {
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
         assertTrue(violations.isEmpty(),
                 "Rating within valid range should have no violations");
-        assertTrue(ProvidedService.getExtent().contains(service),
+        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
                 "Valid ProvidedService should be added to extent");
     }
 
@@ -134,7 +134,7 @@ public class ProvidedServiceTests {
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "rating"),
                 "Expected violation for 'rating' field");
-        assertFalse(ProvidedService.getExtent().contains(service),
+        assertFalse(ProvidedService.getProvidedServiceList().contains(service),
                 "Invalid ProvidedService should NOT be added to extent");
     }
 
