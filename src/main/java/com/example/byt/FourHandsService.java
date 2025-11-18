@@ -40,4 +40,8 @@ public class FourHandsService extends Service{
     public static List<FourHandsService> getFourHandsServiceList(){
         return new ArrayList<>(fourHandsServiceList);
     }
+
+    public boolean isExpressService() {
+        return isExpressService;
+    }
 }

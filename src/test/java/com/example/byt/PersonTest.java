@@ -30,6 +30,24 @@ class PersonTest {
     }
 
     @Test
+    void constructorSetsValuesCorrectly() {
+        String name = "Yelizaveta";
+        String surname = "Gaiduk";
+        String phoneNumber = "+48123456789";
+        LocalDate birthDate = LocalDate.now().minusYears(25);
+        TestPerson person = new TestPerson(
+                name,
+                surname,
+                phoneNumber,
+                birthDate
+        );
+        assertEquals(name, person.getName(), "Incorrect name set in the constructor");
+        assertEquals(surname, person.getSurname(), "Incorrect surname set in the constructor");
+        assertEquals(phoneNumber, person.getPhoneNumber(), "Incorrect phoneNumber set in the constructor");
+        assertEquals(birthDate, person.getBirthDate(), "Incorrect birthDate set in the constructor");
+    }
+
+    @Test
     void validPersonPassesValidation() {
         TestPerson person = new TestPerson(
                 "Yelizaveta",
@@ -149,8 +167,19 @@ class PersonTest {
                 )
         );
     }
+    @Test
+    void nullBirthDateThrowsForException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new TestPerson(
+                        "Yelizaveta",
+                        "Gaiduk",
+                        "+48123456789",
+                        null
+                )
+        );
+    }
 
-    private boolean containsViolationFor(Set<? extends ConstraintViolation<?>> violations, String field) {
+    private boolean containsViolationFor(Set<ConstraintViolation<TestPerson>> violations, String field) {
         return violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals(field));
     }
 }

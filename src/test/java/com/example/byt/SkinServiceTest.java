@@ -11,8 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SkinServiceTest {
     private static Validator validator;
@@ -21,6 +20,30 @@ public class SkinServiceTest {
     static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+
+    @Test
+    void constructorSetsValuesCorrectly(){
+        int id  =1;
+        String name = "Facial" ;
+        String description = "Deep cleansing";
+        double regularPrice = 50.0;
+        double duration = 60.0;
+        String purpose = "Hydration";
+        SkinService service = new SkinService(
+                id,
+                name,
+                regularPrice,
+                description,
+                duration,
+                purpose);
+        assertEquals(id, service.getId(), "Incorrect id set in constructor");
+        assertEquals(name, service.getName(), "Incorrect name set in constructor");
+        assertEquals(description, service.getDescription(), "Incorrect description set in constructor");
+        assertEquals(duration, service.getDuration(), "Incorrect duration set in constructor");
+        assertEquals(purpose, service.getPurpose(), "Incorrect purpose set in constructor");
+        assertEquals(regularPrice, service.getRegularPrice(), "Incorrect regular price set in constructor");
+
     }
 
     @Test

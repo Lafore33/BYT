@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MaterialTest {
     private static Validator validator;
@@ -20,6 +19,15 @@ public class MaterialTest {
     static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+
+    @Test
+    void constructorSetsCorrectValues() {
+        String name = "Nail Polish";
+        String producer = "OPI";
+        Material material = new Material(name ,producer);
+        assertEquals(name, material.getName(), "Incorrect name set in the constructor");
+        assertEquals(producer, material.getProducer(), "Incorrect producer set in the constructor");
     }
 
     @Test

@@ -37,4 +37,12 @@ public class Receptionist extends Worker {
         }
         receptionistList.add(receptionist);
     }
+
+    public WorkType getWorkType() {
+        return workType;
+    }
+
+    public static List<Receptionist> getReceptionistList() {
+        return new ArrayList<>(receptionistList);
+    }
 }

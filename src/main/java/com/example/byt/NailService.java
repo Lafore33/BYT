@@ -42,4 +42,12 @@ public class NailService extends Service {
     public static List<NailService> getNailServiceList(){
         return new ArrayList<>(nailServiceList);
     }
+
+    public NailServiceType getType() {
+        return type;
+    }
+
+    public boolean isCareIncluded() {
+        return isCareIncluded;
+    }
 }

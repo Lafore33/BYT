@@ -24,6 +24,27 @@ class MasterTest {
     }
 
     @Test
+    void constructorSetsValuesCorrectly() {
+        String name = "Yelizaveta";
+        String surname = "Gaiduk";
+        String phoneNumber = "+48123456789";
+        LocalDate dateOfBirth = LocalDate.now().minusYears(25);
+        int experience = 5;
+        Master master = new Master(
+                name,
+                surname,
+                phoneNumber,
+                dateOfBirth,
+                experience
+        );
+        assertEquals(name, master.getName(), "Incorrect name set in the constructor");
+        assertEquals(surname, master.getSurname(), "Incorrect surname set in the constructor");
+        assertEquals(phoneNumber, master.getPhoneNumber(), "Incorrect phone number set in the constructor");
+        assertEquals(dateOfBirth, master.getBirthDate(), "Incorrect date set in the constructor");
+        assertEquals(experience, master.getExperience(), "Incorrect experience set in the constructor");
+    }
+
+    @Test
     void validMasterShouldHaveNoViolations() {
         Master master = new Master(
                 "Yelizaveta",
@@ -63,21 +84,9 @@ class MasterTest {
         assertTrue(containsViolationFor(violations, "experience"),
                 "Expected violation for negative 'experience', but got: " + violations);
     }
-
     @Test
-    void constructorSetsExperienceCorrectly() throws Exception {
-        Master master = new Master(
-                "Yelizaveta",
-                "Gaiduk",
-                "+48123456789",
-                LocalDate.now().minusYears(25),
-                7
-        );
-
-        Field experienceField = Master.class.getDeclaredField("experience");
-        experienceField.setAccessible(true);
-        assertEquals(7, experienceField.get(master),
-                "Constructor should assign correct experience value");
+    void getMinExperienceForTopREturnsCorrectValue() {
+        assertEquals(3, Master.getMinExperienceForTop(), "Incorrect min experience for top, should be 3");
     }
     private boolean containsViolationFor(Set<ConstraintViolation<Master>> violations,
                                          String fieldName) {

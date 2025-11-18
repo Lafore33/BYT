@@ -11,8 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NailServiceTest {
     private static Validator validator;
@@ -21,6 +20,34 @@ public class NailServiceTest {
     static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+
+    @Test
+    void constructorSetsValuesCorrectly() {
+        int id  = 1;
+        String name = "Manicure";
+        double regularPrice = 30.0;
+        String description = "Basic hand treatment";
+        double duration = 45.0;
+        NailServiceType type = NailServiceType.HAND;
+        boolean isCareIncluded = true;
+        NailService service = new NailService(
+                id,
+                name,
+                regularPrice,
+                description,
+                duration,
+                type,
+                isCareIncluded
+        );
+        assertEquals(id, service.getId(), "Incorrect id set in the constructor");
+        assertEquals(name, service.getName(), "Incorrect name set in the constructor");
+        assertEquals(regularPrice, service.getRegularPrice(), "Incorrect regular price");
+        assertEquals(description, service.getDescription(), "Incorrect description set in the constructor");
+        assertEquals(duration, service.getDuration(), "Incorrect duration set in the constructor");
+        assertEquals(type, service.getType(), "Incorrect type set in the constructor");
+        assertEquals(isCareIncluded, service.isCareIncluded(), "Incorrect isCareIncluded set in the constructor");
+
     }
     @Test
     void validHandNailServiceShouldHaveNoViolations() {

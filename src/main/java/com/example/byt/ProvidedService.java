@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class ProvidedService {
 
-    @Min(0)
+    @Min(1)
     @Max(5)
     private Integer rating;
 
@@ -46,9 +46,22 @@ public class ProvidedService {
         }
         providedServiceList.add(providedService);
     }
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+    public void setComment(String comment) {
+        if (comment == null) {
+            this.comment = null;
+        } else if (comment.trim().isEmpty()) {
+            this.comment = null;
+        } else {
+            this.comment = comment;
+        }
+    }
+
 
     public static class Builder {
-        @Min(0)
+        @Min(1)
         @Max(5)
         private Integer rating;
 

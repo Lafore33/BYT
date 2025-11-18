@@ -24,6 +24,33 @@ public class HairServiceTest {
     }
 
     @Test
+    void constructorSetsValuesCorrectly(){
+        int id  = 1;
+        String name = "Haircut";
+        double regularPrice = 25.0;
+        String description = "Basic cut and style";
+        double duration = 30.0;
+        HairServiceType type = HairServiceType.CUT;
+        List<String> hairTypes = Arrays.asList("Straight", "Curly");
+        HairService service = new HairService(
+                id,
+                name,
+                regularPrice,
+                description,
+                duration,
+                type,
+                hairTypes
+        );
+        assertEquals(id, service.getId(), "Incorrect id set in the constructor");
+        assertEquals(name, service.getName(), "Incorrect name set in the constructor");
+        assertEquals(regularPrice, service.getRegularPrice(), "Incorrect regularPrice set in the constructor");
+        assertEquals(description, service.getDescription(), "Incorrect description set in the constructor");
+        assertEquals(duration, service.getDuration(), "Incorrect duration set in the constructor");
+        assertEquals(type, service.getType(), "Incorrect type set in the constructor");
+        assertEquals(hairTypes, service.getHairTypes(), "Incorrect hairTypes set in the constructor");
+    }
+
+    @Test
     void validHairServiceShouldHaveNoViolations() {
         HairService service = new HairService(
                 1,

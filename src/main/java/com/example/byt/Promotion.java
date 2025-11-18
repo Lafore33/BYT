@@ -81,6 +81,14 @@ public class Promotion {
         return name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public double getPercentage() {
+        return percentage;
+    }
+
     public LocalDate getStartDate() {
         return startDate;
     }

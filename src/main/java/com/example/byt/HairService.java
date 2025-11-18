@@ -54,6 +54,10 @@ public class HairService extends Service{
         this.hairTypes = new ArrayList<>(hairTypes);
     }
 
+    public HairServiceType getType() {
+        return type;
+    }
+
     public static List<HairService> getHairServiceList() {
         return new ArrayList<>(hairServiceList);
     }

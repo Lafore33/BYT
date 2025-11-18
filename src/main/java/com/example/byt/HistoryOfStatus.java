@@ -43,6 +43,14 @@ public class HistoryOfStatus {
         historyOfStatusList.add(historyOfStatus);
     }
 
+    public AppointmentStatus getStatus() {
+        return status;
+    }
+
+    public LocalDate getDateOfChangingStatus() {
+        return dateOfChangingStatus;
+    }
+
     public static List<HistoryOfStatus> getHistoryOfStatusList() {
         return new ArrayList<>(historyOfStatusList);
     }

@@ -22,6 +22,21 @@ public class ServiceTest {
     }
 
     @Test
+    void constructorSetsValuesCorrectly(){
+        int id  = 1;
+        String name = "Haircut";
+        double regularPrice = 20.0;
+        String description = "Basic haircut";
+        double duration = 30.0;
+        Service service = new Service(id, name, regularPrice, description, duration);
+        assertEquals(id, service.getId(), "Incorrect ID set in constructor");
+        assertEquals(name, service.getName(), "Incorrect name set in constructor");
+        assertEquals(regularPrice, service.getRegularPrice(), "Incorrect regular price set in constructor");
+        assertEquals(description, service.getDescription(), "Incorrect description set in constructor");
+        assertEquals(duration, service.getDuration(), "Incorrect duration set in constructor");
+    }
+
+    @Test
     void validServiceShouldHaveNoViolationsAndShouldBeAddedToList() {
         Service service = new Service(1, "Haircut", 20.0, "Basic haircut", 30.0);
         Set<ConstraintViolation<Service>> violations = validator.validate(service);

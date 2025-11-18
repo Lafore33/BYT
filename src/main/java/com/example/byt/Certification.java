@@ -87,4 +87,27 @@ public class Certification {
         this.issueDate = issueDate;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getCertificationNumber() {
+        return certificationNumber;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public LocalDate getIssueDate() {
+        return issueDate;
+    }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
 }

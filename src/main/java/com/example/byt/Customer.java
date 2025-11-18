@@ -52,7 +52,9 @@ public class Customer extends Person {
         }
         customers.add(customer);
     }
-
+    public void setEmailAddress(String email){
+        this.emailAddress = email;
+    }
     public int getAge() {
         return Period.between(getBirthDate(), LocalDate.now()).getYears();
     }

@@ -40,6 +40,10 @@ public class Master extends Worker {
         masterList.add(master);
     }
 
+    public int getExperience() {
+        return experience;
+    }
+
     public static int getMinExperienceForTop(){
         return minExperienceForTop;
     }

@@ -22,6 +22,31 @@ public class FourHandsServiceTest {
     }
 
     @Test
+    void constructorSetsValuesCorrectly(){
+        int id = 1;
+        String name = "Full Body Massage";
+        double regularPrice = 120.0;
+        String description = "Relaxing full body massage";
+        double duration = 60.0;
+        boolean isExpressService = true;
+        FourHandsService service = new FourHandsService(
+                id,
+                name,
+                regularPrice,
+                description,
+                duration,
+                isExpressService
+        );
+        assertEquals(id, service.getId(), "Incorrect id set in the constructor");
+        assertEquals(name, service.getName(), "Incorrect name set in the constructor");
+        assertEquals(regularPrice, service.getRegularPrice(), "Incorrect regular price set in the constructor");
+        assertEquals(description, service.getDescription(), "Incorrect description set in the constructor");
+        assertEquals(duration, service.getDuration(), "Incorrect duration set in the constructor");
+        assertEquals(isExpressService, service.isExpressService(), "Incorrect isExpressService set in the constructor");
+
+    }
+
+    @Test
     void validFourHandsServiceShouldHaveNoViolations() {
         FourHandsService service = new FourHandsService(
                 1,

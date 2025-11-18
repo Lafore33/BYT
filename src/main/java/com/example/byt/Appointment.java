@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 public class Appointment {
-    // as the appointment might be completed, so the date will be in the past
-    // it can be scheduled as well, that mean it is in the future
     @NotNull
     private LocalDate date;
 
@@ -25,7 +23,7 @@ public class Appointment {
     @Min(0)
     private double totalPrice;
 
-    private static List<Appointment> appointments = new ArrayList<>();;
+    private static List<Appointment> appointments = new ArrayList<>();
 
     public Appointment(Builder builder) {
         this.date = builder.date;
@@ -61,6 +59,9 @@ public class Appointment {
             throw new IllegalArgumentException("notes can't contain null or empty elements");
         }
         this.notes = new ArrayList<>(notes);
+    }
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public static class Builder {

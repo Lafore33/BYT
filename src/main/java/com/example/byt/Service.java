@@ -69,4 +69,24 @@ public class Service {
     public static List<Service> getServiceList() {
         return new ArrayList<>(serviceList);
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getRegularPrice() {
+        return regularPrice;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public double getDuration() {
+        return duration;
+    }
 }

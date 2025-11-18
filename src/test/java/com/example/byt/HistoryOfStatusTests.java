@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +21,16 @@ public class HistoryOfStatusTests {
     static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+
+    @Test
+    void constructorSetsValuesCorrectly() {
+        AppointmentStatus status = AppointmentStatus.SCHEDULED;
+        LocalDate date = LocalDate.of(2020, 1, 1);
+
+        HistoryOfStatus historyOfStatus = new HistoryOfStatus(status, date);
+        assertEquals(status, historyOfStatus.getStatus(), "Incorrect status set in the constructor");
+        assertEquals(date, historyOfStatus.getDateOfChangingStatus(), "Incorrect date set in the constructor");
     }
 
     @Test
@@ -38,8 +49,6 @@ public class HistoryOfStatusTests {
         LocalDate date = LocalDate.now().minusDays(1);
         HistoryOfStatus history = new HistoryOfStatus(null, date);
         Set<ConstraintViolation<HistoryOfStatus>> violations = validator.validate(history);
-        assertFalse(violations.isEmpty(),
-                "Expected validation violations for null 'status', but got none");
         assertTrue(containsViolationFor(violations, "status"),
                 "Expected violation for field 'status', but got: " + violations);
         assertFalse(HistoryOfStatus.getHistoryOfStatusList().contains(history),
@@ -50,8 +59,6 @@ public class HistoryOfStatusTests {
     void nullDateShouldFailValidation() {
         HistoryOfStatus history = new HistoryOfStatus(AppointmentStatus.SCHEDULED, null);
         Set<ConstraintViolation<HistoryOfStatus>> violations = validator.validate(history);
-        assertFalse(violations.isEmpty(),
-                "Expected validation violations for null 'dateOfChangingStatus', but got none");
         assertTrue(containsViolationFor(violations, "dateOfChangingStatus"),
                 "Expected violation for field 'dateOfChangingStatus', but got: " + violations);
         assertFalse(HistoryOfStatus.getHistoryOfStatusList().contains(history),
@@ -69,6 +76,16 @@ public class HistoryOfStatusTests {
                 "Expected violation for field 'dateOfChangingStatus', but got: " + violations);
         assertFalse(HistoryOfStatus.getHistoryOfStatusList().contains(history),
                 "Invalid HistoryOfStatus should NOT be added to extent");
+    }
+
+    @Test
+    void getHistoryOfStatusListShouldReturnCopy() {
+        LocalDate date = LocalDate.now().minusDays(1);
+        HistoryOfStatus history = new HistoryOfStatus(AppointmentStatus.SCHEDULED, date);
+        List<HistoryOfStatus> listCopy = HistoryOfStatus.getHistoryOfStatusList();
+        listCopy.clear();
+        List<HistoryOfStatus> list = HistoryOfStatus.getHistoryOfStatusList();
+        assertTrue(list.contains(history), "The list should not be modified");
     }
 
     private boolean containsViolationFor(Set<ConstraintViolation<HistoryOfStatus>> violations, String fieldName) {

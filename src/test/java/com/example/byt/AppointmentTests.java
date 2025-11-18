@@ -25,13 +25,30 @@ public class AppointmentTests {
     }
 
     @Test
-    void validAppointmentWithOnlyDate() {
+    void constructorSetsValuesCorrectlyForFullAppointment() {
+        LocalDate date = LocalDate.of(2025, 11, 1);
+        List<String> notes = Arrays.asList("note1", "note2", "note3");
+        PaymentMethod paymentMethod = PaymentMethod.CARD;
+        Appointment appointment = new Appointment.Builder(date).notes(notes).paymentMethod(paymentMethod).build();
+        assertEquals(date, appointment.getDate(), "Incorrect date set in the constructor");
+        assertEquals(notes, appointment.getNotes(), "Incorrect notes set in the constructor");
+        assertEquals(paymentMethod, appointment.getPaymentMethod(), "Incorrect payment method set in the constructor");
+    }
+
+    @Test
+    void constructorSetsValuesCorrectlyForAppointmentWithOnlyDate() {
         LocalDate date = LocalDate.of(2025, 12, 1);
         Appointment appointment = new Appointment.Builder(date).build();
-        assertNotNull(appointment);
-        assertEquals(date, appointment.getDate());
-        assertNull(appointment.getNotes());
-        assertNull(appointment.getPaymentMethod());
+        assertEquals(date, appointment.getDate(), "Incorrect date set in the constructor");
+        assertNull(appointment.getPaymentMethod(), "Incorrect payment method set in the constructor");
+        assertNull(appointment.getNotes(), "Incorrect notes set in the constructor");
+
+    }
+
+    @Test
+    void validAppointmentPassesValidation() {
+        LocalDate date = LocalDate.of(2025, 12, 1);
+        Appointment appointment = new Appointment.Builder(date).build();
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for a valid Appointment, but got: " + violations);
@@ -39,31 +56,24 @@ public class AppointmentTests {
         assertTrue(appointmentList.contains(appointment),
                 "Valid appointment should be added to extent");
     }
-
     @Test
-    void appointmentWithNotesStoresThem() {
-        LocalDate date = LocalDate.of(2025, 12, 1);
-        List<String> notes = Arrays.asList("First note", "Second note");
-        Appointment appointment = new Appointment.Builder(date)
-                .notes(notes)
-                .build();
-        assertNotNull(appointment.getNotes());
-        assertEquals(2, appointment.getNotes().size());
+    void appointmentWithNullDateFailsValidation() {
+        Appointment appointment = new Appointment.Builder(null).build();
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
-        assertTrue(violations.isEmpty(),
-                "Expected no validation violations for Appointment with valid notes, but got: " + violations);
+        assertTrue(containsViolationFor(violations, "date"),
+                "Expected violation for 'date' field");
         List<Appointment> appointmentList = Appointment.getAppointmentList();
-        assertTrue(appointmentList.contains(appointment),
-                "Valid appointment should be added to extent");
+        assertFalse(appointmentList.contains(appointment),
+                "Invalid appointment should NOT be added to extent");
     }
 
     @Test
     void appointmentNotesContainingNullThrowsException() {
-        LocalDate date = LocalDate.of(2025, 12, 1);
         List<String> invalidNotes = Arrays.asList("Valid", null);
         List<Appointment> before = Appointment.getAppointmentList();
         assertThrows(IllegalArgumentException.class, () ->
-                        new Appointment.Builder(date).notes(invalidNotes).build(),
+                        new Appointment.Builder(LocalDate.of(2025, 12, 1))
+                                .notes(invalidNotes).build(),
                 "Expected IllegalArgumentException when notes contains null element"
         );
         List<Appointment> after = Appointment.getAppointmentList();
@@ -72,7 +82,7 @@ public class AppointmentTests {
     }
 
     @Test
-    void appointmentNotesContainingEmptyStringThrowsException() {
+    void appointmentNotesContainingBlankStringThrowsException() {
         LocalDate date = LocalDate.of(2025, 12, 1);
         List<String> invalidNotes = Arrays.asList("Valid", "   ");
         List<Appointment> before = Appointment.getAppointmentList();
@@ -86,42 +96,42 @@ public class AppointmentTests {
     }
 
     @Test
-    void setNotesWithValidValuesStoresNotes() {
-        LocalDate date = LocalDate.of(2025, 12, 1);
-        Appointment appointment = new Appointment.Builder(date).build();
+    void setNotesWithValidValuesStoresNotesCorrectly() {
+        Appointment appointment = new Appointment.Builder(LocalDate.of(2025, 12, 1)).build();
         List<String> validNotes = Arrays.asList("Note 1", "Note 2");
         appointment.setNotes(validNotes);
-        assertEquals(2, appointment.getNotes().size());
-        Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
-        assertTrue(violations.isEmpty(),
-                "Appointment should remain valid after setting valid notes");
+        assertEquals(validNotes, appointment.getNotes(), "Incorrect setNotes");
     }
 
     @Test
-    void setNotesWithInvalidValuesThrowsException() {
+    void setNotesWithNotesContainingBlankStringThrowsException() {
         LocalDate date = LocalDate.of(2025, 12, 1);
         Appointment appointment = new Appointment.Builder(date).build();
-        List<String> invalidNotes = Arrays.asList("Good", "", "Bad");
+        List<String> invalidNotes = Arrays.asList("Good", " ", "Bad");
         assertThrows(IllegalArgumentException.class, () ->
                         appointment.setNotes(invalidNotes),
                 "Expected IllegalArgumentException when notes contains blank string"
         );
-        Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
-        assertTrue(violations.isEmpty(),
-                "Appointment should remain valid after failed setNotes()");
+    }
+    @Test
+    void setNotesWithNotesContainingNullStringThrowsException() {
+        LocalDate date = LocalDate.of(2025, 12, 1);
+        Appointment appointment = new Appointment.Builder(date).build();
+        List<String> invalidNotes = Arrays.asList("Good", null, "Bad");
+        assertThrows(IllegalArgumentException.class, () ->
+                        appointment.setNotes(invalidNotes),
+                "Expected IllegalArgumentException when notes contains blank string"
+        );
     }
 
     @Test
-    void setNotesToNullClearsNotes() {
+    void setNotesToNullPasses() {
         LocalDate date = LocalDate.of(2025, 12, 1);
         Appointment appointment = new Appointment.Builder(date)
-                .notes(Arrays.asList("Note"))
+                .notes(List.of("Notes"))
                 .build();
         appointment.setNotes(null);
         assertNull(appointment.getNotes());
-        Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
-        assertTrue(violations.isEmpty(),
-                "Setting notes to null should not break validation");
     }
 
     @Test
@@ -136,50 +146,16 @@ public class AppointmentTests {
                 "getNotes() should return a new copy, not the same list");
         assertEquals(original, returned,
                 "Returned notes list should be equal to the original list");
-        Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
-        assertTrue(violations.isEmpty(),
-                "Appointment used in getNotes test should have no validation errors");
     }
 
     @Test
-    void paymentMethodIsNullByDefault() {
-        LocalDate date = LocalDate.of(2025, 12, 1);
-        Appointment appointment = new Appointment.Builder(date).build();
-        assertNull(appointment.getPaymentMethod());
-        Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
-        assertTrue(violations.isEmpty(),
-                "Default null paymentMethod should be valid");
-        List<Appointment> appointmentList = Appointment.getAppointmentList();
-        assertTrue(appointmentList.contains(appointment),
-                "Valid appointment should be added to extent");
-    }
-
-    @Test
-    void paymentMethodCanBeSet() {
-        LocalDate date = LocalDate.of(2025, 12, 1);
-        Appointment appointment = new Appointment.Builder(date)
-                .paymentMethod(PaymentMethod.CASH)
+    void setPaymentMethodStoresCorrectly(){
+        Appointment appointment = new Appointment.Builder(LocalDate.of(2025, 12, 1))
+                .notes(Arrays.asList("Note 1", "Note 2"))
                 .build();
-        assertEquals(PaymentMethod.CASH, appointment.getPaymentMethod());
-        Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
-        assertTrue(violations.isEmpty(),
-                "Appointment with valid paymentMethod should have no validation errors");
-        List<Appointment> appointmentList = Appointment.getAppointmentList();
-        assertTrue(appointmentList.contains(appointment),
-                "Valid appointment should be added to extent");
-    }
-
-    @Test
-    void appointmentWithNullDateHasValidationError() {
-        Appointment appointment = new Appointment.Builder(null).build();
-        Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
-        assertFalse(violations.isEmpty(),
-                "Appointment with null date should have validation errors");
-        assertTrue(containsViolationFor(violations, "date"),
-                "Expected violation for 'date' field");
-        List<Appointment> appointmentList = Appointment.getAppointmentList();
-        assertFalse(appointmentList.contains(appointment),
-                "Invalid appointment should NOT be added to extent");
+        PaymentMethod paymentMethod = PaymentMethod.CARD;
+        appointment.setPaymentMethod(paymentMethod);
+        assertEquals(paymentMethod, appointment.getPaymentMethod(), "Incorrect setPaymentMethod");
     }
 
     @Test

@@ -41,4 +41,11 @@ public class Material {
         return new ArrayList<>(materialList);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getProducer() {
+        return producer;
+    }
 }

@@ -45,15 +45,19 @@ abstract class Person {
         this.birthDate = birthDate;
     }
 
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 }

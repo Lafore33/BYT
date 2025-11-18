@@ -23,6 +23,27 @@ public class TwoHandsServiceTest {
     }
 
     @Test
+    void constructorSetsValuesCorrectly(){
+        int id = 1;
+        String name  = "Massage";
+        String description = "Full body massage with two hands";
+        double regularPrice = 80.0;
+        double duration = 60.0;
+        TwoHandsService service = new TwoHandsService(
+                id,
+                name,
+                regularPrice,
+                description,
+                duration
+        );
+        assertEquals(id, service.getId(), "Incorrect id set in the constructor");
+        assertEquals(name, service.getName(), "Incorrect name set in the constructor");
+        assertEquals(description, service.getDescription(), "Incorrect description set in the constructor");
+        assertEquals(duration, service.getDuration(), "Incorrect duration set in the constructor");
+        assertEquals(regularPrice, service.getRegularPrice(), "Incorrect regular price set in the constructor");
+    }
+
+    @Test
     void validTwoHandsServiceShouldHaveNoViolations() {
         TwoHandsService service = new TwoHandsService(
                 1,

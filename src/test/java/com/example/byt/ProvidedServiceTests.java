@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +21,32 @@ public class ProvidedServiceTests {
     static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+
+    @Test
+    void constructorSetsValuesCorrectlyForFullProvidedService(){
+        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
+        int rating = 4;
+        String comment = "This is a comment";
+        ProvidedService service = new ProvidedService.Builder(time)
+                .rating(rating)
+                .comment(comment)
+                .build();
+        assertEquals(time, service.getTime(), "Incorrect time set in the constructor");
+        assertEquals(rating, service.getRating(), "Incorrect rating set in the constructor");
+        assertEquals(comment, service.getComment(), "Incorrect comment set in the constructor");
+
+    }
+
+    @Test
+    void constructorSetsValuesCorrectlyForProvidedServiceWithOnlyTime(){
+        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
+        ProvidedService service = new ProvidedService.Builder(time)
+                .build();
+        assertEquals(time, service.getTime(), "Incorrect time set in the constructor");
+        assertNull(service.getRating(), "Incorrect rating set in the constructor");
+        assertNull(service.getComment(), "Incorrect comment set in the constructor");
+
     }
 
     @Test
@@ -40,53 +67,9 @@ public class ProvidedServiceTests {
     void providedServiceWithoutOptionalFieldsIsValid() {
         LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
         ProvidedService service = new ProvidedService.Builder(time).build();
-        assertNotNull(service);
-        assertNull(service.getRating());
-        assertNull(service.getComment());
         Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for ProvidedService without optional fields");
-        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
-                "Valid ProvidedService should be added to extent");
-    }
-
-    @Test
-    void ratingIsNullWhenNotProvided() {
-        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
-        ProvidedService service = new ProvidedService.Builder(time).build();
-        assertNull(service.getRating());
-        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
-                "Valid ProvidedService should be added to extent");
-    }
-
-    @Test
-    void ratingIsSetWhenProvided() {
-        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
-        ProvidedService service = new ProvidedService.Builder(time)
-                .rating(4)
-                .build();
-        assertEquals(4, service.getRating());
-        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
-                "Valid ProvidedService should be added to extent");
-    }
-
-    @Test
-    void commentIsNullWhenNotProvided() {
-        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
-        ProvidedService service = new ProvidedService.Builder(time).build();
-        assertNull(service.getComment());
-        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
-                "Valid ProvidedService should be added to extent");
-    }
-
-    @Test
-    void commentIsSetWhenProvided() {
-        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
-        ProvidedService service = new ProvidedService.Builder(time)
-                .comment("Good")
-                .build();
-
-        assertEquals("Good", service.getComment());
         assertTrue(ProvidedService.getProvidedServiceList().contains(service),
                 "Valid ProvidedService should be added to extent");
     }
@@ -113,19 +96,6 @@ public class ProvidedServiceTests {
     }
 
     @Test
-    void ratingWithinRangeIsValid() {
-        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
-        ProvidedService service = new ProvidedService.Builder(time)
-                .rating(3)
-                .build();
-        Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
-        assertTrue(violations.isEmpty(),
-                "Rating within valid range should have no violations");
-        assertTrue(ProvidedService.getProvidedServiceList().contains(service),
-                "Valid ProvidedService should be added to extent");
-    }
-
-    @Test
     void ratingAboveMaxProducesValidationError() {
         LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
         ProvidedService service = new ProvidedService.Builder(time)
@@ -136,6 +106,72 @@ public class ProvidedServiceTests {
                 "Expected violation for 'rating' field");
         assertFalse(ProvidedService.getProvidedServiceList().contains(service),
                 "Invalid ProvidedService should NOT be added to extent");
+    }
+
+    @Test
+    void ratingBelowMinProducesValidationError() {
+        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
+        ProvidedService service = new ProvidedService.Builder(time)
+                .rating(0)
+                .build();
+        Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
+        assertTrue(containsViolationFor(violations, "rating"),
+                "Expected violation for 'rating' field");
+        assertFalse(ProvidedService.getProvidedServiceList().contains(service),
+                "Invalid ProvidedService should NOT be added to extent");
+    }
+
+    @Test
+    void setRatingSetsValuesCorrectly(){
+        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
+        ProvidedService service = new ProvidedService.Builder(time).build();
+        service.setRating(5);
+        assertEquals(5, service.getRating(), "Incorrect rating set in setRating");
+    }
+    @Test
+    void setCommentSetsValuesCorrectly(){
+        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
+        ProvidedService service = new ProvidedService.Builder(time).build();
+        service.setComment("Great service");
+        assertEquals("Great service", service.getComment(), "Incorrect comment set in setComment");
+    }
+
+    @Test
+    void setRatingValidShouldHaveNoViolations() {
+        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
+        ProvidedService service = new ProvidedService.Builder(time).build();
+        service.setRating(5);
+        Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
+        assertTrue(violations.isEmpty(), "Expected no violations");
+    }
+    @Test
+    void setRatingInvalidShouldHaveViolations() {
+        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
+        ProvidedService service = new ProvidedService.Builder(time).build();
+        service.setRating(-1);
+        Set<ConstraintViolation<ProvidedService>> violations = validator.validate(service);
+        assertTrue(containsViolationFor(violations, "rating"), "Expected violations for invalid 'rating'");
+    }
+
+    @Test
+    void setCommentBlankShouldStoreNullComment() {
+        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
+        ProvidedService service = new ProvidedService.Builder(time).build();
+        service.setComment(" ");
+        assertNull(service.getComment(), "Incorrect comment set in setComment");
+    }
+
+    @Test
+    void getProvidedServiceListReturnsCopy() {
+        LocalDateTime time = LocalDateTime.of(2025, 11, 13, 14, 30);
+        ProvidedService service = new ProvidedService.Builder(time)
+                .rating(3)
+                .build();
+        List<ProvidedService> listCopy = ProvidedService.getProvidedServiceList();
+        listCopy.clear();
+        List<ProvidedService> list = ProvidedService.getProvidedServiceList();
+        assertTrue(list.contains(service), "The list should not be modified");
+
     }
 
     private boolean containsViolationFor(Set<ConstraintViolation<ProvidedService>> violations, String fieldName) {

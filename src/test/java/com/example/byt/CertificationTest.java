@@ -22,6 +22,30 @@ class CertificationTest {
     }
 
     @Test
+    void constructorSetsValuesCorrectly() {
+        String name = "Manicure course";
+        String certificationNumber = "CERT-123";
+        String description = "Professional manicure course";
+        String organization = "Beauty school";
+        LocalDate issueDate = LocalDate.of(2020, 1, 1);
+        LocalDate expiryDate = LocalDate.of(2020, 12, 31);
+        Certification certification = new Certification(
+                name,
+                certificationNumber,
+                description,
+                organization,
+                issueDate,
+                expiryDate
+        );
+        assertEquals(name, certification.getName(), "Incorrect name set in the constructor");
+        assertEquals(certificationNumber, certification.getCertificationNumber(), "Incorrect certification number set in the constructor");
+        assertEquals(description, certification.getDescription(), "Incorrect description set in the constructor");
+        assertEquals(organization, certification.getOrganization(), "Incorrect organization set in the constructor");
+        assertEquals(issueDate, certification.getIssueDate(), "Incorrect issue date set in the constructor");
+        assertEquals(expiryDate, certification.getExpiryDate(), "Incorrect expiry date set in the constructor");
+    }
+
+    @Test
     void validCertificationShouldHaveNoViolations() {
         Certification certification = new Certification(
                 "Manicure course",
@@ -154,7 +178,7 @@ class CertificationTest {
     }
 
     @Test
-    void nullIssueDateShouldFailValidation() {
+    void nullIssueDateShouldThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
             new Certification(
                     "Course",
@@ -181,7 +205,7 @@ class CertificationTest {
         assertTrue(containsViolationFor(violations, "issueDate"), "Expected violation for future 'issueDate', but got: " + violations);
     }
     @Test
-    void expiryDateBeforeIssueDateShouldFail() {
+    void expiryDateBeforeIssueDateShouldThrowException() {
         LocalDate issue = LocalDate.now();
         LocalDate expiry = issue.minusDays(1);
 
@@ -197,7 +221,7 @@ class CertificationTest {
     }
 
     @Test
-    void expiryDateEqualToIssueDateShouldPass() {
+    void expiryDateEqualToIssueDateShouldNotTrowException() {
         LocalDate date = LocalDate.now();
 
         assertDoesNotThrow(() -> new Certification(
@@ -211,7 +235,7 @@ class CertificationTest {
     }
 
     @Test
-    void expiryDateAfterIssueDateShouldPass() {
+    void expiryDateAfterIssueDateShouldNotThrowException() {
         LocalDate issue = LocalDate.now();
         LocalDate expiry = issue.plusDays(30);
 
@@ -226,7 +250,22 @@ class CertificationTest {
     }
 
     @Test
-    void settingExpiryDateAfterIssueDateShouldPass() {
+    void setExpiryDateSetsValuesCorrectly(){
+        LocalDate issue = LocalDate.now();
+        LocalDate expiry = issue.plusDays(30);
+        Certification certification = new Certification(
+                "Course",
+                "CERT-123",
+                "Description",
+                "Organization",
+                issue
+        );
+        certification.setExpiryDate(expiry);
+        assertEquals(expiry, certification.getExpiryDate());
+    }
+
+    @Test
+    void settingExpiryDateAfterIssueDateShouldNotThrowException() {
         Certification cert = new Certification(
                 "Course",
                 "CERT-004",
@@ -241,7 +280,7 @@ class CertificationTest {
     }
 
     @Test
-    void settingExpiryDateBeforeIssueDateShouldFail() {
+    void settingExpiryDateBeforeIssueDateShouldThrowException() {
         Certification cert = new Certification(
                 "Course",
                 "CERT-005",
@@ -255,6 +294,65 @@ class CertificationTest {
         assertThrows(IllegalArgumentException.class, () -> cert.setExpiryDate(expiry),
                 "Expected exception when setting expiryDate before issueDate");
     }
+
+    @Test
+    void setIssueDateSetsValuesCorrectly(){
+        LocalDate issue = LocalDate.now().minusDays(25);
+        Certification certification = new Certification(
+                "Course",
+                "CERT-123",
+                "Description",
+                "Organization",
+                LocalDate.now()
+        );
+        certification.setIssueDate(issue);
+        assertEquals(issue, certification.getIssueDate());
+    }
+
+    @Test
+    void settingIssueDateNullShouldThrowException() {
+        Certification cert = new Certification(
+                "Course",
+                "CERT-005",
+                "Description",
+                "Org",
+                LocalDate.now()
+        );
+
+        assertThrows(IllegalArgumentException.class, () -> cert.setIssueDate(null),
+                "Expected exception when setting issueDate null");
+    }
+
+    @Test
+    void settingIssueDateAfterExpiryDateShouldThrowException() {
+        Certification cert = new Certification(
+                "Course",
+                "CERT-005",
+                "Description",
+                "Org",
+                LocalDate.of(2024, 10, 26),
+                LocalDate.of(2025, 10, 26)
+        );
+        LocalDate newIssueDate = LocalDate.of(2025, 11, 26);
+        assertThrows(IllegalArgumentException.class, () -> cert.setIssueDate(newIssueDate),
+                "Expected exception when setting issueDate after expiryDate");
+    }
+    @Test
+    void settingIssueDateBeforeExpiryDateShouldNotThrowException() {
+        Certification cert = new Certification(
+                "Course",
+                "CERT-005",
+                "Description",
+                "Org",
+                LocalDate.of(2024, 10, 26),
+                LocalDate.of(2025, 10, 26)
+        );
+        LocalDate newIssueDate = LocalDate.of(2025, 9, 26);
+        assertDoesNotThrow(() -> cert.setIssueDate(newIssueDate),
+                "Expected no exception when setting issueDate before expiryDate");
+    }
+
+
 
 
     private boolean containsViolationFor(Set<ConstraintViolation<Certification>> violations, String fieldName) {

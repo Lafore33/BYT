@@ -22,6 +22,27 @@ class ReceptionistTest {
     }
 
     @Test
+    void constructorSetsValuesCorrectly(){
+        String name = "Yelizaveta";
+        String surname = "Gaiduk";
+        String phoneNumber = "+48123456789";
+        WorkType type = WorkType.FULL_TIME;
+        LocalDate birthDate = LocalDate.now().minusYears(25);
+        Receptionist receptionist = new Receptionist(
+                name,
+                surname,
+                phoneNumber,
+                birthDate,
+                type
+        );
+        assertEquals(name, receptionist.getName(), "Incorrect name set in constructor");
+        assertEquals(surname, receptionist.getSurname(), "Incorrect name set in constructor");
+        assertEquals(phoneNumber, receptionist.getPhoneNumber(), "Incorrect phone number set in constructor");
+        assertEquals(birthDate, receptionist.getBirthDate(), "Incorrect birth date set in constructor");
+        assertEquals(type, receptionist.getWorkType(), "Incorrect work type set in constructor");
+    }
+
+    @Test
     void validReceptionistPassesValidation() {
         LocalDate birthDate = LocalDate.now().minusYears(25);
         Receptionist receptionist = new Receptionist(
