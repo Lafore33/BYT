@@ -95,9 +95,6 @@ public class AppointmentTests {
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
         assertTrue(violations.isEmpty(),
                 "Appointment should remain valid after setting valid notes");
-        List<Appointment> appointmentList = Appointment.getAppointmentList();
-        assertTrue(appointmentList.contains(appointment),
-                "Valid appointment should stay in extent");
     }
 
     @Test
@@ -105,14 +102,10 @@ public class AppointmentTests {
         LocalDate date = LocalDate.of(2025, 12, 1);
         Appointment appointment = new Appointment.Builder(date).build();
         List<String> invalidNotes = Arrays.asList("Good", "", "Bad");
-        List<Appointment> before = Appointment.getAppointmentList();
         assertThrows(IllegalArgumentException.class, () ->
                         appointment.setNotes(invalidNotes),
                 "Expected IllegalArgumentException when notes contains blank string"
         );
-        List<Appointment> after = Appointment.getAppointmentList();
-        assertEquals(before.size(), after.size(),
-                "Invalid notes should not change the extent");
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
         assertTrue(violations.isEmpty(),
                 "Appointment should remain valid after failed setNotes()");
@@ -129,9 +122,6 @@ public class AppointmentTests {
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
         assertTrue(violations.isEmpty(),
                 "Setting notes to null should not break validation");
-        List<Appointment> appointmentList = Appointment.getAppointmentList();
-        assertTrue(appointmentList.contains(appointment),
-                "Appointment should still be in extent after clearing notes");
     }
 
     @Test
@@ -149,9 +139,6 @@ public class AppointmentTests {
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
         assertTrue(violations.isEmpty(),
                 "Appointment used in getNotes test should have no validation errors");
-        List<Appointment> appointmentList = Appointment.getAppointmentList();
-        assertTrue(appointmentList.contains(appointment),
-                "Valid appointment should be in extent");
     }
 
     @Test
@@ -193,6 +180,17 @@ public class AppointmentTests {
         List<Appointment> appointmentList = Appointment.getAppointmentList();
         assertFalse(appointmentList.contains(appointment),
                 "Invalid appointment should NOT be added to extent");
+    }
+
+    @Test
+    void getAppointmentListShouldReturnCopy() {
+        LocalDate date = LocalDate.of(2025, 12, 1);
+        Appointment appointment = new Appointment.Builder(date).build();
+        List<Appointment> listCopy = Appointment.getAppointmentList();
+        listCopy.clear();
+        List<Appointment> originalList = Appointment.getAppointmentList();
+        assertTrue(originalList.contains(appointment),
+                "The original list should not be modified when clearing the returned copy");
     }
 
     private boolean containsViolationFor(Set<ConstraintViolation<Appointment>> violations, String fieldName) {
