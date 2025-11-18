@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public enum CustomerStatus {
-    GOOD, BAD
-}
-
 public class Customer extends Person {
 
     @Email

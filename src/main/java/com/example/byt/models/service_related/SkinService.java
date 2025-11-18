@@ -86,6 +86,14 @@ public class SkinService extends Service implements Serializable {
         return new ArrayList<>(skinServiceList);
     }
 
+    public static void clearExtent() {
+        skinServiceList.clear();
+    }
+
+    public static String getExtentFile() {
+        return EXTENT_FILE;
+    }
+
     public String getPurpose() {
         return purpose;
     }
