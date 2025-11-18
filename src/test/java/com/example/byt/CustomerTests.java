@@ -27,10 +27,11 @@ public class CustomerTests {
         LocalDate birthDate = LocalDate.of(2000, 1, 1);
         Customer customer = new Customer("John", "Doe", "123456789",
                 "john@example.com", birthDate);
-
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for valid customer with email");
+        assertTrue(Customer.getCustomerList().contains(customer),
+                "Valid customer should be added to extent");
     }
 
     @Test
@@ -38,10 +39,11 @@ public class CustomerTests {
         LocalDate birthDate = LocalDate.of(2000, 1, 1);
         Customer customer = new Customer("John", "Doe", "123456789",
                 "not-an-email", birthDate);
-
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
         assertTrue(containsViolationFor(violations, "emailAddress"),
                 "Expected violation for 'emailAddress' field");
+        assertFalse(Customer.getCustomerList().contains(customer),
+                "Invalid customer should NOT be added to extent");
     }
 
     @Test
@@ -49,11 +51,12 @@ public class CustomerTests {
         LocalDate birthDate = LocalDate.of(2000, 1, 1);
         Customer customer = new Customer("John", "Doe", "123456789",
                 "john@example.com", birthDate);
-
         assertNotNull(customer);
         assertEquals("John", customer.getName());
         assertEquals("john@example.com", customer.getEmailAddress());
         assertEquals(CustomerStatus.GOOD, customer.getCustomerStatus());
+        assertTrue(Customer.getCustomerList().contains(customer),
+                "Valid customer should be added to extent");
     }
 
 
@@ -64,6 +67,8 @@ public class CustomerTests {
         assertNotNull(customer);
         assertEquals("Jane", customer.getName());
         assertEquals(CustomerStatus.GOOD, customer.getCustomerStatus());
+        assertTrue(Customer.getCustomerList().contains(customer),
+                "Valid customer should be added to extent");
     }
 
     @Test
@@ -71,14 +76,17 @@ public class CustomerTests {
         LocalDate birthDate = LocalDate.of(2000, 1, 1);
         Customer customer = new Customer("Test", "User", "111", birthDate);
         assertEquals(CustomerStatus.GOOD, customer.getCustomerStatus());
+        assertTrue(Customer.getCustomerList().contains(customer),
+                "Valid customer should be added to extent");
     }
 
     @Test
     void ageIsCalculatedCorrectly() {
         LocalDate birthDate = LocalDate.now().minusYears(25).minusDays(1);
         Customer customer = new Customer("Age", "Test", "555", birthDate);
-
         assertEquals(25, customer.getAge());
+        assertTrue(Customer.getCustomerList().contains(customer),
+                "Valid customer should be added to extent");
     }
 
     private boolean containsViolationFor(Set<ConstraintViolation<Customer>> violations, String fieldName) {

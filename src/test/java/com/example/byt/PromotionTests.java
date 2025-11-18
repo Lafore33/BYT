@@ -26,26 +26,26 @@ public class PromotionTests {
     void validPromotionHasNoViolations() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
-
         Promotion promotion = new Promotion("Black Friday", "Big discount",
                 30.0, start, end);
-
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for valid promotion");
+        assertTrue(Promotion.getPromotionList().contains(promotion),
+                "Valid promotion should be added to extent");
     }
 
     @Test
     void invalidPercentageProducesViolation() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
-
         Promotion promotion = new Promotion("Too small", "Invalid",
                 3.0, start, end);
-
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "percentage"),
                 "Expected violation for 'percentage' field");
+        assertFalse(Promotion.getPromotionList().contains(promotion),
+                "Invalid promotion should NOT be added to extent");
     }
 
     @Test
@@ -53,10 +53,8 @@ public class PromotionTests {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
         Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
-
         LocalDate newEnd = LocalDate.of(2025, 12, 15);
         promotion.setEndDate(newEnd);
-
         assertEquals(newEnd, promotion.getEndDate());
     }
 
@@ -65,9 +63,7 @@ public class PromotionTests {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
         Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
-
         LocalDate invalidEnd = LocalDate.of(2025, 10, 15);
-
         assertThrows(RuntimeException.class, () -> promotion.setEndDate(invalidEnd));
     }
 
@@ -76,7 +72,6 @@ public class PromotionTests {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
         Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
-
         assertThrows(RuntimeException.class, () -> promotion.setEndDate(null));
     }
 
@@ -85,10 +80,8 @@ public class PromotionTests {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
         Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
-
         LocalDate newStart = LocalDate.of(2025, 10, 15);
         promotion.setStartDate(newStart);
-
         assertEquals(newStart, promotion.getStartDate());
     }
 
@@ -97,9 +90,7 @@ public class PromotionTests {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
         Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
-
         LocalDate invalidStart = LocalDate.of(2025, 12, 15);
-
         assertThrows(RuntimeException.class, () -> promotion.setStartDate(invalidStart));
     }
 
@@ -108,7 +99,6 @@ public class PromotionTests {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
         Promotion promotion = new Promotion("Sale", "Discount", 20.0, start, end);
-
         assertThrows(RuntimeException.class, () -> promotion.setStartDate(null));
     }
 
@@ -116,58 +106,57 @@ public class PromotionTests {
     void blankNameProducesViolation() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
-
         Promotion promotion = new Promotion("   ", "Valid description",
                 20.0, start, end);
-
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for 'name' field");
+        assertFalse(Promotion.getPromotionList().contains(promotion),
+                "Invalid promotion should NOT be added to extent");
     }
 
     @Test
     void nullNameProducesViolation() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
-
         Promotion promotion = new Promotion(null, "Valid description",
                 20.0, start, end);
-
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for 'name' field");
+        assertFalse(Promotion.getPromotionList().contains(promotion),
+                "Invalid promotion should NOT be added to extent");
     }
 
     @Test
     void blankDescriptionProducesViolation() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
-
         Promotion promotion = new Promotion("Promo", "   ",
                 20.0, start, end);
-
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "description"),
                 "Expected violation for 'description' field");
+        assertFalse(Promotion.getPromotionList().contains(promotion),
+                "Invalid promotion should NOT be added to extent");
     }
 
     @Test
     void nullDescriptionProducesViolation() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
-
         Promotion promotion = new Promotion("Promo", null,
                 20.0, start, end);
-
         Set<ConstraintViolation<Promotion>> violations = validator.validate(promotion);
         assertTrue(containsViolationFor(violations, "description"),
                 "Expected violation for 'description' field");
+        assertFalse(Promotion.getPromotionList().contains(promotion),
+                "Invalid promotion should NOT be added to extent");
     }
 
     @Test
     void nullStartDateThrowsException() {
         LocalDate end = LocalDate.of(2025, 11, 30);
-
         assertThrows(IllegalArgumentException.class, () ->
                 new Promotion("Promo", "Desc", 20.0, null, end)
         );
@@ -176,7 +165,6 @@ public class PromotionTests {
     @Test
     void nullEndDateThrowsException() {
         LocalDate start = LocalDate.of(2025, 11, 1);
-
         assertThrows(IllegalArgumentException.class, () ->
                 new Promotion("Promo", "Desc", 20.0, start, null)
         );

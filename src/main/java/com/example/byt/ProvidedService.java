@@ -93,4 +93,8 @@ public class ProvidedService {
     public LocalDateTime getTime() {
         return time;
     }
+
+    public static List<ProvidedService> getProvidedServiceList() {
+        return new ArrayList<>(providedServiceList);
+    }
 }

@@ -63,4 +63,8 @@ public class Customer extends Person {
 
     public String getEmailAddress() { return this.emailAddress;
     }
+
+    public static List<Customer> getCustomerList() {
+        return new ArrayList<>(customers);
+    }
 }

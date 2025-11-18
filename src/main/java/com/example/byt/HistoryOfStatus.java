@@ -43,4 +43,8 @@ public class HistoryOfStatus {
         historyOfStatusList.add(historyOfStatus);
     }
 
+    public static List<HistoryOfStatus> getHistoryOfStatusList() {
+        return new ArrayList<>(historyOfStatusList);
+    }
+
 }
