@@ -1,4 +1,4 @@
-package com.example.byt.models.appointment_related;
+package com.example.byt.models;
 
 public enum AppointmentStatus {
     SCHEDULED,

@@ -1,4 +1,4 @@
-package com.example.byt.models.person_related;
+package com.example.byt.models.person;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;

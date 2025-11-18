@@ -1,4 +1,4 @@
-package com.example.byt.models.person_related;
+package com.example.byt.models.person;
 
 import java.time.LocalDate;
 

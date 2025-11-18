@@ -1,6 +1,6 @@
 package com.example.byt.unit_tests.service_related;
 
-import com.example.byt.models.service_related.FourHandsService;
+import com.example.byt.models.services.FourHandsService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

@@ -1,4 +1,4 @@
-package com.example.byt.models.appointment_related;
+package com.example.byt.models;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;

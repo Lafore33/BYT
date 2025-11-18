@@ -1,7 +1,7 @@
 package com.example.byt.unit_tests.person_related;
 
-import com.example.byt.models.person_related.Receptionist;
-import com.example.byt.models.person_related.WorkType;
+import com.example.byt.models.person.Receptionist;
+import com.example.byt.models.person.WorkType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

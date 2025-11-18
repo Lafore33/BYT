@@ -1,7 +1,7 @@
 package com.example.byt.unit_tests.service_related;
 
-import com.example.byt.models.service_related.NailService;
-import com.example.byt.models.service_related.NailServiceType;
+import com.example.byt.models.services.NailService;
+import com.example.byt.models.services.NailServiceType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

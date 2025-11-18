@@ -1,7 +1,7 @@
 package com.example.byt.unit_tests.appointment_related;
 
-import com.example.byt.models.appointment_related.AppointmentStatus;
-import com.example.byt.models.appointment_related.HistoryOfStatus;
+import com.example.byt.models.AppointmentStatus;
+import com.example.byt.models.HistoryOfStatus;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

@@ -1,6 +1,6 @@
 package com.example.byt.unit_tests.appointment_related;
 
-import com.example.byt.models.appointment_related.Promotion;
+import com.example.byt.models.Promotion;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

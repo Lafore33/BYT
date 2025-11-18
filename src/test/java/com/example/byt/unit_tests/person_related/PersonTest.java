@@ -1,6 +1,6 @@
 package com.example.byt.unit_tests.person_related;
 
-import com.example.byt.models.person_related.Person;
+import com.example.byt.models.person.Person;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

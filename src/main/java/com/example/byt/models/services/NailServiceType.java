@@ -1,4 +1,4 @@
-package com.example.byt.models.service_related;
+package com.example.byt.models.services;
 
 public enum NailServiceType {
     HAND,

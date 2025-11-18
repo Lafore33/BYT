@@ -1,7 +1,7 @@
 package com.example.byt.unit_tests.appointment_related;
 
-import com.example.byt.models.appointment_related.Appointment;
-import com.example.byt.models.appointment_related.PaymentMethod;
+import com.example.byt.models.appointment.Appointment;
+import com.example.byt.models.appointment.PaymentMethod;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

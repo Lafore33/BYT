@@ -1,7 +1,7 @@
 package com.example.byt.unit_tests.service_related;
 
-import com.example.byt.models.service_related.HairService;
-import com.example.byt.models.service_related.HairServiceType;
+import com.example.byt.models.services.HairService;
+import com.example.byt.models.services.HairServiceType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

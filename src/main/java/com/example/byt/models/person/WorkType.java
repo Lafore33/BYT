@@ -1,4 +1,4 @@
-package com.example.byt.models.person_related;
+package com.example.byt.models.person;
 
 public enum WorkType {
     PART_TIME,
