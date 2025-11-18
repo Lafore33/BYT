@@ -38,6 +38,8 @@ public class HairServiceTest {
         Set<ConstraintViolation<HairService>> violations = validator.validate(service);
         assertTrue(violations.isEmpty(),
                 "Expected no validation violations for a valid HairService, but got: " + violations);
+        List<HairService> serviceList = HairService.getHairServiceList();
+        assertTrue(serviceList.contains(service), "The valid service should be added to the list");
     }
     @Test
     void nullTypeShouldFailValidation() {
@@ -54,10 +56,12 @@ public class HairServiceTest {
         Set<ConstraintViolation<HairService>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "type"),
                 "Expected violation for null 'type', but got: " + violations);
+        List<HairService> serviceList = HairService.getHairServiceList();
+        assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
     }
     @Test
     void nullHairTypesShouldFailValidation() {
-
+        List<HairService> serviceList = HairService.getHairServiceList();
         assertThrows(IllegalArgumentException.class,
                 () -> new HairService(
                         1,
@@ -69,6 +73,8 @@ public class HairServiceTest {
                         null
                 ),
                 "Expected IllegalArgumentException when hairTypes is null" );
+        List<HairService> serviceListAfter = HairService.getHairServiceList();
+        assertEquals(serviceList.size(), serviceListAfter.size(), "The invalid service should not be added to the list");
     }
 
     @Test
@@ -86,9 +92,12 @@ public class HairServiceTest {
         Set<ConstraintViolation<HairService>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "hairTypes"),
                 "Expected violation for empty 'hairTypes', but got: " + violations);
+        List<HairService> serviceList = HairService.getHairServiceList();
+        assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
     }
     @Test
     void hairTypesContainingNullElementShouldThrowException() {
+        List<HairService> serviceList = HairService.getHairServiceList();
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new HairService(
@@ -102,9 +111,12 @@ public class HairServiceTest {
                 ),
                 "Expected IllegalArgumentException when hairTypes contains null element"
         );
+        List<HairService> serviceListAfter = HairService.getHairServiceList();
+        assertEquals(serviceList.size(), serviceListAfter.size(), "The invalid service should not be added to the list");
     }
     @Test
     void hairTypesContainingBlankElementShouldThrowException() {
+        List<HairService> serviceList = HairService.getHairServiceList();
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new HairService(
@@ -118,6 +130,8 @@ public class HairServiceTest {
                 ),
                 "Expected IllegalArgumentException when hairTypes contains blank string"
         );
+        List<HairService> serviceListAfter = HairService.getHairServiceList();
+        assertEquals(serviceList.size(), serviceListAfter.size(), "The invalid service should not be added to the list");
     }
     @Test
     void getHairTypesShouldReturnCopy() {
@@ -136,6 +150,26 @@ public class HairServiceTest {
         assertNotSame(original, returned, "getHairTypes() should return a new copy, not the same list");
         assertEquals(original, returned, "Returned hairTypes list should be equal to the original list");
     }
+
+    @Test
+    void getServiceListShouldReturnCopy() {
+        HairService service = new HairService(
+                1,
+                "Haircut",
+                25.0,
+                "Basic cut and style",
+                30.0,
+                HairServiceType.CUT,
+                Arrays.asList("Straight", "Curly")
+        );
+
+        List<HairService> listCopy = HairService.getHairServiceList();
+        listCopy.clear();
+
+        List<HairService> originalList = HairService.getHairServiceList();
+        assertTrue(originalList.contains(service), "The original list should not be modified");
+    }
+
     private boolean containsViolationFor(Set<ConstraintViolation<HairService>> violations, String fieldName) {
         return violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals(fieldName));
     }

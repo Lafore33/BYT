@@ -37,4 +37,7 @@ public class FourHandsService extends Service{
     public static int getNumOfSpecialistsRequired(){
         return numOfSpecialistsRequired;
     }
+    public static List<FourHandsService> getFourHandsServiceList(){
+        return new ArrayList<>(fourHandsServiceList);
+    }
 }

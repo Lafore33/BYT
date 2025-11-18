@@ -39,5 +39,7 @@ public class NailService extends Service {
         }
         nailServiceList.add(nailService);
     }
-
+    public static List<NailService> getNailServiceList(){
+        return new ArrayList<>(nailServiceList);
+    }
 }

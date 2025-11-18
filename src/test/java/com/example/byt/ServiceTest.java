@@ -7,9 +7,10 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ServiceTest {
     private static Validator validator;
@@ -21,10 +22,12 @@ public class ServiceTest {
     }
 
     @Test
-    void validServiceShouldHaveNoViolations() {
+    void validServiceShouldHaveNoViolationsAndShouldBeAddedToList() {
         Service service = new Service(1, "Haircut", 20.0, "Basic haircut", 30.0);
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(violations.isEmpty(), "Expected no validation errors for valid Service, but got: " + violations);
+        List<Service> serviceList = Service.getServiceList();
+        assertTrue(serviceList.contains(service), "The valid service should be added to the list");
     }
 
     @Test
@@ -33,6 +36,9 @@ public class ServiceTest {
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "id"),
                 "Expected violation for field 'id' when negative, but got: " + violations);
+        List<Service> serviceList = Service.getServiceList();
+        assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
+
     }
 
     @Test
@@ -41,6 +47,8 @@ public class ServiceTest {
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for blank 'name', but got: " + violations);
+        List<Service> serviceList = Service.getServiceList();
+        assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
     }
 
     @Test
@@ -49,6 +57,8 @@ public class ServiceTest {
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for null 'name', but got: " + violations);
+        List<Service> serviceList = Service.getServiceList();
+        assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
     }
 
     @Test
@@ -57,6 +67,8 @@ public class ServiceTest {
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "regularPrice"),
                 "Expected violation for negative 'regularPrice', but got: " + violations);
+        List<Service> serviceList = Service.getServiceList();
+        assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
     }
 
     @Test
@@ -65,6 +77,8 @@ public class ServiceTest {
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "description"),
                 "Expected violation for blank 'description', but got: " + violations);
+        List<Service> serviceList = Service.getServiceList();
+        assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
     }
 
     @Test
@@ -73,6 +87,8 @@ public class ServiceTest {
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "description"),
                 "Expected violation for null 'description', but got: " + violations);
+        List<Service> serviceList = Service.getServiceList();
+        assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
     }
 
     @Test
@@ -81,6 +97,19 @@ public class ServiceTest {
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "duration"),
                 "Expected violation for negative 'duration', but got: " + violations);
+        List<Service> serviceList = Service.getServiceList();
+        assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
+    }
+
+    @Test
+    void getServiceListShouldReturnCopy() {
+        Service service = new Service(1, "Haircut", 20.0, "Basic haircut", 30.0);
+
+        List<Service> listCopy = Service.getServiceList();
+        listCopy.clear();
+
+        List<Service> originalList = Service.getServiceList();
+        assertTrue(originalList.contains(service), "The original list should not be modified");
     }
 
     private boolean containsViolationFor(Set<ConstraintViolation<Service>> violations, String fieldName) {

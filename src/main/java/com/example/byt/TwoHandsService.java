@@ -37,4 +37,7 @@ public class TwoHandsService extends Service {
     public static int getNumOfSpecialistsRequired(){
         return numOfSpecialistsRequired;
     }
+    public static List<TwoHandsService> getTwoHandsServiceList(){
+        return new ArrayList<>(twoHandsServiceList);
+    }
 }
