@@ -29,8 +29,7 @@ public class FourHandsService extends Service{
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<FourHandsService>> violations = validator.validate(fourHandsService);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed for FourHandsService");
+            System.out.println("Validation failed, the service cannot be added to the list");
             return;
         }
         fourHandsServiceList.add(fourHandsService);

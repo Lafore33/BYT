@@ -42,8 +42,7 @@ public class Appointment {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Appointment>> violations = validator.validate(appointment);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed for Appointment");
+            System.out.println("Validation failed, the appointment cannot be added to the list");
             return;
         }
         appointments.add(appointment);

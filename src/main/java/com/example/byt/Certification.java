@@ -64,8 +64,7 @@ public class Certification {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
         if (!violations.isEmpty()) {
-            // TODO: fix this
-//            throw new IllegalArgumentException("Validation failed for Certification");
+            System.out.println("Validation failed, the cetification cannot be added to the list");
             return;
         }
         certifications.add(certification);
