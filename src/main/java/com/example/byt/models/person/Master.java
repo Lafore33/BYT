@@ -18,7 +18,7 @@ public class Master extends Worker {
 
     private final static int minExperienceForTop = 3;
 
-    private static List<Master> masterList = new ArrayList<>();
+    private static List<Master> masters = new ArrayList<>();
 
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
         super(name, surname, phoneNumber, birthDate);
@@ -37,7 +37,7 @@ public class Master extends Worker {
             System.out.println("Validation failed, the master cannot be added to the list");
             return;
         }
-        masterList.add(master);
+        masters.add(master);
     }
 
     public int getExperience() {
@@ -46,5 +46,9 @@ public class Master extends Worker {
 
     public static int getMinExperienceForTop(){
         return minExperienceForTop;
+    }
+
+    public static void clearExtent() {
+        masters.clear();
     }
 }

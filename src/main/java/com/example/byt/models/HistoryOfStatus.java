@@ -21,7 +21,7 @@ public class HistoryOfStatus {
     @PastOrPresent
     private LocalDate dateOfChangingStatus;
 
-    private static List<HistoryOfStatus> historyOfStatusList = new ArrayList<>();
+    private static List<HistoryOfStatus> historyOfStatuses = new ArrayList<>();
 
     public HistoryOfStatus(AppointmentStatus status, LocalDate dateOfChangingStatus) {
         this.status = status;
@@ -40,7 +40,7 @@ public class HistoryOfStatus {
             System.out.println("Validation failed, the history cannot be added to the list");
             return;
         }
-        historyOfStatusList.add(historyOfStatus);
+        historyOfStatuses.add(historyOfStatus);
     }
 
     public AppointmentStatus getStatus() {
@@ -52,7 +52,11 @@ public class HistoryOfStatus {
     }
 
     public static List<HistoryOfStatus> getHistoryOfStatusList() {
-        return new ArrayList<>(historyOfStatusList);
+        return new ArrayList<>(historyOfStatuses);
+    }
+
+    public static void clearExtent() {
+        historyOfStatuses.clear();
     }
 
 }

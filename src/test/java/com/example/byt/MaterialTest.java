@@ -1,4 +1,4 @@
-package com.example.byt.unit_tests.service_related;
+package com.example.byt;
 
 import com.example.byt.models.Material;
 import jakarta.validation.ConstraintViolation;

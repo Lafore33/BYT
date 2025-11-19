@@ -16,7 +16,7 @@ public class Material {
     @NotBlank
     private String producer;
 
-    private static List<Material> materialList = new ArrayList<>();
+    private static List<Material> materials = new ArrayList<>();
 
     public Material(String name, String producer) {
         this.name = name;
@@ -35,10 +35,10 @@ public class Material {
             System.out.println("Validation failed, the material cannot be added to the list");
             return;
         }
-        materialList.add(material);
+        materials.add(material);
     }
     public static List<Material> getMaterialList() {
-        return new ArrayList<>(materialList);
+        return new ArrayList<>(materials);
     }
 
     public String getName() {
@@ -47,5 +47,9 @@ public class Material {
 
     public String getProducer() {
         return producer;
+    }
+
+    public static void clearExtent() {
+        materials.clear();
     }
 }

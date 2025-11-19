@@ -17,7 +17,7 @@ public class SkinService extends Service implements Serializable {
     @NotBlank
     private String purpose;
 
-    private static List<SkinService> skinServiceList = new ArrayList<>();
+    private static List<SkinService> skinServices = new ArrayList<>();
     private static final String EXTENT_FILE = "skinservice.ser";
 
     public SkinService(int id, String name, double regularPrice, String description,
@@ -38,13 +38,13 @@ public class SkinService extends Service implements Serializable {
             System.out.println("Validation failed, the service cannot be added to the list");
             return;
         }
-        skinServiceList.add(skinService);
+        skinServices.add(skinService);
     }
 
     public static void save(){
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(EXTENT_FILE))) {
-            oos.writeObject(skinServiceList);
+            oos.writeObject(skinServices);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -78,16 +78,16 @@ public class SkinService extends Service implements Serializable {
                 }
             }
 
-            skinServiceList = loadedList;
+            skinServices = new ArrayList<>(loadedList);
         }
     }
 
     public static List<SkinService> getSkinServiceList() {
-        return new ArrayList<>(skinServiceList);
+        return new ArrayList<>(skinServices);
     }
 
     public static void clearExtent() {
-        skinServiceList.clear();
+        skinServices.clear();
     }
 
     public static String getExtentFile() {

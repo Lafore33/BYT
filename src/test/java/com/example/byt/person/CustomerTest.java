@@ -1,4 +1,4 @@
-package com.example.byt.unit_tests.person_related;
+package com.example.byt.person;
 
 import com.example.byt.models.person.Customer;
 import com.example.byt.models.person.CustomerStatus;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CustomerTests {
+public class CustomerTest {
 
     private static Validator validator;
 

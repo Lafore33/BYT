@@ -16,7 +16,7 @@ public class Receptionist extends Worker {
     @NotNull
     private WorkType workType;
 
-    private static List<Receptionist> receptionistList = new ArrayList<>();
+    private static List<Receptionist> receptionists = new ArrayList<>();
 
     public Receptionist(String name, String surname, String phoneNumber, LocalDate birthDate, WorkType workType) {
         super(name, surname, phoneNumber, birthDate);
@@ -35,7 +35,7 @@ public class Receptionist extends Worker {
             System.out.println("Validation failed, the receptionist cannot be added to the list");
             return;
         }
-        receptionistList.add(receptionist);
+        receptionists.add(receptionist);
     }
 
     public WorkType getWorkType() {
@@ -43,6 +43,10 @@ public class Receptionist extends Worker {
     }
 
     public static List<Receptionist> getReceptionistList() {
-        return new ArrayList<>(receptionistList);
+        return new ArrayList<>(receptionists);
+    }
+
+    public static void clearExtent() {
+        receptionists.clear();
     }
 }

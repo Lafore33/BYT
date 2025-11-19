@@ -12,7 +12,7 @@ import java.util.Set;
 public class FourHandsService extends Service {
     private boolean isExpressService;
     private final static int numOfSpecialistsRequired = 2;
-    private static List<FourHandsService> fourHandsServiceList = new ArrayList<>();
+    private static List<FourHandsService> fourHandsServices = new ArrayList<>();
 
     public FourHandsService(int id, String name, double regularPrice, String description,
                             double duration, boolean isExpressService) {
@@ -32,16 +32,20 @@ public class FourHandsService extends Service {
             System.out.println("Validation failed, the service cannot be added to the list");
             return;
         }
-        fourHandsServiceList.add(fourHandsService);
+        fourHandsServices.add(fourHandsService);
     }
     public static int getNumOfSpecialistsRequired(){
         return numOfSpecialistsRequired;
     }
     public static List<FourHandsService> getFourHandsServiceList(){
-        return new ArrayList<>(fourHandsServiceList);
+        return new ArrayList<>(fourHandsServices);
     }
 
     public boolean isExpressService() {
         return isExpressService;
+    }
+
+    public static void clearExtent() {
+        fourHandsServices.clear();
     }
 }

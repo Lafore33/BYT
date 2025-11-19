@@ -1,4 +1,4 @@
-package com.example.byt.unit_tests.person_related;
+package com.example.byt.person;
 
 import com.example.byt.models.person.Person;
 import jakarta.validation.ConstraintViolation;

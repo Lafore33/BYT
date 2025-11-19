@@ -1,4 +1,4 @@
-package com.example.byt.unit_tests.service_related;
+package com.example.byt.services;
 
 import com.example.byt.models.services.SkinService;
 import jakarta.validation.ConstraintViolation;

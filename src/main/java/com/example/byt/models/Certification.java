@@ -110,4 +110,8 @@ public class Certification {
     public LocalDate getExpiryDate() {
         return expiryDate;
     }
+
+    public static void clearExtent() {
+        certifications.clear();
+    }
 }

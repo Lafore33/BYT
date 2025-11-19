@@ -42,7 +42,7 @@ public class Service implements Serializable {
     protected Service() {
     }
 
-    private static List<Service> serviceList = new ArrayList<>();
+    private static List<Service> services = new ArrayList<>();
 
     public Service(int id, String name, double regularPrice, String description,
                    double duration) {
@@ -65,10 +65,10 @@ public class Service implements Serializable {
             System.out.println("Validation failed, the service cannot be added to the list");
             return;
         }
-        serviceList.add(service);
+        services.add(service);
     }
     public static List<Service> getServiceList() {
-        return new ArrayList<>(serviceList);
+        return new ArrayList<>(services);
     }
 
     public int getId() {
@@ -89,5 +89,9 @@ public class Service implements Serializable {
 
     public double getDuration() {
         return duration;
+    }
+
+    public static void clearExtent() {
+        services.clear();
     }
 }

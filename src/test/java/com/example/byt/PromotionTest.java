@@ -1,4 +1,4 @@
-package com.example.byt.unit_tests.appointment_related;
+package com.example.byt;
 
 import com.example.byt.models.Promotion;
 import jakarta.validation.ConstraintViolation;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PromotionTests {
+public class PromotionTest {
 
     private static Validator validator;
 

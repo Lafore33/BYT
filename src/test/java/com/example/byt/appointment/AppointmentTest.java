@@ -1,4 +1,4 @@
-package com.example.byt.unit_tests.appointment_related;
+package com.example.byt.appointment;
 
 import com.example.byt.models.appointment.Appointment;
 import com.example.byt.models.appointment.PaymentMethod;
@@ -16,7 +16,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AppointmentTests {
+public class AppointmentTest {
 
     private static Validator validator;
 

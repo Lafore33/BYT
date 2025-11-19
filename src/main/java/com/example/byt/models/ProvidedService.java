@@ -24,7 +24,7 @@ public class ProvidedService {
     @Min(0)
     private double price;
 
-    private static List<ProvidedService> providedServiceList = new ArrayList<>();
+    private static List<ProvidedService> providedServices = new ArrayList<>();
 
     private ProvidedService(Builder builder) {
         this.rating = builder.rating;
@@ -44,7 +44,7 @@ public class ProvidedService {
             System.out.println("Validation failed, the provided service cannot be added to the list");
             return;
         }
-        providedServiceList.add(providedService);
+        providedServices.add(providedService);
     }
     public void setRating(Integer rating) {
         this.rating = rating;
@@ -108,6 +108,10 @@ public class ProvidedService {
     }
 
     public static List<ProvidedService> getProvidedServiceList() {
-        return new ArrayList<>(providedServiceList);
+        return new ArrayList<>(providedServices);
+    }
+
+    public static void clearExtent() {
+        providedServices.clear();
     }
 }

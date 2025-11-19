@@ -65,4 +65,8 @@ public class Customer extends Person {
     public static List<Customer> getCustomerList() {
         return new ArrayList<>(customers);
     }
+
+    public static void clearExtent() {
+        customers.clear();
+    }
 }

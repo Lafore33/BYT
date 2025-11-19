@@ -28,7 +28,7 @@ public class Promotion {
 
     private LocalDate endDate;
 
-    private static List<Promotion> promotionList = new ArrayList<>();
+    private static List<Promotion> promotions = new ArrayList<>();
 
     public Promotion(String name, String description, double percentage, LocalDate startDate, LocalDate endDate) {
         this.name = name;
@@ -50,7 +50,7 @@ public class Promotion {
             System.out.println("Validation failed, the promotion cannot be added to the list");
             return;
         }
-        promotionList.add(promotion);
+        promotions.add(promotion);
     }
 
 
@@ -98,7 +98,11 @@ public class Promotion {
     }
 
     public static List<Promotion> getPromotionList() {
-        return new ArrayList<>(promotionList);
+        return new ArrayList<>(promotions);
+    }
+
+    public static void clearExtent() {
+        promotions.clear();
     }
 
 }

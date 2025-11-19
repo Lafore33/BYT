@@ -18,7 +18,7 @@ public class HairService extends Service {
     @NotEmpty
     private List<String> hairTypes;
 
-    private static List<HairService> hairServiceList = new ArrayList<>();
+    private static List<HairService> hairServices = new ArrayList<>();
 
     public HairService(int id, String name, double regularPrice, String description, double duration, HairServiceType type, List<String> hairTypes) {
         super(id, name, regularPrice, description, duration);
@@ -38,7 +38,7 @@ public class HairService extends Service {
             System.out.println("Validation failed, the service cannot be added to the list");
             return;
         }
-        hairServiceList.add(hairService);
+        hairServices.add(hairService);
     }
 
     public List<String> getHairTypes() {
@@ -59,6 +59,10 @@ public class HairService extends Service {
     }
 
     public static List<HairService> getHairServiceList() {
-        return new ArrayList<>(hairServiceList);
+        return new ArrayList<>(hairServices);
+    }
+
+    public static void clearExtent() {
+        hairServices.clear();
     }
 }

@@ -109,4 +109,8 @@ public class Appointment {
     public static List<Appointment> getAppointmentList() {
         return new ArrayList<>(appointments);
     }
+
+    public static void clearExtent() {
+        appointments.clear();
+    }
 }
