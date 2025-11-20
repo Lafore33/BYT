@@ -6,11 +6,11 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class CertificationTest {
@@ -20,6 +20,11 @@ class CertificationTest {
     static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+
+    @BeforeEach
+    void clearExtent() {
+        Certification.clearExtent();
     }
 
     @Test
@@ -57,8 +62,8 @@ class CertificationTest {
                 null
         );
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(violations.isEmpty(),
-                "Valid certification should have no violations, but got: " + violations);
+        assertTrue(violations.isEmpty(),"Valid certification should have no violations, but got: " + violations);
+        assertTrue(Certification.getCertificationList().contains(certification),"Valid certification must be added to extent");
     }
 
     @Test
@@ -72,7 +77,8 @@ class CertificationTest {
                 null
         );
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(containsViolationFor(violations, "name"), "Expected violation for null 'name', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "name"),"Expected violation for null 'name', but got: " + violations);
+        assertFalse(Certification.getCertificationList().contains(certification),"Invalid certification must NOT be added to extent");
     }
 
     @Test
@@ -86,7 +92,8 @@ class CertificationTest {
                 null
         );
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(containsViolationFor(violations, "name"), "Expected violation for blank 'name', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "name"),"Expected violation for blank 'name', but got: " + violations);
+        assertFalse(Certification.getCertificationList().contains(certification),"Invalid certification must NOT be added to extent");
     }
 
     @Test
@@ -99,9 +106,9 @@ class CertificationTest {
                 LocalDate.now(),
                 null
         );
-
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(containsViolationFor(violations, "certificationNumber"), "Expected violation for null 'certificationNumber', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "certificationNumber"),"Expected violation for null 'certificationNumber', but got: " + violations);
+        assertFalse(Certification.getCertificationList().contains(certification),"Invalid certification must NOT be added to extent");
     }
 
     @Test
@@ -114,9 +121,9 @@ class CertificationTest {
                 LocalDate.now(),
                 null
         );
-
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(containsViolationFor(violations, "certificationNumber"), "Expected violation for blank 'certificationNumber', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "certificationNumber"),"Expected violation for blank 'certificationNumber', but got: " + violations);
+        assertFalse(Certification.getCertificationList().contains(certification),"Invalid certification must NOT be added to extent");
     }
 
     @Test
@@ -129,10 +136,9 @@ class CertificationTest {
                 LocalDate.now(),
                 null
         );
-
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(containsViolationFor(violations, "description"), "Expected violation for null 'description', but got: " + violations);
-
+        assertTrue(containsViolationFor(violations, "description"),"Expected violation for null 'description', but got: " + violations);
+        assertFalse(Certification.getCertificationList().contains(certification),"Invalid certification must NOT be added to extent");
     }
 
     @Test
@@ -146,7 +152,8 @@ class CertificationTest {
                 null
         );
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(containsViolationFor(violations, "description"), "Expected violation for blank 'description', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "description"),"Expected violation for blank 'description', but got: " + violations);
+        assertFalse(Certification.getCertificationList().contains(certification),"Invalid certification must NOT be added to extent");
     }
 
     @Test
@@ -160,7 +167,8 @@ class CertificationTest {
                 null
         );
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(containsViolationFor(violations, "organization"), "Expected violation for null 'organization', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "organization"),"Expected violation for null 'organization', but got: " + violations);
+        assertFalse(Certification.getCertificationList().contains(certification),"Invalid certification must NOT be added to extent");
     }
 
     @Test
@@ -168,14 +176,13 @@ class CertificationTest {
         Certification certification = new Certification(
                 "Course",
                 "CERT-123",
-                "Description",
-                "   ",
+                "Description","   ",
                 LocalDate.now(),
                 null
         );
-
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(containsViolationFor(violations, "organization"), "Expected violation for blank 'organization', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "organization"),"Expected violation for blank 'organization', but got: " + violations);
+        assertFalse(Certification.getCertificationList().contains(certification),"Invalid certification must NOT be added to extent");
     }
 
     @Test
@@ -203,28 +210,28 @@ class CertificationTest {
                 null
         );
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
-        assertTrue(containsViolationFor(violations, "issueDate"), "Expected violation for future 'issueDate', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "issueDate"),"Expected violation for future 'issueDate', but got: " + violations);
+        assertFalse(Certification.getCertificationList().contains(certification),"Invalid certification must NOT be added to extent");
     }
+
     @Test
     void expiryDateBeforeIssueDateShouldThrowException() {
         LocalDate issue = LocalDate.now();
         LocalDate expiry = issue.minusDays(1);
-
         assertThrows(IllegalArgumentException.class, () ->
-            new Certification(
-                    "Course",
-                    "CERT-123",
-                    "Description",
-                    "Organization",
-                    issue,
-                    expiry
-            ), "Expected IllegalArgumentException when expiryDate is before issueDate");
+                new Certification(
+                        "Course",
+                        "CERT-123",
+                        "Description",
+                        "Organization",
+                        issue,
+                        expiry
+                ), "Expected IllegalArgumentException when expiryDate is before issueDate");
     }
 
     @Test
-    void expiryDateEqualToIssueDateShouldNotTrowException() {
+    void expiryDateEqualToIssueDateShouldNotThrowException() {
         LocalDate date = LocalDate.now();
-
         assertDoesNotThrow(() -> new Certification(
                 "Course",
                 "CERT-123",
@@ -239,7 +246,6 @@ class CertificationTest {
     void expiryDateAfterIssueDateShouldNotThrowException() {
         LocalDate issue = LocalDate.now();
         LocalDate expiry = issue.plusDays(30);
-
         assertDoesNotThrow(() -> new Certification(
                 "Course",
                 "CERT-123",
@@ -274,10 +280,8 @@ class CertificationTest {
                 "Org",
                 LocalDate.now()
         );
-
         LocalDate expiry = LocalDate.now().plusDays(10);
-        assertDoesNotThrow(() -> cert.setExpiryDate(expiry),
-                "Should allow setting expiryDate after issueDate");
+        assertDoesNotThrow(() -> cert.setExpiryDate(expiry),"Should allow setting expiryDate after issueDate");
     }
 
     @Test
@@ -289,11 +293,8 @@ class CertificationTest {
                 "Org",
                 LocalDate.now()
         );
-
         LocalDate expiry = LocalDate.now().minusDays(1);
-
-        assertThrows(IllegalArgumentException.class, () -> cert.setExpiryDate(expiry),
-                "Expected exception when setting expiryDate before issueDate");
+        assertThrows(IllegalArgumentException.class, () -> cert.setExpiryDate(expiry),"Expected exception when setting expiryDate before issueDate");
     }
 
     @Test
@@ -319,9 +320,7 @@ class CertificationTest {
                 "Org",
                 LocalDate.now()
         );
-
-        assertThrows(IllegalArgumentException.class, () -> cert.setIssueDate(null),
-                "Expected exception when setting issueDate null");
+        assertThrows(IllegalArgumentException.class, () -> cert.setIssueDate(null),"Expected exception when setting issueDate null");
     }
 
     @Test
@@ -335,9 +334,9 @@ class CertificationTest {
                 LocalDate.of(2025, 10, 26)
         );
         LocalDate newIssueDate = LocalDate.of(2025, 11, 26);
-        assertThrows(IllegalArgumentException.class, () -> cert.setIssueDate(newIssueDate),
-                "Expected exception when setting issueDate after expiryDate");
+        assertThrows(IllegalArgumentException.class, () -> cert.setIssueDate(newIssueDate),"Expected exception when setting issueDate after expiryDate");
     }
+
     @Test
     void settingIssueDateBeforeExpiryDateShouldNotThrowException() {
         Certification cert = new Certification(
@@ -349,12 +348,24 @@ class CertificationTest {
                 LocalDate.of(2025, 10, 26)
         );
         LocalDate newIssueDate = LocalDate.of(2025, 9, 26);
-        assertDoesNotThrow(() -> cert.setIssueDate(newIssueDate),
-                "Expected no exception when setting issueDate before expiryDate");
+        assertDoesNotThrow(() -> cert.setIssueDate(newIssueDate),"Expected no exception when setting issueDate before expiryDate");
     }
 
-
-
+    @Test
+    void getCertificationListShouldReturnCopy() {
+        Certification certification = new Certification(
+                "Course",
+                "CERT-999",
+                "Description",
+                "Organization",
+                LocalDate.now(),
+                null
+        );
+        List<Certification> listCopy = Certification.getCertificationList();
+        listCopy.clear();
+        List<Certification> originalList = Certification.getCertificationList();
+        assertTrue(originalList.contains(certification),"Original list must not be modified when copy is cleared");
+    }
 
     private boolean containsViolationFor(Set<ConstraintViolation<Certification>> violations, String fieldName) {
         return violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals(fieldName));

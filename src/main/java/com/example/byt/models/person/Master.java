@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Min;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +40,11 @@ public class Master extends Worker {
         }
         masters.add(master);
     }
+
+    public static List<Master> getMasterList() {
+        return new ArrayList<>(masters);
+    }
+
 
     public int getExperience() {
         return experience;
