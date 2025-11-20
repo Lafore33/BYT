@@ -6,6 +6,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -22,6 +23,11 @@ public class PromotionTest {
     static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+
+    @BeforeEach
+    void clearExtent() {
+        Promotion.clearExtent();
     }
 
     @Test
@@ -83,6 +89,7 @@ public class PromotionTest {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate end = LocalDate.of(2025, 11, 30);
         assertDoesNotThrow(() -> new Promotion("Sale", "Discount", 20.0, start, end), "Expected no exceptions creating promotion with valid dates");
+        assertFalse(Promotion.getPromotionList().isEmpty(), "Valid promotion should be added to extent");
     }
 
     @Test
@@ -90,18 +97,21 @@ public class PromotionTest {
         LocalDate start = LocalDate.of(2025, 11, 1);
         LocalDate invalidEnd = LocalDate.of(2025, 10, 15);
         assertThrows(IllegalArgumentException.class, () -> new Promotion("Sale", "Discount", 20.0, start, invalidEnd));
+        assertTrue(Promotion.getPromotionList().isEmpty(), "Invalid promotion should not be added to extent");
     }
 
     @Test
     void endDateToNullThrowsException() {
         LocalDate start = LocalDate.of(2025, 11, 1);
         assertThrows(IllegalArgumentException.class, () -> new Promotion("Sale", "Discount", 20.0, start, null));
+        assertTrue(Promotion.getPromotionList().isEmpty(), "Invalid promotion should not be added to extent");
     }
 
     @Test
     void startDateToNullThrowsException() {
         LocalDate end = LocalDate.of(2025, 11, 30);
         assertThrows(RuntimeException.class, () -> new Promotion("Sale", "Discount", 20.0, null, end));
+        assertTrue(Promotion.getPromotionList().isEmpty(), "Invalid promotion should not be added to extent");
     }
 
     @Test

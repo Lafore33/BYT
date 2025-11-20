@@ -7,6 +7,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -23,6 +24,10 @@ public class HairServiceTest {
     static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+    @BeforeEach
+    void clearExtent() {
+        HairService.clearExtent();
     }
 
     @Test
@@ -89,8 +94,7 @@ public class HairServiceTest {
         assertFalse(serviceList.contains(service), "The invalid service should not be added to the list");
     }
     @Test
-    void nullHairTypesShouldFailValidation() {
-        List<HairService> serviceList = HairService.getHairServiceList();
+    void nullHairTypesShouldThrowException() {
         assertThrows(IllegalArgumentException.class,
                 () -> new HairService(
                         1,
@@ -102,8 +106,8 @@ public class HairServiceTest {
                         null
                 ),
                 "Expected IllegalArgumentException when hairTypes is null" );
-        List<HairService> serviceListAfter = HairService.getHairServiceList();
-        assertEquals(serviceList.size(), serviceListAfter.size(), "The invalid service should not be added to the list");
+        List<HairService> list = HairService.getHairServiceList();
+        assertTrue(list.isEmpty(), "The invalid service should not be added to the list");
     }
 
     @Test
@@ -126,7 +130,6 @@ public class HairServiceTest {
     }
     @Test
     void hairTypesContainingNullElementShouldThrowException() {
-        List<HairService> serviceList = HairService.getHairServiceList();
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new HairService(
@@ -140,12 +143,11 @@ public class HairServiceTest {
                 ),
                 "Expected IllegalArgumentException when hairTypes contains null element"
         );
-        List<HairService> serviceListAfter = HairService.getHairServiceList();
-        assertEquals(serviceList.size(), serviceListAfter.size(), "The invalid service should not be added to the list");
+        List<HairService> list = HairService.getHairServiceList();
+        assertTrue(list.isEmpty(), "The invalid service should not be added to the list");
     }
     @Test
     void hairTypesContainingBlankElementShouldThrowException() {
-        List<HairService> serviceList = HairService.getHairServiceList();
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new HairService(
@@ -159,8 +161,8 @@ public class HairServiceTest {
                 ),
                 "Expected IllegalArgumentException when hairTypes contains blank string"
         );
-        List<HairService> serviceListAfter = HairService.getHairServiceList();
-        assertEquals(serviceList.size(), serviceListAfter.size(), "The invalid service should not be added to the list");
+        List<HairService> list = HairService.getHairServiceList();
+        assertTrue(list.isEmpty(), "The invalid service should not be added to the list");
     }
     @Test
     void getHairTypesShouldReturnCopy() {

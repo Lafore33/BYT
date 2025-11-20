@@ -33,7 +33,7 @@ class PersonTest {
     void constructorSetsValuesCorrectly() {
         String name = "Yelizaveta";
         String surname = "Gaiduk";
-        String phoneNumber = "48123456789";
+        String phoneNumber = "+48123456789";
         LocalDate birthDate = LocalDate.now().minusYears(25);
 
         TestPerson person = new TestPerson(
@@ -53,7 +53,7 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 "Yelizaveta",
                 "Gaiduk",
-                "48123456789",
+                "+48123456789",
                 LocalDate.now().minusYears(25)
         );
 
@@ -66,7 +66,7 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 "  ",
                 "Gaiduk",
-                "48123456789",
+                "+48123456789",
                 LocalDate.now().minusYears(25)
         );
         Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
@@ -78,7 +78,7 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 null,
                 "Gaiduk",
-                "48123456789",
+                "+48123456789",
                 LocalDate.now().minusYears(25)
         );
 
@@ -91,7 +91,7 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 "Yelizaveta",
                 "   ",
-                "48123456789",
+                "+48123456789",
                 LocalDate.now().minusYears(25)
         );
 
@@ -104,7 +104,7 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 "Yelizaveta",
                 null,
-                "48123456789",
+                "+48123456789",
                 LocalDate.now().minusYears(25)
         );
         Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);assertTrue(containsViolationFor(violations, "surname"),
@@ -153,7 +153,7 @@ class PersonTest {
                         new TestPerson(
                                 "Yelizaveta",
                                 "Gaiduk",
-                                "48123456789",
+                                "+48123456789",
                                 null
                         ),
                 "Expected IllegalArgumentException for null 'birthDate'"
@@ -164,7 +164,7 @@ class PersonTest {
     void underageBirthDateThrowsException() {
         LocalDate tooYoung = LocalDate.now().minusYears(17);
         assertThrows(IllegalArgumentException.class, () ->
-                new TestPerson("Yelizaveta", "Gaiduk", "48123456789", tooYoung
+                new TestPerson("Yelizaveta", "Gaiduk", "+48123456789", tooYoung
                 ),"Expected IllegalArgumentException for underage birthDate"
         );
     }
