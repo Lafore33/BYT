@@ -10,6 +10,7 @@ import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -68,6 +69,10 @@ public class Certification {
             return;
         }
         certifications.add(certification);
+    }
+
+    public static List<Certification> getCertificationList() {
+        return new ArrayList<>(certifications);
     }
 
     public void setExpiryDate(LocalDate expiryDate) {

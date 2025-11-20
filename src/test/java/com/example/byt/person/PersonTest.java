@@ -33,8 +33,9 @@ class PersonTest {
     void constructorSetsValuesCorrectly() {
         String name = "Yelizaveta";
         String surname = "Gaiduk";
-        String phoneNumber = "+48123456789";
+        String phoneNumber = "48123456789";
         LocalDate birthDate = LocalDate.now().minusYears(25);
+
         TestPerson person = new TestPerson(
                 name,
                 surname,
@@ -52,12 +53,12 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 "Yelizaveta",
                 "Gaiduk",
-                "+48123456789",
+                "48123456789",
                 LocalDate.now().minusYears(25)
         );
+
         Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
-        assertTrue(violations.isEmpty(),
-                "Valid person should have no validation violations");
+        assertTrue(violations.isEmpty(),"Valid person should have no validation violations");
     }
 
     @Test
@@ -65,11 +66,11 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 "  ",
                 "Gaiduk",
-                "+48123456789",
+                "48123456789",
                 LocalDate.now().minusYears(25)
         );
         Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
-        assertTrue(containsViolationFor(violations, "name"), "Expected violation for blank 'name', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "name"),"Expected violation for blank 'name', but got: " + violations);
     }
 
     @Test
@@ -77,11 +78,12 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 null,
                 "Gaiduk",
-                "+48123456789",
+                "48123456789",
                 LocalDate.now().minusYears(25)
         );
+
         Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
-        assertTrue(containsViolationFor(violations, "name"), "Expected violation for null 'name', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "name"),"Expected violation for null 'name', but got: " + violations);
     }
 
     @Test
@@ -89,11 +91,12 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 "Yelizaveta",
                 "   ",
-                "+48123456789",
+                "48123456789",
                 LocalDate.now().minusYears(25)
         );
+
         Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
-        assertTrue(containsViolationFor(violations, "surname"), "Expected violation for blank 'surname', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "surname"),"Expected violation for blank 'surname', but got: " + violations);
     }
 
     @Test
@@ -101,11 +104,11 @@ class PersonTest {
         TestPerson person = new TestPerson(
                 "Yelizaveta",
                 null,
-                "+48123456789",
+                "48123456789",
                 LocalDate.now().minusYears(25)
         );
-        Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
-        assertTrue(containsViolationFor(violations, "surname"), "Expected violation for null 'surname', but got: " + violations);
+        Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);assertTrue(containsViolationFor(violations, "surname"),
+                "Expected violation for null 'surname', but got: " + violations);
     }
 
     @Test
@@ -117,7 +120,7 @@ class PersonTest {
                 LocalDate.now().minusYears(25)
         );
         Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
-        assertTrue(containsViolationFor(violations, "phoneNumber"), "Expected violation for blank 'phoneNumber', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "phoneNumber"),"Expected violation for blank 'phoneNumber', but got: " + violations);
     }
 
     @Test
@@ -129,7 +132,7 @@ class PersonTest {
                 LocalDate.now().minusYears(25)
         );
         Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
-        assertTrue(containsViolationFor(violations, "phoneNumber"), "Expected violation for null 'phoneNumber', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "phoneNumber"),"Expected violation for null 'phoneNumber', but got: " + violations);
     }
 
     @Test
@@ -141,41 +144,28 @@ class PersonTest {
                 LocalDate.now().minusYears(25)
         );
         Set<ConstraintViolation<TestPerson>> violations = validator.validate(person);
-        assertTrue(containsViolationFor(violations, "phoneNumber"), "Expected violation for non-digit 'phoneNumber', but got: " + violations);
+        assertTrue(containsViolationFor(violations, "phoneNumber"),"Expected violation for non-digit 'phoneNumber', but got: " + violations);
     }
 
     @Test
-    void nullBirthDateThrowsException(){
-        assertThrows(IllegalArgumentException.class, () -> new TestPerson(
-                "Yelizaveta",
-                "Gaiduk",
-                "+48123456789",
-                null
-        ), "Expected IllegalArgumentException for null 'birthDate'");
-
-    }
-
-    @Test
-    void underageBirthDateThrowsForException() {
-        LocalDate tooYoung = LocalDate.now().minusYears(17);
+    void nullBirthDateThrowsException() {
         assertThrows(IllegalArgumentException.class, () ->
-                new TestPerson(
-                        "Yelizaveta",
-                        "Gaiduk",
-                        "+48123456789",
-                        tooYoung
-                )
+                        new TestPerson(
+                                "Yelizaveta",
+                                "Gaiduk",
+                                "48123456789",
+                                null
+                        ),
+                "Expected IllegalArgumentException for null 'birthDate'"
         );
     }
+
     @Test
-    void nullBirthDateThrowsForException() {
+    void underageBirthDateThrowsException() {
+        LocalDate tooYoung = LocalDate.now().minusYears(17);
         assertThrows(IllegalArgumentException.class, () ->
-                new TestPerson(
-                        "Yelizaveta",
-                        "Gaiduk",
-                        "+48123456789",
-                        null
-                )
+                new TestPerson("Yelizaveta", "Gaiduk", "48123456789", tooYoung
+                ),"Expected IllegalArgumentException for underage birthDate"
         );
     }
 

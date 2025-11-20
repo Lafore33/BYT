@@ -148,8 +148,6 @@ public class CustomerTest {
         assertTrue(containsViolationFor(violations, "emailAddress"), "Expected violations for blank email address");
     }
 
-
-
     private boolean containsViolationFor(Set<ConstraintViolation<Customer>> violations, String fieldName) {
         return violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals(fieldName));
