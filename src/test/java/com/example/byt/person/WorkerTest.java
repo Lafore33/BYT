@@ -17,7 +17,7 @@ class WorkerTest {
     void constructorSetsValuesCorrectly() {
         String name = "Yelizaveta";
         String surname = "Gaiduk";
-        String phoneNumber = "48123456789";
+        String phoneNumber = "+48123456789";
         LocalDate birthDate = LocalDate.now().minusYears(25);
 
         TestWorker worker = new TestWorker(

@@ -2,11 +2,13 @@ package com.example.byt.appointment;
 
 import com.example.byt.models.appointment.Appointment;
 import com.example.byt.models.appointment.PaymentMethod;
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -19,6 +21,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AppointmentTest {
 
     private static Validator validator;
+
+    @BeforeEach
+    void clearExtent() {
+        Appointment.clearExtent();
+    }
 
     @BeforeAll
     static void setupValidator() {
@@ -72,14 +79,13 @@ public class AppointmentTest {
     @Test
     void appointmentNotesContainingNullThrowsException() {
         List<String> invalidNotes = Arrays.asList("Valid", null);
-        List<Appointment> before = Appointment.getAppointmentList();
         assertThrows(IllegalArgumentException.class, () ->
                         new Appointment.Builder(LocalDate.of(2025, 12, 1))
                                 .notes(invalidNotes).build(),
                 "Expected IllegalArgumentException when notes contains null element"
         );
-        List<Appointment> after = Appointment.getAppointmentList();
-        assertEquals(before.size(), after.size(),
+        List<Appointment> list = Appointment.getAppointmentList();
+        assertTrue(list.isEmpty(),
                 "Invalid appointment should not be added to extent");
     }
 
@@ -87,13 +93,12 @@ public class AppointmentTest {
     void appointmentNotesContainingBlankStringThrowsException() {
         LocalDate date = LocalDate.of(2025, 12, 1);
         List<String> invalidNotes = Arrays.asList("Valid", "   ");
-        List<Appointment> before = Appointment.getAppointmentList();
         assertThrows(IllegalArgumentException.class, () ->
                         new Appointment.Builder(date).notes(invalidNotes).build(),
                 "Expected IllegalArgumentException when notes contains blank string"
         );
-        List<Appointment> after = Appointment.getAppointmentList();
-        assertEquals(before.size(), after.size(),
+        List<Appointment> list = Appointment.getAppointmentList();
+        assertTrue(list.isEmpty(),
                 "Invalid appointment should not be added to extent");
     }
 

@@ -1,6 +1,7 @@
 package com.example.byt;
 
 import com.example.byt.models.Certification;
+import com.example.byt.models.services.HairService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -197,6 +198,8 @@ class CertificationTest {
                     null
             );
         }, "IllegalArgumentException expected for null 'issueDate'");
+        List<Certification> list = Certification.getCertificationList();
+        assertTrue(list.isEmpty(), "The invalid certification should not be added to the list");
     }
 
     @Test
@@ -227,6 +230,8 @@ class CertificationTest {
                         issue,
                         expiry
                 ), "Expected IllegalArgumentException when expiryDate is before issueDate");
+        List<Certification> list = Certification.getCertificationList();
+        assertTrue(list.isEmpty(), "The invalid certification should not be added to the list");
     }
 
     @Test
@@ -240,6 +245,7 @@ class CertificationTest {
                 date,
                 date
         ), "Should allow expiryDate equal to issueDate");
+        assertFalse(Certification.getCertificationList().isEmpty(),"Valid certification must be added to extent");
     }
 
     @Test
@@ -254,6 +260,7 @@ class CertificationTest {
                 issue,
                 expiry
         ), "Should allow expiryDate after issueDate");
+        assertFalse(Certification.getCertificationList().isEmpty(),"Valid certification must be added to extent");
     }
 
     @Test
