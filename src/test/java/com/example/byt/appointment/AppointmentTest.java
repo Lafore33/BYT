@@ -1,8 +1,10 @@
 package com.example.byt.appointment;
 
+import com.example.byt.models.ProvidedService;
 import com.example.byt.models.appointment.Appointment;
 import com.example.byt.models.appointment.PaymentMethod;
 import com.example.byt.models.person.Master;
+import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +28,9 @@ public class AppointmentTest {
     @BeforeEach
     void clearExtent() {
         Appointment.clearExtent();
+        ProvidedService.clearExtent();
+        Master.clearExtent();
+        Service.clearExtent();
     }
 
     @BeforeAll
@@ -174,6 +180,134 @@ public class AppointmentTest {
         List<Appointment> originalList = Appointment.getAppointmentList();
         assertTrue(originalList.contains(appointment),
                 "The original list should not be modified when clearing the returned copy");
+    }
+    @Test
+    void addProvidedServiceCreatesReverseConnection() {
+        LocalDate birthDate = LocalDate.now().minusYears(30);
+        Master master = new Master("John", "Doe", "+48111111111", birthDate, 5);
+        Service service = new Service(1, "Manicure", 50.0, "Professional manicure", 60.0);
+        Appointment appointment1 = new Appointment.Builder(LocalDate.of(2025, 12, 15)).build();
+        Appointment appointment2 = new Appointment.Builder(LocalDate.of(2025, 12, 16)).build();
+        ProvidedService ps = new ProvidedService.Builder(LocalDateTime.of(2025, 12, 15, 14, 0))
+                .addMaster(master)
+                .service(service)
+                .appointment(appointment1)
+                .build();
+        assertTrue(appointment1.getProvidedServices().contains(ps), "Appointment1 should contain PS");
+        assertEquals(appointment1, ps.getAppointment(), "PS should reference appointment1");
+        appointment2.addProvidedService(ps);
+        assertTrue(appointment2.getProvidedServices().contains(ps), "Appointment2 should contain PS");
+        assertEquals(appointment2, ps.getAppointment(), "PS should reference appointment2 (reverse)");
+        assertFalse(appointment1.getProvidedServices().contains(ps), "Appointment1 should NOT contain PS anymore");
+    }
+
+    @Test
+    void moveProvidedServiceBetweenAppointmentsPreservesIntegrity() {
+        LocalDate birthDate = LocalDate.now().minusYears(30);
+        Master master = new Master("John", "Doe", "+48111111111", birthDate, 5);
+        Service service1 = new Service(1, "Manicure", 50.0, "Professional manicure", 60.0);
+        Service service2 = new Service(2, "Pedicure", 60.0, "Professional pedicure", 75.0);
+        Appointment appointment1 = new Appointment.Builder(LocalDate.of(2025, 12, 15)).build();
+        Appointment appointment2 = new Appointment.Builder(LocalDate.of(2025, 12, 16)).build();
+        ProvidedService ps1 = new ProvidedService.Builder(LocalDateTime.of(2025, 12, 15, 14, 0))
+                .addMaster(master)
+                .service(service1)
+                .appointment(appointment1)
+                .build();
+        ProvidedService ps2 = new ProvidedService.Builder(LocalDateTime.of(2025, 12, 15, 15, 0))
+                .addMaster(master)
+                .service(service2)
+                .appointment(appointment1)
+                .build();
+        assertEquals(2, appointment1.getProvidedServices().size(), "Appointment1 should have 2 PS initially");
+        assertEquals(0, appointment2.getProvidedServices().size(), "Appointment2 should be empty initially");
+        appointment2.addProvidedService(ps1);
+        assertEquals(1, appointment1.getProvidedServices().size(), "Appointment1 should have 1 PS after move");
+        assertEquals(1, appointment2.getProvidedServices().size(), "Appointment2 should have 1 PS after move");
+        assertTrue(appointment1.getProvidedServices().contains(ps2), "Appointment1 should still contain ps2");
+        assertFalse(appointment1.getProvidedServices().contains(ps1), "Appointment1 should NOT contain ps1");
+        assertTrue(appointment2.getProvidedServices().contains(ps1), "Appointment2 should contain ps1");
+        assertEquals(appointment2, ps1.getAppointment(), "ps1 should reference appointment2");
+        assertEquals(appointment1, ps2.getAppointment(), "ps2 should still reference appointment1");
+    }
+    @Test
+    void addNullProvidedServiceThrowsException() {
+        Appointment appointment = new Appointment.Builder(LocalDate.of(2025, 12, 15)).build();
+        assertThrows(IllegalArgumentException.class, () -> appointment.addProvidedService(null));
+    }
+    @Test
+    void addDuplicateProvidedServiceThrowsException() {
+        LocalDate birthDate = LocalDate.now().minusYears(30);
+        Master master = new Master("John", "Doe", "+48111111111", birthDate, 5);
+        Service service = new Service(1, "Manicure", 50.0, "Professional manicure", 60.0);
+        Appointment appointment = new Appointment.Builder(LocalDate.of(2025, 12, 15)).build();
+        ProvidedService ps = new ProvidedService.Builder(LocalDateTime.of(2025, 12, 15, 14, 0))
+                .addMaster(master)
+                .service(service)
+                .appointment(appointment)
+                .build();
+        assertThrows(IllegalArgumentException.class, () -> appointment.addProvidedService(ps));
+    }
+    @Test
+    void getTotalPriceReturnsZeroWhenNoProvidedServices() {
+        Appointment appointment = new Appointment.Builder(LocalDate.of(2025, 12, 15)).build();
+        assertEquals(0.0, appointment.getTotalPrice());
+    }
+
+    @Test
+    void getTotalPriceCalculatesSumOfAllServicePrices() {
+        LocalDate birthDate = LocalDate.now().minusYears(30);
+        Master master1 = new Master("John", "Doe", "+48111111111", birthDate, 5);
+        Master master2 = new Master("Jane", "Smith", "+48222222222", birthDate, 7);
+        Service service1 = new Service(1, "Manicure", 50.0, "Professional manicure", 60.0);
+        Service service2 = new Service(2, "Pedicure", 60.0, "Professional pedicure", 75.0);
+        Appointment appointment = new Appointment.Builder(LocalDate.of(2025, 12, 15)).build();
+        new ProvidedService.Builder(LocalDateTime.of(2025, 12, 15, 14, 0))
+                .addMaster(master1)
+                .service(service1)
+                .appointment(appointment)
+                .build();
+        new ProvidedService.Builder(LocalDateTime.of(2025, 12, 15, 15, 0))
+                .addMaster(master2)
+                .service(service2)
+                .appointment(appointment)
+                .build();
+        assertEquals(122.0, appointment.getTotalPrice());
+    }
+
+    @Test
+    void getTotalPriceRecalculatesAfterProvidedServiceMoved() {
+        LocalDate birthDate = LocalDate.now().minusYears(30);
+        Master master = new Master("John", "Doe", "+48111111111", birthDate, 5);
+        Service service = new Service(1, "Manicure", 50.0, "Professional manicure", 60.0);
+        Appointment appointment1 = new Appointment.Builder(LocalDate.of(2025, 12, 15)).build();
+        Appointment appointment2 = new Appointment.Builder(LocalDate.of(2025, 12, 16)).build();
+        ProvidedService ps = new ProvidedService.Builder(LocalDateTime.of(2025, 12, 15, 14, 0))
+                .addMaster(master)
+                .service(service)
+                .appointment(appointment1)
+                .build();
+        assertEquals(55.0, appointment1.getTotalPrice(), "Appointment1 totalPrice before move");
+        assertEquals(0.0, appointment2.getTotalPrice(), "Appointment2 totalPrice before move");
+        appointment2.addProvidedService(ps);
+        assertEquals(0.0, appointment1.getTotalPrice(), "Appointment1 totalPrice after move");
+        assertEquals(55.0, appointment2.getTotalPrice(), "Appointment2 totalPrice after move");
+    }
+    @Test
+    void getProvidedServicesReturnsDefensiveCopy() {
+        LocalDate birthDate = LocalDate.now().minusYears(30);
+        Master master = new Master("John", "Doe", "+48111111111", birthDate, 5);
+        Service service = new Service(1, "Manicure", 50.0, "Professional manicure", 60.0);
+        Appointment appointment = new Appointment.Builder(LocalDate.of(2025, 12, 15)).build();
+        ProvidedService ps = new ProvidedService.Builder(LocalDateTime.of(2025, 12, 15, 14, 0))
+                .addMaster(master)
+                .service(service)
+                .appointment(appointment)
+                .build();
+        Set<ProvidedService> copy = appointment.getProvidedServices();
+        copy.clear();
+        assertEquals(1, appointment.getProvidedServices().size(), "Original set should not be modified");
+        assertTrue(appointment.getProvidedServices().contains(ps), "Original set should still contain ps");
     }
 
     private boolean containsViolationFor(Set<ConstraintViolation<Appointment>> violations, String fieldName) {

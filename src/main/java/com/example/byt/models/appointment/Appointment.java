@@ -1,5 +1,6 @@
 package com.example.byt.models.appointment;
 
+import com.example.byt.models.ProvidedService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,6 +24,7 @@ public class Appointment {
 
     @Min(0)
     private double totalPrice;
+    private Set<ProvidedService> providedServices = new HashSet<>();
 
     private static List<Appointment> appointments = new ArrayList<>();
 
@@ -45,7 +48,35 @@ public class Appointment {
         }
         appointments.add(appointment);
     }
+    public void addProvidedService(ProvidedService providedService) {
+        if (providedService == null) {
+            throw new IllegalArgumentException("ProvidedService cannot be null");
+        }
+        if (providedServices.contains(providedService)) {
+            throw new IllegalArgumentException("ProvidedService is already assigned to this Appointment");
+        }
+        Appointment oldAppointment = providedService.getAppointment();
+        if (oldAppointment != null && oldAppointment != this) {
+            oldAppointment.removeProvidedServiceInternal(providedService);
+        }
 
+        providedServices.add(providedService);
+        if (providedService.getAppointment() != this) {
+            providedService.setAppointmentInternal(this);
+        }
+    }
+
+    public void addProvidedServiceInternal(ProvidedService providedService) {
+        if (!providedServices.contains(providedService)) {
+            providedServices.add(providedService);
+        }
+    }
+    public void removeProvidedServiceInternal(ProvidedService providedService) {
+        providedServices.remove(providedService);
+    }
+    public Set<ProvidedService> getProvidedServices() {
+        return new HashSet<>(providedServices);
+    }
     public List<String> getNotes() {
         return notes == null ? null : new ArrayList<>(notes);
     }
@@ -104,6 +135,18 @@ public class Appointment {
 
     public LocalDate getDate() {
         return date;
+    }
+    public double getTotalPrice() {
+        recalculateTotalPrice();
+        return totalPrice;
+    }
+
+    private void recalculateTotalPrice() {
+        double total = 0;
+        for (ProvidedService ps : providedServices) {
+            total += ps.getPrice();
+        }
+        this.totalPrice = total;
     }
 
     public static List<Appointment> getAppointmentList() {
