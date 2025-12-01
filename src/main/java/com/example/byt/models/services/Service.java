@@ -1,5 +1,6 @@
 package com.example.byt.models.services;
 
+import com.example.byt.models.ProvidedService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -10,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +38,7 @@ public class Service implements Serializable {
 
     @Min(0)
     private double totalPrice;
+    private Set<ProvidedService> providedAs = new HashSet<>();
 
     // added default constructor for proper deserialization
     // made it protected on purpose, so that it is used only by the inheritors
@@ -44,8 +47,7 @@ public class Service implements Serializable {
 
     private static List<Service> services = new ArrayList<>();
 
-    public Service(int id, String name, double regularPrice, String description,
-                   double duration) {
+    public Service(int id, String name, double regularPrice, String description, double duration) {
         this.id = id;
         this.name = name;
         this.regularPrice = regularPrice;
@@ -67,6 +69,24 @@ public class Service implements Serializable {
         }
         services.add(service);
     }
+
+    public void addProvidedAs(ProvidedService providedService) {
+        if (providedService == null) {
+            throw new IllegalArgumentException("ProvidedService cannot be null");
+        }
+        providedAs.add(providedService);
+    }
+
+    public void removeProvidedAs(ProvidedService providedService) {
+        if (providedService != null) {
+            providedAs.remove(providedService);
+        }
+    }
+
+    public Set<ProvidedService> getProvidedAs() {
+        return new HashSet<>(providedAs);
+    }
+
     public static List<Service> getServiceList() {
         return new ArrayList<>(services);
     }

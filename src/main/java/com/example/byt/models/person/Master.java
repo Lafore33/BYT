@@ -1,5 +1,6 @@
 package com.example.byt.models.person;
 
+import com.example.byt.models.ProvidedService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -8,7 +9,7 @@ import jakarta.validation.constraints.Min;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +19,8 @@ public class Master extends Worker {
     private int experience;
 
     private final static int minExperienceForTop = 3;
+
+    private Set<ProvidedService> servicesCompleted = new HashSet<>();
 
     private static List<Master> masters = new ArrayList<>();
 
@@ -41,10 +44,26 @@ public class Master extends Worker {
         masters.add(master);
     }
 
+    public void addServiceCompleted(ProvidedService providedService) {
+        if (providedService == null) {
+            throw new IllegalArgumentException("ProvidedService cannot be null");
+        }
+        servicesCompleted.add(providedService);
+    }
+
+    public void removeServiceCompleted(ProvidedService providedService) {
+        if (providedService != null) {
+            servicesCompleted.remove(providedService);
+        }
+    }
+
+    public Set<ProvidedService> getServicesCompleted() {
+        return new HashSet<>(servicesCompleted);
+    }
+
     public static List<Master> getMasterList() {
         return new ArrayList<>(masters);
     }
-
 
     public int getExperience() {
         return experience;

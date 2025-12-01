@@ -1,5 +1,8 @@
 package com.example.byt.models.appointment;
 
+import com.example.byt.models.ProvidedService;
+import com.example.byt.models.person.Master;
+import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -8,9 +11,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class Appointment {
     @NotNull
@@ -23,6 +25,8 @@ public class Appointment {
     @Min(0)
     private double totalPrice;
 
+    private Set<ProvidedService> servicesDone = new HashSet<>();
+
     private static List<Appointment> appointments = new ArrayList<>();
 
     public Appointment(Builder builder) {
@@ -30,6 +34,34 @@ public class Appointment {
         this.notes = builder.notes;
         this.paymentMethod = builder.paymentMethod;
         addAppointment(this);
+    }
+
+    public Appointment(LocalDate date, List<String> notes, PaymentMethod paymentMethod, Map<Service, Set<Master>> serviceWithMasters) {
+        if (serviceWithMasters == null || serviceWithMasters.isEmpty()) {
+            throw new IllegalArgumentException("Appointment must have at least one service");
+        }
+
+        this.date = date;
+        this.notes = notes == null ? null : new ArrayList<>(notes);
+        this.paymentMethod = paymentMethod;
+
+        addAppointment(this);
+
+        LocalDateTime appointmentTime = date.atStartOfDay();
+        for (Map.Entry<Service, Set<Master>> entry : serviceWithMasters.entrySet()) {
+            Service service = entry.getKey();
+            Set<Master> masters = entry.getValue();
+
+            if (service == null) {
+                throw new IllegalArgumentException("Service cannot be null");
+            }
+            if (masters == null || masters.isEmpty()) {
+                throw new IllegalArgumentException("Each service must have at least one master");
+            }
+
+            ProvidedService ps = ProvidedService.createProvidedService(this, service, masters, appointmentTime);
+            servicesDone.add(ps);
+        }
     }
 
     private static void addAppointment(Appointment appointment) {
@@ -46,6 +78,69 @@ public class Appointment {
         appointments.add(appointment);
     }
 
+    public void addServiceDone(Service service, Set<Master> masters) {
+        if (service == null) {
+            throw new IllegalArgumentException("Service cannot be null");
+        }
+        if (masters == null || masters.isEmpty()) {
+            throw new IllegalArgumentException("Service must have at least one master");
+        }
+
+        for (ProvidedService ps : servicesDone) {
+            if (ps.getRefersTo().equals(service)) {
+                throw new IllegalArgumentException("This service is already in this appointment");
+            }
+        }
+
+        LocalDateTime appointmentTime = date.atStartOfDay();
+        ProvidedService ps = ProvidedService.createProvidedService(this, service, masters, appointmentTime);
+        servicesDone.add(ps);
+    }
+
+    public void removeServiceDone(Service service) {
+        if (service == null) {
+            throw new IllegalArgumentException("Service cannot be null");
+        }
+
+        if (servicesDone.size() <= 1) {
+            throw new IllegalStateException("Cannot remove service: Appointment must have at least one service");
+        }
+
+        ProvidedService toRemove = null;
+        for (ProvidedService ps : servicesDone) {
+            if (ps.getRefersTo().equals(service)) {
+                toRemove = ps;
+                break;
+            }
+        }
+
+        if (toRemove != null) {
+            if (servicesDone.remove(toRemove)) {
+                toRemove.removeProvidedService();
+            }
+        }
+    }
+
+    public void removeAppointment() {
+        for (ProvidedService ps : new HashSet<>(servicesDone)) {
+            ps.removeProvidedService();
+        }
+        servicesDone.clear();
+        appointments.remove(this);
+    }
+
+    public Set<ProvidedService> getServicesDone() {
+        return new HashSet<>(servicesDone);
+    }
+
+    public double getTotalPrice() {
+        double total = 0;
+        for (ProvidedService ps : servicesDone) {
+            total += ps.getPrice();
+        }
+        return total;
+    }
+
     public List<String> getNotes() {
         return notes == null ? null : new ArrayList<>(notes);
     }
@@ -60,6 +155,7 @@ public class Appointment {
         }
         this.notes = new ArrayList<>(notes);
     }
+
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
@@ -67,9 +163,7 @@ public class Appointment {
     public static class Builder {
         @NotNull
         private LocalDate date;
-
         private List<String> notes;
-
         private PaymentMethod paymentMethod;
 
         public Builder(LocalDate date) {
