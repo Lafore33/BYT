@@ -1,5 +1,6 @@
 package com.example.byt.models.services;
 
+import com.example.byt.models.Material;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -20,6 +21,12 @@ public class TwoHandsService extends Service {
         addTwoHandsService(this);
     }
 
+    public TwoHandsService(int id, String name, double regularPrice, String description,
+                           double duration, Set<Material> materialsUsed) {
+        super(id, name, regularPrice, description, duration, materialsUsed);
+        addTwoHandsService(this);
+    }
+
     private static void addTwoHandsService(TwoHandsService twoHandsService){
         if (twoHandsService == null){
             throw new NullPointerException("TwoHandsService cannot be null");
@@ -33,6 +40,12 @@ public class TwoHandsService extends Service {
         }
 
         twoHandsServices.add(twoHandsService);
+    }
+
+    @Override
+    public void removeService() {
+        super.removeService();
+        twoHandsServices.remove(this);
     }
 
     public static int getNumOfSpecialistsRequired(){

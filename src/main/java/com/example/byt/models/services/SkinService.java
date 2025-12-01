@@ -1,5 +1,6 @@
 package com.example.byt.models.services;
 
+import com.example.byt.models.Material;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -27,6 +28,13 @@ public class SkinService extends Service implements Serializable {
         addSkinService(this);
     }
 
+    public SkinService(int id, String name, double regularPrice, String description,
+                       double duration, String purpose, Set<Material> materialsUsed) {
+        super(id, name, regularPrice, description, duration, materialsUsed);
+        this.purpose = purpose;
+        addSkinService(this);
+    }
+
     private static void addSkinService(SkinService skinService){
         if (skinService == null){
             throw new NullPointerException("SkinService cannot be null");
@@ -39,6 +47,12 @@ public class SkinService extends Service implements Serializable {
             return;
         }
         skinServices.add(skinService);
+    }
+
+    @Override
+    public void removeService() {
+        super.removeService();
+        skinServices.remove(this);
     }
 
     public static void save(){
