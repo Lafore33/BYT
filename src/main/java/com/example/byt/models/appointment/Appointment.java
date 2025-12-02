@@ -28,42 +28,32 @@ public class Appointment {
     private Set<ProvidedService> servicesDone = new HashSet<>();
 
     private static List<Appointment> appointments = new ArrayList<>();
-
     public Appointment(Builder builder) {
         this.date = builder.date;
         this.notes = builder.notes;
         this.paymentMethod = builder.paymentMethod;
         addAppointment(this);
-    }
+        if (builder.serviceWithMasters != null && !builder.serviceWithMasters.isEmpty()) {
+            LocalDateTime appointmentTime = date.atStartOfDay();
+            for (Map.Entry<Service, Set<Master>> entry : builder.serviceWithMasters.entrySet()) {
+                Service service = entry.getKey();
+                Set<Master> masters = entry.getValue();
+                for (Master master : masters) {
+                    if (!master.getServiceSpecialisesIn().contains(service)) {
+                        throw new IllegalArgumentException("Master " + master.getName() + " does not specialize in service " + service.getName());
+                    }
+                }
 
+                new ProvidedService.Builder(this, service, masters, appointmentTime).build();
+            }
+        }
+    }
     public Appointment(Appointment other) {
         this.date = other.date;
         this.notes = other.notes == null ? null : new ArrayList<>(other.notes);
         this.paymentMethod = other.paymentMethod;
         this.totalPrice = other.totalPrice;
         this.servicesDone = new HashSet<>(other.servicesDone);
-    }
-
-    public Appointment(LocalDate date, List<String> notes, PaymentMethod paymentMethod, Map<Service, Set<Master>> serviceWithMasters) {
-        if (serviceWithMasters == null || serviceWithMasters.isEmpty()) {
-            throw new IllegalArgumentException("Appointment must have at least one service");
-        }
-
-        this.date = date;
-        this.notes = notes == null ? null : new ArrayList<>(notes);
-        this.paymentMethod = paymentMethod;
-
-        addAppointment(this);
-
-        LocalDateTime appointmentTime = date.atStartOfDay();
-        for (Map.Entry<Service, Set<Master>> entry : serviceWithMasters.entrySet()) {
-            Service service = entry.getKey();
-            Set<Master> masters = entry.getValue();
-
-            ProvidedService ps = new ProvidedService.Builder(this, service, masters, appointmentTime)
-                    .build();
-            servicesDone.add(ps);
-        }
     }
 
     private static void addAppointment(Appointment appointment) {
@@ -93,12 +83,20 @@ public class Appointment {
         }
     }
 
-    public void addServiceDone(Service service, Set<Master> masters) {
+    public void addServiceDone(Service service, Set<Master> masters, LocalDateTime time) {
         if (service == null) {
             throw new IllegalArgumentException("Service cannot be null");
         }
         if (masters == null || masters.isEmpty()) {
             throw new IllegalArgumentException("Service must have at least one master");
+        }
+        if (time == null) {
+            throw new IllegalArgumentException("Time cannot be null");
+        }
+        for (Master master : masters) {
+            if (!master.getServiceSpecialisesIn().contains(service)) {
+                throw new IllegalArgumentException("Master " + master.getName() + " does not specialize in service " + service.getName());
+            }
         }
 
         for (ProvidedService ps : servicesDone) {
@@ -106,8 +104,8 @@ public class Appointment {
                 throw new IllegalArgumentException("This service is already in this appointment");
             }
         }
-        LocalDateTime appointmentTime = date.atStartOfDay();
-        new ProvidedService.Builder(this, service, masters, appointmentTime).build();
+
+        new ProvidedService.Builder(this, service, masters, time).build();
     }
 
     public void removeServiceDone(Service service) {
@@ -176,6 +174,7 @@ public class Appointment {
         private LocalDate date;
         private List<String> notes;
         private PaymentMethod paymentMethod;
+        private Map<Service, Set<Master>> serviceWithMasters;
 
         public Builder(LocalDate date) {
             this.date = date;
@@ -197,8 +196,15 @@ public class Appointment {
             this.paymentMethod = paymentMethod;
             return this;
         }
+        public Builder serviceWithMasters(Map<Service, Set<Master>> serviceWithMasters) {
+            if (serviceWithMasters == null || serviceWithMasters.isEmpty()) {
+                throw new IllegalArgumentException("Appointment must have at least one service");
+            }
+            this.serviceWithMasters = new HashMap<>(serviceWithMasters);
+            return this;
+        }
 
-        public Appointment build(){
+        public Appointment build() {
             return new Appointment(this);
         }
     }

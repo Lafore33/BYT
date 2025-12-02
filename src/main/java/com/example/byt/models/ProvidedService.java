@@ -66,25 +66,14 @@ public class ProvidedService {
         addProvidedService(this);
     }
 
-    private ProvidedService(ProvidedService other) {
-        this.rating = other.rating;
-        this.comment = other.comment;
-        this.time = other.time;
-        this.price = other.price;
-        this.appointmentDoneDuring = other.appointmentDoneDuring;
-        this.serviceRefersTo = other.serviceRefersTo;
-        this.completedBy = new HashSet<>(other.completedBy);
-    }
-
     private double calculatePrice(Service service, Set<Master> masters) {
-        double basePrice = service.getRegularPrice();
+        double basePriceWithPromotions = service.getTotalPrice();
         boolean hasTopMaster = masters.stream()
                 .anyMatch(master -> master.getExperience() >= Master.getMinExperienceForTop());
-
         if (hasTopMaster) {
-            return basePrice * (1 + TOP_MASTER_SURCHARGE);
+            return basePriceWithPromotions * (1 + TOP_MASTER_SURCHARGE);
         }
-        return basePrice;
+        return basePriceWithPromotions;
     }
 
     private static void addProvidedService(ProvidedService providedService) {
@@ -264,13 +253,6 @@ public class ProvidedService {
 
     public double getPrice() {
         return price;
-    }
-
-    public void setPrice(double price) {
-        if (price < 0) {
-            throw new IllegalArgumentException("Price cannot be negative");
-        }
-        this.price = price;
     }
 
     public static double getTopMasterSurcharge() {
