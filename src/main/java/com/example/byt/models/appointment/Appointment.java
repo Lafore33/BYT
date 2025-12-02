@@ -80,6 +80,19 @@ public class Appointment {
         appointments.add(appointment);
     }
 
+    public void addProvidedServiceInternal(ProvidedService providedService) {
+        if (providedService == null) {
+            throw new IllegalArgumentException("ProvidedService cannot be null");
+        }
+        servicesDone.add(providedService);
+    }
+
+    public void removeProvidedServiceInternal(ProvidedService providedService) {
+        if (providedService != null) {
+            servicesDone.remove(providedService);
+        }
+    }
+
     public void addServiceDone(Service service, Set<Master> masters) {
         if (service == null) {
             throw new IllegalArgumentException("Service cannot be null");
@@ -93,11 +106,8 @@ public class Appointment {
                 throw new IllegalArgumentException("This service is already in this appointment");
             }
         }
-
         LocalDateTime appointmentTime = date.atStartOfDay();
-        ProvidedService ps = new ProvidedService.Builder(this, service, masters, appointmentTime)
-                .build();
-        servicesDone.add(ps);
+        new ProvidedService.Builder(this, service, masters, appointmentTime).build();
     }
 
     public void removeServiceDone(Service service) {
@@ -118,9 +128,7 @@ public class Appointment {
         }
 
         if (toRemove != null) {
-            if (servicesDone.remove(toRemove)) {
-                toRemove.removeProvidedService();
-            }
+            toRemove.removeProvidedService();
         }
     }
 

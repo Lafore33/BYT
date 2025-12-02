@@ -35,26 +35,37 @@ public class ProvidedService {
 
     private static final int MIN_MASTERS = 1;
     private static final int MAX_MASTERS = 2;
+    private static final double TOP_MASTER_SURCHARGE = 0.20;
 
     private static List<ProvidedService> providedServices = new ArrayList<>();
+
     private ProvidedService(Builder builder) {
         this.rating = builder.rating;
         this.comment = builder.comment;
         this.time = builder.time;
         this.appointmentDoneDuring = builder.appointment;
         this.serviceRefersTo = builder.service;
+
+        if (builder.appointment != null) {
+            builder.appointment.addProvidedServiceInternal(this);
+        }
+
         if (builder.service != null) {
             builder.service.addProvidedAs(this);
         }
 
         for (Master master : builder.masters) {
-            if (completedBy.add(master)) {
-                master.addServiceCompleted(this);
-            }
+            completedBy.add(master);
+            master.addServiceCompleted(this);
+        }
+
+        if (builder.service != null) {
+            this.price = calculatePrice(builder.service, builder.masters);
         }
 
         addProvidedService(this);
     }
+
     private ProvidedService(ProvidedService other) {
         this.rating = other.rating;
         this.comment = other.comment;
@@ -63,6 +74,17 @@ public class ProvidedService {
         this.appointmentDoneDuring = other.appointmentDoneDuring;
         this.serviceRefersTo = other.serviceRefersTo;
         this.completedBy = new HashSet<>(other.completedBy);
+    }
+
+    private double calculatePrice(Service service, Set<Master> masters) {
+        double basePrice = service.getRegularPrice();
+        boolean hasTopMaster = masters.stream()
+                .anyMatch(master -> master.getExperience() >= Master.getMinExperienceForTop());
+
+        if (hasTopMaster) {
+            return basePrice * (1 + TOP_MASTER_SURCHARGE);
+        }
+        return basePrice;
     }
 
     private static void addProvidedService(ProvidedService providedService) {
@@ -84,14 +106,16 @@ public class ProvidedService {
             throw new IllegalStateException("Cannot remove ProvidedService: Appointment must have at least one service");
         }
 
+        if (appointmentDoneDuring != null) {
+            appointmentDoneDuring.removeProvidedServiceInternal(this);
+        }
+
         if (serviceRefersTo != null) {
             serviceRefersTo.removeProvidedAs(this);
         }
 
         for (Master master : new HashSet<>(completedBy)) {
-            if (completedBy.remove(master)) {
-                master.removeServiceCompleted(this);
-            }
+            master.removeServiceCompleted(this);
         }
 
         completedBy.clear();
@@ -102,11 +126,20 @@ public class ProvidedService {
         if (master == null) {
             throw new IllegalArgumentException("Master cannot be null");
         }
+
         if (completedBy.size() >= MAX_MASTERS) {
             throw new IllegalStateException("ProvidedService cannot have more than " + MAX_MASTERS + " Masters (1..2). Current: " + completedBy.size());
         }
-        if (completedBy.add(master)) {
-            master.addServiceCompleted(this);
+
+        if (completedBy.contains(master)) {
+            return;
+        }
+
+        completedBy.add(master);
+        master.addServiceCompleted(this);
+
+        if (serviceRefersTo != null) {
+            this.price = calculatePrice(serviceRefersTo, completedBy);
         }
     }
 
@@ -119,6 +152,10 @@ public class ProvidedService {
 
         if (completedBy.remove(master)) {
             master.removeServiceCompleted(this);
+
+            if (serviceRefersTo != null) {
+                this.price = calculatePrice(serviceRefersTo, completedBy);
+            }
         }
     }
 
@@ -134,11 +171,13 @@ public class ProvidedService {
 
         @NotNull
         private final LocalDateTime time;
+
         @Min(1)
         @Max(5)
         private Integer rating;
 
         private String comment;
+
         public Builder(Appointment appointment, Service service, Set<Master> masters, LocalDateTime time) {
             if (appointment == null) {
                 throw new IllegalArgumentException("ProvidedService must be associated with an Appointment");
@@ -184,6 +223,7 @@ public class ProvidedService {
             return new ProvidedService(this);
         }
     }
+
     public Appointment getAppointmentDoneDuring() {
         return appointmentDoneDuring == null ? null : new Appointment(appointmentDoneDuring);
     }
@@ -231,6 +271,10 @@ public class ProvidedService {
             throw new IllegalArgumentException("Price cannot be negative");
         }
         this.price = price;
+    }
+
+    public static double getTopMasterSurcharge() {
+        return TOP_MASTER_SURCHARGE;
     }
 
     public static List<ProvidedService> getProvidedServiceList() {
