@@ -9,6 +9,8 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.util.AbstractMap;
+import java.util.Map.Entry;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,18 +35,17 @@ public class Appointment {
         this.notes = builder.notes;
         this.paymentMethod = builder.paymentMethod;
         addAppointment(this);
-        if (builder.serviceWithMasters != null && !builder.serviceWithMasters.isEmpty()) {
-            LocalDateTime appointmentTime = date.atStartOfDay();
-            for (Map.Entry<Service, Set<Master>> entry : builder.serviceWithMasters.entrySet()) {
+        if (builder.serviceData != null && !builder.serviceData.isEmpty()) {
+            for (Entry<Service, Entry<Set<Master>, LocalDateTime>> entry : builder.serviceData) {
                 Service service = entry.getKey();
-                Set<Master> masters = entry.getValue();
+                Set<Master> masters = entry.getValue().getKey();
+                LocalDateTime time = entry.getValue().getValue();
                 for (Master master : masters) {
                     if (!master.getServiceSpecialisesIn().contains(service)) {
                         throw new IllegalArgumentException("Master " + master.getName() + " does not specialize in service " + service.getName());
                     }
                 }
-
-                new ProvidedService.Builder(this, service, masters, appointmentTime).build();
+                new ProvidedService.Builder(this, service, masters, time).build();
             }
         }
     }
@@ -174,7 +175,7 @@ public class Appointment {
         private LocalDate date;
         private List<String> notes;
         private PaymentMethod paymentMethod;
-        private Map<Service, Set<Master>> serviceWithMasters;
+        private List<Entry<Service, Entry<Set<Master>, LocalDateTime>>> serviceData;
 
         public Builder(LocalDate date) {
             this.date = date;
@@ -196,11 +197,16 @@ public class Appointment {
             this.paymentMethod = paymentMethod;
             return this;
         }
-        public Builder serviceWithMasters(Map<Service, Set<Master>> serviceWithMasters) {
-            if (serviceWithMasters == null || serviceWithMasters.isEmpty()) {
-                throw new IllegalArgumentException("Appointment must have at least one service");
+
+        public Builder addService(Service service, Set<Master> masters, LocalDateTime time) {
+            if (this.serviceData == null) {
+                this.serviceData = new ArrayList<>();
             }
-            this.serviceWithMasters = new HashMap<>(serviceWithMasters);
+            Entry<Set<Master>, LocalDateTime> mastersAndTime =
+                    new AbstractMap.SimpleEntry<>(new HashSet<>(masters), time);
+            Entry<Service, Entry<Set<Master>, LocalDateTime>> entry =
+                    new AbstractMap.SimpleEntry<>(service, mastersAndTime);
+            this.serviceData.add(entry);
             return this;
         }
 
