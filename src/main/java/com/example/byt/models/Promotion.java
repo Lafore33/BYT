@@ -1,5 +1,6 @@
 package com.example.byt.models;
 
+import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -10,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,15 +30,24 @@ public class Promotion {
 
     private LocalDate endDate;
 
+    private Set<Service> servicesApplicableTo = new HashSet<>();
+
     private static List<Promotion> promotions = new ArrayList<>();
 
-    public Promotion(String name, String description, double percentage, LocalDate startDate, LocalDate endDate) {
+    public Promotion(String name, String description, double percentage, LocalDate startDate, LocalDate endDate, Set<Service> servicesApplicableTo) {
+        if(servicesApplicableTo == null || servicesApplicableTo.isEmpty()){
+            throw new IllegalArgumentException("Promotion must have at least one service");
+        }
         this.name = name;
         this.description = description;
         this.percentage = percentage;
         setStartDate(startDate);
         setEndDate(endDate);
         addPromotion(this);
+
+        for(Service service : servicesApplicableTo){
+            addServiceApplicableTo(service);
+        }
     }
 
     private static void addPromotion(Promotion promotion){
@@ -51,6 +62,37 @@ public class Promotion {
             return;
         }
         promotions.add(promotion);
+    }
+
+    public void removePromotion(){
+        for(Service service : servicesApplicableTo){
+            if(service != null && servicesApplicableTo.remove(service)) {
+                service.removePromotionApplied(this);
+            }
+        }
+        promotions.remove(this);
+    }
+
+    public void addServiceApplicableTo(Service service){
+        if(service == null)
+            throw new IllegalArgumentException("Service cannot be null");
+        if(servicesApplicableTo.add(service))
+            service.addPromotionApplied(this);
+    }
+
+    public void removeServiceApplicableTo(Service service){
+        if(service == null) return;
+        if(servicesApplicableTo.remove(service)){
+            service.removePromotionApplied(this);
+        }
+        if(servicesApplicableTo.isEmpty()) {
+            addServiceApplicableTo(service);
+            throw new IllegalArgumentException("Promotion must have at least one service");
+        }
+    }
+
+    public Set<Service> getServicesApplicableTo(){
+        return new HashSet<>(servicesApplicableTo);
     }
 
 

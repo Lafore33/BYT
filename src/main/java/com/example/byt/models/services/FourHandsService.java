@@ -1,11 +1,13 @@
 package com.example.byt.models.services;
 
+import com.example.byt.models.Material;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +19,12 @@ public class FourHandsService extends Service {
     public FourHandsService(int id, String name, double regularPrice, String description,
                             double duration, boolean isExpressService) {
         super(id, name, regularPrice, description, duration);
+        this.isExpressService = isExpressService;
+        addFourHandsService(this);
+    }
+    public FourHandsService(int id, String name, double regularPrice, String description,
+                            double duration, boolean isExpressService, Set<Material> materialsUsed) {
+        super(id, name, regularPrice, description, duration, materialsUsed);
         this.isExpressService = isExpressService;
         addFourHandsService(this);
     }
@@ -34,6 +42,13 @@ public class FourHandsService extends Service {
         }
         fourHandsServices.add(fourHandsService);
     }
+
+    @Override
+    public void removeService() {
+        super.removeService();
+        fourHandsServices.remove(this);
+    }
+
     public static int getNumOfSpecialistsRequired(){
         return numOfSpecialistsRequired;
     }

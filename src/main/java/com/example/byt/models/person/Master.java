@@ -1,6 +1,7 @@
 package com.example.byt.models.person;
 
 import com.example.byt.models.ProvidedService;
+import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.*;
 
 public class Master extends Worker {
 
@@ -19,8 +21,8 @@ public class Master extends Worker {
     private int experience;
 
     private final static int minExperienceForTop = 3;
-
     private Set<ProvidedService> servicesCompleted = new HashSet<>();
+    private Set<Service> servicesSpecialisesIn = new HashSet<>();
 
     private static List<Master> masters = new ArrayList<>();
 
@@ -28,6 +30,19 @@ public class Master extends Worker {
         super(name, surname, phoneNumber, birthDate);
         this.experience = experience;
         addMaster(this);
+    }
+
+    public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience, Set<Service> servicesSpecialisesIn) {
+        super(name, surname, phoneNumber, birthDate);
+        if(servicesSpecialisesIn == null || servicesSpecialisesIn.isEmpty()) {
+            throw new IllegalArgumentException("Master should specialise in at least one service");
+        }
+        this.experience = experience;
+        addMaster(this);
+
+        for (Service service : servicesSpecialisesIn) {
+            addServiceSpecialisesIn(service);
+        }
     }
 
     private static void addMaster(Master master){
@@ -43,7 +58,6 @@ public class Master extends Worker {
         }
         masters.add(master);
     }
-
     public void addServiceCompleted(ProvidedService providedService) {
         if (providedService == null) {
             throw new IllegalArgumentException("ProvidedService cannot be null");
@@ -59,6 +73,38 @@ public class Master extends Worker {
 
     public Set<ProvidedService> getServicesCompleted() {
         return new HashSet<>(servicesCompleted);
+    }
+    public void removeMaster(){
+        for(Service service : servicesSpecialisesIn) {
+            if (service != null && servicesSpecialisesIn.remove(service)) {
+                service.removeMasterSpecializedIn(this);
+            }
+        }
+        masters.remove(this);
+
+    }
+
+    public void addServiceSpecialisesIn(Service service){
+        if(service == null)
+            throw new IllegalArgumentException("Service cannot be null");
+        if(servicesSpecialisesIn.add(service))
+            service.addMasterSpecializedIn(this);
+    }
+
+
+    public void removeServiceSpecialisesIn(Service service){
+        if(service == null) return;
+        if(servicesSpecialisesIn.remove(service))
+            service.removeMasterSpecializedIn(this);
+        if(servicesSpecialisesIn.isEmpty()) {
+            addServiceSpecialisesIn(service);
+            throw new IllegalStateException("Master should specialise in at least one service");
+        }
+
+    }
+
+    public Set<Service> getServiceSpecialisesIn(){
+        return new HashSet<>(servicesSpecialisesIn);
     }
 
     public static List<Master> getMasterList() {

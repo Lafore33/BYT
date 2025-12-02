@@ -1,6 +1,9 @@
 package com.example.byt.models.services;
 
 import com.example.byt.models.ProvidedService;
+import com.example.byt.models.Material;
+import com.example.byt.models.Promotion;
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -10,6 +13,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,10 +39,12 @@ public class Service implements Serializable {
     @Min(0)
     @Max(5)
     private double rating;
-
     @Min(0)
     private double totalPrice;
     private Set<ProvidedService> providedAs = new HashSet<>();
+    private Set<Material> materialsUsed = new HashSet<>();
+    private Set<Promotion> promotionsApplied = new HashSet<>();
+    private Set<Master> mastersSpecializedIn = new HashSet<>();
 
     // added default constructor for proper deserialization
     // made it protected on purpose, so that it is used only by the inheritors
@@ -66,6 +72,16 @@ public class Service implements Serializable {
         this.providedAs = new HashSet<>(other.providedAs);
     }
 
+    public Service(int id, String name, double regularPrice, String description, double duration, Set<Material> materialsUsed) {
+        this(id, name, regularPrice, description, duration);
+
+        if (materialsUsed != null) {
+            for(Material material : materialsUsed) {
+                addMaterialUsed(material);
+            }
+        }
+    }
+
     private static void addService(Service service){
         if (service == null){
             throw new NullPointerException("Service cannot be null");
@@ -79,7 +95,6 @@ public class Service implements Serializable {
         }
         services.add(service);
     }
-
     public void addProvidedAs(ProvidedService providedService) {
         if (providedService == null) {
             throw new IllegalArgumentException("ProvidedService cannot be null");
@@ -95,6 +110,75 @@ public class Service implements Serializable {
 
     public Set<ProvidedService> getProvidedAs() {
         return new HashSet<>(providedAs);
+    }
+    public void removeService(){
+        for(Material material : materialsUsed){
+            removeMaterialUsed(material);
+        }
+
+        for(Promotion promotion : promotionsApplied){
+            removePromotionApplied(promotion);
+        }
+
+        for(Master master : mastersSpecializedIn){
+            if(master != null && mastersSpecializedIn.remove(master)){
+                master.removeServiceSpecialisesIn(this);
+            }
+        }
+        services.remove(this);
+    }
+
+    public void addMaterialUsed(Material material){
+        if(material == null)
+            throw new IllegalArgumentException("Material cannot be null");
+        if(materialsUsed.add(material))
+            material.addServiceUsedIn(this);
+    }
+
+    public void removeMaterialUsed(Material material){
+        if(material != null && materialsUsed.remove(material))
+            material.removeServiceUsedIn(this);
+    }
+
+    public Set<Material> getMaterialsUsed() {
+        return new HashSet<>(materialsUsed);
+    }
+
+    public void addPromotionApplied(Promotion promotion){
+        if(promotion == null)
+            throw new IllegalArgumentException("Promotion cannot be null");
+        if(promotionsApplied.add(promotion))
+            promotion.addServiceApplicableTo(this);
+    }
+
+    public void removePromotionApplied(Promotion promotion){
+        if(promotion != null && promotionsApplied.remove(promotion))
+            promotion.removeServiceApplicableTo(this);
+    }
+
+    public Set<Promotion> getPromotionsApplied() {
+        return new HashSet<>(promotionsApplied);
+    }
+
+    public void addMasterSpecializedIn(Master master){
+        if(master == null)
+            throw new IllegalArgumentException("Master cannot be null");
+        if(mastersSpecializedIn.add(master))
+            master.addServiceSpecialisesIn(this);
+    }
+
+    public void removeMasterSpecializedIn(Master master){
+        if(master == null) return;
+        if(mastersSpecializedIn.remove(master))
+            master.removeServiceSpecialisesIn(this);
+        if(mastersSpecializedIn.isEmpty()) {
+            addMasterSpecializedIn(master);
+            throw new IllegalArgumentException("Service must have at least one master specialized in it");
+        }
+    }
+
+    public Set<Master> getMasterSpecializedIn() {
+        return new HashSet<>(mastersSpecializedIn);
     }
 
     public static List<Service> getServiceList() {
@@ -119,6 +203,19 @@ public class Service implements Serializable {
 
     public double getDuration() {
         return duration;
+    }
+
+    public double getTotalPrice(){
+        double maxDiscount = 0;
+        LocalDate today = LocalDate.now();
+
+        for (Promotion promo : promotionsApplied) {
+            if (!today.isBefore(promo.getStartDate()) && !today.isAfter(promo.getEndDate())) {
+                maxDiscount = Math.max(maxDiscount, promo.getPercentage());
+            }
+        }
+
+        return Math.max(regularPrice * (1 - maxDiscount / 100.0), 0);
     }
 
     public static void clearExtent() {

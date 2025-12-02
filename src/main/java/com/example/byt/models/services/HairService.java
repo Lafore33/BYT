@@ -1,5 +1,6 @@
 package com.example.byt.models.services;
 
+import com.example.byt.models.Material;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -22,6 +23,12 @@ public class HairService extends Service {
 
     public HairService(int id, String name, double regularPrice, String description, double duration, HairServiceType type, List<String> hairTypes) {
         super(id, name, regularPrice, description, duration);
+        this.type = type;
+        setHairTypes(hairTypes);
+        addHairService(this);
+    }
+    public HairService(int id, String name, double regularPrice, String description, double duration, HairServiceType type, List<String> hairTypes, Set<Material> materialsUsed) {
+        super(id, name, regularPrice, description, duration, materialsUsed);
         this.type = type;
         setHairTypes(hairTypes);
         addHairService(this);
@@ -52,6 +59,12 @@ public class HairService extends Service {
             throw new IllegalArgumentException("hairTypes can't contain null or empty elements");
         }
         this.hairTypes = new ArrayList<>(hairTypes);
+    }
+
+    @Override
+    public void removeService() {
+        super.removeService();
+        hairServices.remove(this);
     }
 
     public HairServiceType getType() {
