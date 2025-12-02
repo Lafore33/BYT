@@ -1,5 +1,6 @@
 package com.example.byt.models.services;
 
+import com.example.byt.models.Material;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -26,6 +27,14 @@ public class NailService extends Service {
         addNailService(this);
     }
 
+    public NailService(int id, String name, double regularPrice, String description,
+                       double duration, NailServiceType type, boolean isCareIncluded, Set<Material> materialsUsed) {
+        super(id, name, regularPrice, description, duration, materialsUsed);
+        this.type = type;
+        this.isCareIncluded = isCareIncluded;
+        addNailService(this);
+    }
+
     private static void addNailService(NailService nailService){
         if (nailService == null){
             throw new NullPointerException("NailService cannot be null");
@@ -39,6 +48,13 @@ public class NailService extends Service {
         }
         nailServices.add(nailService);
     }
+
+    @Override
+    public void removeService() {
+        super.removeService();
+        nailServices.remove(this);
+    }
+
     public static List<NailService> getNailServiceList(){
         return new ArrayList<>(nailServices);
     }
