@@ -39,15 +39,12 @@ public class Service implements Serializable {
     @Min(0)
     @Max(5)
     private double rating;
-    @Min(0)
-    private double totalPrice;
+
     private Set<ProvidedService> providedAs = new HashSet<>();
     private Set<Material> materialsUsed = new HashSet<>();
     private Set<Promotion> promotionsApplied = new HashSet<>();
     private Set<Master> mastersSpecializedIn = new HashSet<>();
 
-    // added default constructor for proper deserialization
-    // made it protected on purpose, so that it is used only by the inheritors
     protected Service() {
     }
 
@@ -61,6 +58,7 @@ public class Service implements Serializable {
         this.duration = duration;
         addService(this);
     }
+
     public Service(Service other) {
         this.id = other.id;
         this.name = other.name;
@@ -68,7 +66,6 @@ public class Service implements Serializable {
         this.description = other.description;
         this.duration = other.duration;
         this.rating = other.rating;
-        this.totalPrice = other.totalPrice;
         this.providedAs = new HashSet<>(other.providedAs);
     }
 
@@ -95,6 +92,7 @@ public class Service implements Serializable {
         }
         services.add(service);
     }
+
     public void addProvidedAs(ProvidedService providedService) {
         if (providedService == null) {
             throw new IllegalArgumentException("ProvidedService cannot be null");
@@ -111,6 +109,7 @@ public class Service implements Serializable {
     public Set<ProvidedService> getProvidedAs() {
         return new HashSet<>(providedAs);
     }
+
     public void removeService(){
         for(Material material : materialsUsed){
             removeMaterialUsed(material);

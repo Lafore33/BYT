@@ -26,9 +26,6 @@ public class ProvidedService {
     @NotNull
     private LocalDateTime time;
 
-    @Min(0)
-    private double price;
-
     private Appointment appointmentDoneDuring;
     private Service serviceRefersTo;
     private Set<Master> completedBy = new HashSet<>();
@@ -59,21 +56,7 @@ public class ProvidedService {
             master.addServiceCompleted(this);
         }
 
-        if (builder.service != null) {
-            this.price = calculatePrice(builder.service, builder.masters);
-        }
-
         addProvidedService(this);
-    }
-
-    private double calculatePrice(Service service, Set<Master> masters) {
-        double basePriceWithPromotions = service.getTotalPrice();
-        boolean hasTopMaster = masters.stream()
-                .anyMatch(master -> master.getExperience() >= Master.getMinExperienceForTop());
-        if (hasTopMaster) {
-            return basePriceWithPromotions * (1 + TOP_MASTER_SURCHARGE);
-        }
-        return basePriceWithPromotions;
     }
 
     private static void addProvidedService(ProvidedService providedService) {
@@ -126,10 +109,6 @@ public class ProvidedService {
 
         completedBy.add(master);
         master.addServiceCompleted(this);
-
-        if (serviceRefersTo != null) {
-            this.price = calculatePrice(serviceRefersTo, completedBy);
-        }
     }
 
     public void removeMasterCompletedBy(Master master) {
@@ -141,10 +120,6 @@ public class ProvidedService {
 
         if (completedBy.remove(master)) {
             master.removeServiceCompleted(this);
-
-            if (serviceRefersTo != null) {
-                this.price = calculatePrice(serviceRefersTo, completedBy);
-            }
         }
     }
 
@@ -214,11 +189,11 @@ public class ProvidedService {
     }
 
     public Appointment getAppointmentDoneDuring() {
-        return appointmentDoneDuring == null ? null : new Appointment(appointmentDoneDuring);
+        return appointmentDoneDuring;
     }
 
     public Service getServiceRefersTo() {
-        return serviceRefersTo == null ? null : new Service(serviceRefersTo);
+        return serviceRefersTo;
     }
 
     public Set<Master> getCompletedBy() {
@@ -250,9 +225,21 @@ public class ProvidedService {
     public LocalDateTime getTime() {
         return time;
     }
-
     public double getPrice() {
-        return price;
+        if (serviceRefersTo == null || completedBy == null || completedBy.isEmpty()) {
+            return 0.0;
+        }
+
+        double basePriceWithPromotions = serviceRefersTo.getTotalPrice();
+
+        boolean hasTopMaster = completedBy.stream()
+                .anyMatch(master -> master.getExperience() >= Master.getMinExperienceForTop());
+
+        if (hasTopMaster) {
+            return basePriceWithPromotions * (1 + TOP_MASTER_SURCHARGE);
+        }
+
+        return basePriceWithPromotions;
     }
 
     public static double getTopMasterSurcharge() {

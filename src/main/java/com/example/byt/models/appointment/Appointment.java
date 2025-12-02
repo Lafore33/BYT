@@ -7,7 +7,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.util.AbstractMap;
 import java.util.Map.Entry;
@@ -24,37 +23,32 @@ public class Appointment {
 
     private PaymentMethod paymentMethod;
 
-    @Min(0)
-    private double totalPrice;
-
     private Set<ProvidedService> servicesDone = new HashSet<>();
 
     private static List<Appointment> appointments = new ArrayList<>();
-    public Appointment(Builder builder) {
+
+    private Appointment(Builder builder) {
         this.date = builder.date;
         this.notes = builder.notes;
         this.paymentMethod = builder.paymentMethod;
+
         addAppointment(this);
+
         if (builder.serviceData != null && !builder.serviceData.isEmpty()) {
             for (Entry<Service, Entry<Set<Master>, LocalDateTime>> entry : builder.serviceData) {
                 Service service = entry.getKey();
                 Set<Master> masters = entry.getValue().getKey();
                 LocalDateTime time = entry.getValue().getValue();
+
                 for (Master master : masters) {
                     if (!master.getServiceSpecialisesIn().contains(service)) {
                         throw new IllegalArgumentException("Master " + master.getName() + " does not specialize in service " + service.getName());
                     }
                 }
+
                 new ProvidedService.Builder(this, service, masters, time).build();
             }
         }
-    }
-    public Appointment(Appointment other) {
-        this.date = other.date;
-        this.notes = other.notes == null ? null : new ArrayList<>(other.notes);
-        this.paymentMethod = other.paymentMethod;
-        this.totalPrice = other.totalPrice;
-        this.servicesDone = new HashSet<>(other.servicesDone);
     }
 
     private static void addAppointment(Appointment appointment) {
@@ -142,7 +136,6 @@ public class Appointment {
     public Set<ProvidedService> getServicesDone() {
         return new HashSet<>(servicesDone);
     }
-
     public double getTotalPrice() {
         double total = 0;
         for (ProvidedService ps : servicesDone) {
