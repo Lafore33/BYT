@@ -59,10 +59,16 @@ public class Master extends Worker {
     }
 
     public void removeMaster(){
-        for(Service service : servicesSpecialisesIn) {
-            if (service != null && servicesSpecialisesIn.remove(service)) {
-                service.removeMasterSpecializedIn(this);
-            }
+        if (this.manager != null) {
+            removeManager();
+        }
+        for (Master trainee : new HashSet<>(this.trainees)) {
+            removeTrainee(trainee);
+        }
+        Set<Service> servicesCopy = new HashSet<>(servicesSpecialisesIn);
+        servicesSpecialisesIn.clear();
+        for (Service service : servicesCopy) {
+            service.removeMasterSpecializedIn(this);
         }
         masters.remove(this);
     }
