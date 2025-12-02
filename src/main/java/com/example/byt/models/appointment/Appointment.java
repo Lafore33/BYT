@@ -36,6 +36,14 @@ public class Appointment {
         addAppointment(this);
     }
 
+    public Appointment(Appointment other) {
+        this.date = other.date;
+        this.notes = other.notes == null ? null : new ArrayList<>(other.notes);
+        this.paymentMethod = other.paymentMethod;
+        this.totalPrice = other.totalPrice;
+        this.servicesDone = new HashSet<>(other.servicesDone);
+    }
+
     public Appointment(LocalDate date, List<String> notes, PaymentMethod paymentMethod, Map<Service, Set<Master>> serviceWithMasters) {
         if (serviceWithMasters == null || serviceWithMasters.isEmpty()) {
             throw new IllegalArgumentException("Appointment must have at least one service");
@@ -52,14 +60,8 @@ public class Appointment {
             Service service = entry.getKey();
             Set<Master> masters = entry.getValue();
 
-            if (service == null) {
-                throw new IllegalArgumentException("Service cannot be null");
-            }
-            if (masters == null || masters.isEmpty()) {
-                throw new IllegalArgumentException("Each service must have at least one master");
-            }
-
-            ProvidedService ps = ProvidedService.createProvidedService(this, service, masters, appointmentTime);
+            ProvidedService ps = new ProvidedService.Builder(this, service, masters, appointmentTime)
+                    .build();
             servicesDone.add(ps);
         }
     }
@@ -87,13 +89,14 @@ public class Appointment {
         }
 
         for (ProvidedService ps : servicesDone) {
-            if (ps.getRefersTo().equals(service)) {
+            if (ps.getServiceRefersTo().equals(service)) {
                 throw new IllegalArgumentException("This service is already in this appointment");
             }
         }
 
         LocalDateTime appointmentTime = date.atStartOfDay();
-        ProvidedService ps = ProvidedService.createProvidedService(this, service, masters, appointmentTime);
+        ProvidedService ps = new ProvidedService.Builder(this, service, masters, appointmentTime)
+                .build();
         servicesDone.add(ps);
     }
 
@@ -108,7 +111,7 @@ public class Appointment {
 
         ProvidedService toRemove = null;
         for (ProvidedService ps : servicesDone) {
-            if (ps.getRefersTo().equals(service)) {
+            if (ps.getServiceRefersTo().equals(service)) {
                 toRemove = ps;
                 break;
             }

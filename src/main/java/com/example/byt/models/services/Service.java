@@ -55,6 +55,16 @@ public class Service implements Serializable {
         this.duration = duration;
         addService(this);
     }
+    public Service(Service other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.regularPrice = other.regularPrice;
+        this.description = other.description;
+        this.duration = other.duration;
+        this.rating = other.rating;
+        this.totalPrice = other.totalPrice;
+        this.providedAs = new HashSet<>(other.providedAs);
+    }
 
     private static void addService(Service service){
         if (service == null){

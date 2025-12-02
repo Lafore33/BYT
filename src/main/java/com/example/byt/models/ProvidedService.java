@@ -29,48 +29,25 @@ public class ProvidedService {
     @Min(0)
     private double price;
 
-    private Appointment doneDuring;
-    private Service refersTo;
+    private Appointment appointmentDoneDuring;
+    private Service serviceRefersTo;
     private Set<Master> completedBy = new HashSet<>();
 
     private static final int MIN_MASTERS = 1;
     private static final int MAX_MASTERS = 2;
 
     private static List<ProvidedService> providedServices = new ArrayList<>();
-
     private ProvidedService(Builder builder) {
         this.rating = builder.rating;
         this.comment = builder.comment;
         this.time = builder.time;
-        addProvidedService(this);
-    }
-
-    private ProvidedService(Appointment appointment, Service service, Set<Master> masters, LocalDateTime time, Integer rating, String comment) {
-        if (appointment == null) {
-            throw new IllegalArgumentException("ProvidedService must be associated with an Appointment");
-        }
-        if (service == null) {
-            throw new IllegalArgumentException("ProvidedService must be associated with a Service");
-        }
-        if (masters == null || masters.isEmpty()) {
-            throw new IllegalArgumentException("ProvidedService must have at least " + MIN_MASTERS + " Master (1..2)");
-        }
-        if (masters.size() > MAX_MASTERS) {
-            throw new IllegalArgumentException("ProvidedService cannot have more than " + MAX_MASTERS + " Masters (1..2)");
+        this.appointmentDoneDuring = builder.appointment;
+        this.serviceRefersTo = builder.service;
+        if (builder.service != null) {
+            builder.service.addProvidedAs(this);
         }
 
-        this.doneDuring = appointment;
-        this.refersTo = service;
-        this.time = time;
-        this.rating = rating;
-        setComment(comment);
-
-        service.addProvidedAs(this);
-
-        for (Master master : masters) {
-            if (master == null) {
-                throw new IllegalArgumentException("Master cannot be null");
-            }
+        for (Master master : builder.masters) {
             if (completedBy.add(master)) {
                 master.addServiceCompleted(this);
             }
@@ -78,9 +55,14 @@ public class ProvidedService {
 
         addProvidedService(this);
     }
-
-    public static ProvidedService createProvidedService(Appointment appointment, Service service, Set<Master> masters, LocalDateTime time) {
-        return new ProvidedService(appointment, service, masters, time, null, null);
+    private ProvidedService(ProvidedService other) {
+        this.rating = other.rating;
+        this.comment = other.comment;
+        this.time = other.time;
+        this.price = other.price;
+        this.appointmentDoneDuring = other.appointmentDoneDuring;
+        this.serviceRefersTo = other.serviceRefersTo;
+        this.completedBy = new HashSet<>(other.completedBy);
     }
 
     private static void addProvidedService(ProvidedService providedService) {
@@ -98,12 +80,12 @@ public class ProvidedService {
     }
 
     public void removeProvidedService() {
-        if (doneDuring != null && doneDuring.getServicesDone().size() <= 1) {
+        if (appointmentDoneDuring != null && appointmentDoneDuring.getServicesDone().size() <= 1) {
             throw new IllegalStateException("Cannot remove ProvidedService: Appointment must have at least one service");
         }
 
-        if (refersTo != null) {
-            refersTo.removeProvidedAs(this);
+        if (serviceRefersTo != null) {
+            serviceRefersTo.removeProvidedAs(this);
         }
 
         for (Master master : new HashSet<>(completedBy)) {
@@ -141,16 +123,44 @@ public class ProvidedService {
     }
 
     public static class Builder {
+        @NotNull
+        private final Appointment appointment;
+
+        @NotNull
+        private final Service service;
+
+        @NotNull
+        private final Set<Master> masters;
+
+        @NotNull
+        private final LocalDateTime time;
         @Min(1)
         @Max(5)
         private Integer rating;
 
         private String comment;
+        public Builder(Appointment appointment, Service service, Set<Master> masters, LocalDateTime time) {
+            if (appointment == null) {
+                throw new IllegalArgumentException("ProvidedService must be associated with an Appointment");
+            }
+            if (service == null) {
+                throw new IllegalArgumentException("ProvidedService must be associated with a Service");
+            }
+            if (masters == null || masters.isEmpty()) {
+                throw new IllegalArgumentException("ProvidedService must have at least " + MIN_MASTERS + " Master (1..2)");
+            }
+            if (masters.size() > MAX_MASTERS) {
+                throw new IllegalArgumentException("ProvidedService cannot have more than " + MAX_MASTERS + " Masters (1..2)");
+            }
+            for (Master master : masters) {
+                if (master == null) {
+                    throw new IllegalArgumentException("Master cannot be null");
+                }
+            }
 
-        @NotNull
-        private LocalDateTime time;
-
-        public Builder(LocalDateTime time){
+            this.appointment = appointment;
+            this.service = service;
+            this.masters = new HashSet<>(masters);
             this.time = time;
         }
 
@@ -174,13 +184,12 @@ public class ProvidedService {
             return new ProvidedService(this);
         }
     }
-
-    public Appointment getDoneDuring() {
-        return doneDuring;
+    public Appointment getAppointmentDoneDuring() {
+        return appointmentDoneDuring == null ? null : new Appointment(appointmentDoneDuring);
     }
 
-    public Service getRefersTo() {
-        return refersTo;
+    public Service getServiceRefersTo() {
+        return serviceRefersTo == null ? null : new Service(serviceRefersTo);
     }
 
     public Set<Master> getCompletedBy() {
