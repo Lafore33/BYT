@@ -34,6 +34,15 @@ public class Promotion {
 
     private static List<Promotion> promotions = new ArrayList<>();
 
+    public Promotion(String name, String description, double percentage, LocalDate startDate, LocalDate endDate) {
+        this.name = name;
+        this.description = description;
+        this.percentage = percentage;
+        setStartDate(startDate);
+        setEndDate(endDate);
+        addPromotion(this);
+    }
+
     public Promotion(String name, String description, double percentage, LocalDate startDate, LocalDate endDate, Set<Service> servicesApplicableTo) {
         if(servicesApplicableTo == null || servicesApplicableTo.isEmpty()){
             throw new IllegalArgumentException("Promotion must have at least one service");
@@ -65,9 +74,9 @@ public class Promotion {
     }
 
     public void removePromotion(){
-        for(Service service : servicesApplicableTo){
+        for(Service service : new HashSet<>(servicesApplicableTo)){
             if(service != null && servicesApplicableTo.remove(service)) {
-                service.removePromotionApplied(this);
+                service.removePromotionAppliedForRemoval(this);
             }
         }
         promotions.remove(this);
@@ -87,7 +96,7 @@ public class Promotion {
         }
         if(servicesApplicableTo.isEmpty()) {
             addServiceApplicableTo(service);
-            throw new IllegalArgumentException("Promotion must have at least one service");
+            throw new IllegalStateException("Promotion must have at least one service");
         }
     }
 

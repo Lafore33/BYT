@@ -1,4 +1,4 @@
-package com.example.byt.appointment;
+package com.example.byt.models.appointment;
 
 import com.example.byt.models.appointment.Appointment;
 import com.example.byt.models.appointment.PaymentMethod;

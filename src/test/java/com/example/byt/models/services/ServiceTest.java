@@ -1,4 +1,4 @@
-package com.example.byt.services;
+package com.example.byt.models.services;
 
 import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;

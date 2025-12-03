@@ -1,7 +1,5 @@
-package com.example.byt;
+package com.example.byt.models;
 
-import com.example.byt.models.AppointmentStatus;
-import com.example.byt.models.HistoryOfStatus;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
