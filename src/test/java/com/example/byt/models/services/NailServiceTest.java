@@ -1,7 +1,5 @@
 package com.example.byt.models.services;
 
-import com.example.byt.models.services.NailService;
-import com.example.byt.models.services.NailServiceType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

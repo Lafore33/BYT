@@ -1,5 +1,6 @@
 package com.example.byt.models.appointment;
 
+import com.example.byt.models.person.Receptionist;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -20,6 +21,8 @@ public class Appointment {
 
     private PaymentMethod paymentMethod;
 
+    private Receptionist receptionist;
+
     @Min(0)
     private double totalPrice;
 
@@ -29,6 +32,7 @@ public class Appointment {
         this.date = builder.date;
         this.notes = builder.notes;
         this.paymentMethod = builder.paymentMethod;
+        addReceptionist(builder.receptionist);
         addAppointment(this);
     }
 
@@ -44,6 +48,24 @@ public class Appointment {
             return;
         }
         appointments.add(appointment);
+    }
+
+    public Receptionist getReceptionist() {
+        return receptionist;
+    }
+
+
+    public void addReceptionist(Receptionist receptionist) {
+        if (this.receptionist == receptionist) {
+            return;
+        }
+        if (this.receptionist != null) {
+            throw new IllegalArgumentException("The appointment is already done by another receptionist");
+        }
+
+        this.receptionist = receptionist;
+        receptionist.addAppointment(this);
+
     }
 
     public List<String> getNotes() {
@@ -72,6 +94,8 @@ public class Appointment {
 
         private PaymentMethod paymentMethod;
 
+        private Receptionist receptionist;
+
         public Builder(LocalDate date) {
             this.date = date;
         }
@@ -90,6 +114,11 @@ public class Appointment {
 
         public Builder paymentMethod(PaymentMethod paymentMethod) {
             this.paymentMethod = paymentMethod;
+            return this;
+        }
+
+        public Builder receptionist(Receptionist receptionist) {
+            this.receptionist = receptionist;
             return this;
         }
 

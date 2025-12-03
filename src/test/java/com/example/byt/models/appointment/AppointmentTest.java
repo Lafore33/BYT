@@ -1,8 +1,5 @@
 package com.example.byt.models.appointment;
 
-import com.example.byt.models.appointment.Appointment;
-import com.example.byt.models.appointment.PaymentMethod;
-import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

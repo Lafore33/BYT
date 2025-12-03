@@ -1,7 +1,5 @@
 package com.example.byt.models.person;
 
-import com.example.byt.models.person.Customer;
-import com.example.byt.models.person.CustomerStatus;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
