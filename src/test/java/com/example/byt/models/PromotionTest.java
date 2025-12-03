@@ -1,6 +1,5 @@
-package com.example.byt;
+package com.example.byt.models;
 
-import com.example.byt.models.Promotion;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
