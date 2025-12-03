@@ -1,5 +1,6 @@
 package com.example.byt.models.person;
 
+import com.example.byt.models.Certification;
 import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -23,6 +24,9 @@ public class Master extends Worker {
 
     private Master manager;
     private Set<Master> trainees = new HashSet<>();
+
+    private List<Certification> certifications = new ArrayList<>();
+    private Map<String, Certification> certificationsByNumber = new LinkedHashMap<>();
 
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
         super(name, surname, phoneNumber, birthDate);
@@ -69,39 +73,11 @@ public class Master extends Worker {
         for (Service service : servicesCopy) {
             service.removeMasterSpecializedIn(this);
         }
+
+        for (Certification certification : new ArrayList<>(certifications)) {
+            removeCertification(certification);
+        }
         masters.remove(this);
-    }
-
-    public boolean isTopMaster() {
-        return this.experience >= minExperienceForTop;
-    }
-
-    public static int getMinExperienceForTop(){
-        return minExperienceForTop;
-    }
-
-    public Master getManager() {
-        return manager;
-    }
-
-    public Set<Master> getTrainees() {
-        return new HashSet<>(trainees);
-    }
-
-    public boolean hasManager() {
-        return this.manager != null;
-    }
-
-    public boolean hasTrainees() {
-        return !this.trainees.isEmpty();
-    }
-
-    public int getTraineeCount() {
-        return this.trainees.size();
-    }
-
-    public boolean isTrainee(Master master) {
-        return this.trainees.contains(master);
     }
 
     public void setManager(Master newManager) {
@@ -109,9 +85,7 @@ public class Master extends Worker {
             throw new IllegalArgumentException("A master cannot manage themselves");
         }
         if (newManager != null && !newManager.isTopMaster()) {
-            throw new IllegalStateException(
-                    "Only top masters (experience >= " + minExperienceForTop + ") can manage trainees."
-            );
+            throw new IllegalStateException("Only top masters (experience >= " + minExperienceForTop + ") can manage trainees.");
         }
 
         if (this.manager == newManager) {
@@ -189,6 +163,64 @@ public class Master extends Worker {
             throw new IllegalStateException("Master should specialise in at least one service");
         }
     }
+    public void addCertification(Certification certification) {
+        if (certification == null) {
+            throw new IllegalArgumentException("Certification cannot be null");
+        }
+        String number = certification.getCertificationNumber();
+        if (number == null || number.isBlank()) {
+            throw new IllegalArgumentException("Certification number cannot be null or blank");
+        }
+
+        Certification existing = certificationsByNumber.get(number);
+        if (existing != null && existing != certification) {
+            throw new IllegalStateException("Certification with number " + number + " is already assigned to this master");
+        }
+
+        if (certification.getMaster() != null && certification.getMaster() != this) {
+            throw new IllegalStateException("Certification is already assigned to another master");
+        }
+
+        if (!certifications.contains(certification)) {
+            certifications.add(certification);
+        }
+        certificationsByNumber.put(number, certification);
+
+        if (certification.getMaster() != this) {
+            certification.setMaster(this);
+        }
+    }
+
+    public Certification createCertification(String name, String certificationNumber, String description, String organization, LocalDate issueDate, LocalDate expiryDate) {
+        Certification certification = new Certification(name, certificationNumber, description, organization, issueDate, expiryDate);
+        addCertification(certification);
+        return certification;
+    }
+
+    public void removeCertification(Certification certification) {
+        if (certification == null || !certifications.contains(certification)) {
+            return;
+        }
+        certifications.remove(certification);
+
+        String number = certification.getCertificationNumber();
+        if (number != null && certificationsByNumber.get(number) == certification) {
+            certificationsByNumber.remove(number);
+        }
+
+        if (certification.getMaster() == this) {
+            certification.setMaster(null);
+        }
+
+        Certification.removeFromExtent(certification);
+    }
+
+    public Certification getCertificationByNumber(String certificationNumber) {
+        if (certificationNumber == null) {
+            throw new IllegalArgumentException("certificationNumber cannot be null");
+        }
+        return certificationsByNumber.get(certificationNumber);
+    }
 
     public Set<Service> getServiceSpecialisesIn(){
         return new HashSet<>(servicesSpecialisesIn);
@@ -205,4 +237,41 @@ public class Master extends Worker {
     public static void clearExtent() {
         masters.clear();
     }
+
+    public List<Certification> getCertifications() {
+        return new ArrayList<>(certifications);
+    }
+
+    public boolean isTopMaster() {
+        return this.experience >= minExperienceForTop;
+    }
+
+    public static int getMinExperienceForTop(){
+        return minExperienceForTop;
+    }
+
+    public Master getManager() {
+        return manager;
+    }
+
+    public Set<Master> getTrainees() {
+        return new HashSet<>(trainees);
+    }
+
+    public boolean hasManager() {
+        return this.manager != null;
+    }
+
+    public boolean hasTrainees() {
+        return !this.trainees.isEmpty();
+    }
+
+    public int getTraineeCount() {
+        return this.trainees.size();
+    }
+
+    public boolean isTrainee(Master master) {
+        return this.trainees.contains(master);
+    }
+
 }
