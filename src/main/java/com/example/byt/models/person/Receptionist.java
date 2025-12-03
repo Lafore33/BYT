@@ -1,5 +1,6 @@
 package com.example.byt.models.person;
 
+import com.example.byt.models.appointment.Appointment;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -16,6 +17,8 @@ public class Receptionist extends Worker {
     @NotNull
     private WorkType workType;
 
+    private List<Appointment> appointments = new ArrayList<>();
+
     private static List<Receptionist> receptionists = new ArrayList<>();
 
     public Receptionist(String name, String surname, String phoneNumber, LocalDate birthDate, WorkType workType) {
@@ -23,6 +26,22 @@ public class Receptionist extends Worker {
         this.workType = workType;
         addReceptionist(this);
     }
+
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void addAppointment(Appointment appointment) {
+        if (this.appointments.contains(appointment)) {
+            return;
+        }
+        if (appointment == null) {
+            throw new NullPointerException("Null appointment cannot be added to receptionist");
+        }
+        appointments.add(appointment);
+        appointment.addReceptionist(this);
+    }
+
 
     private static void addReceptionist(Receptionist receptionist){
         if (receptionist == null){
