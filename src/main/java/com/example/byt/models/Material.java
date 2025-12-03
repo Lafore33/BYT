@@ -43,9 +43,10 @@ public class Material {
     }
 
     public void removeMaterial(){
-        for(Service service : servicesUsedIn){
+        for(Service service : new HashSet<>(servicesUsedIn)){
             removeServiceUsedIn(service);
         }
+
         materials.remove(this);
     }
     public void addServiceUsedIn(Service service){

@@ -22,12 +22,11 @@ public class Master extends Worker {
     private static List<Master> masters = new ArrayList<>();
 
     private Master manager;
-    private Set<Master> trainees;
+    private Set<Master> trainees = new HashSet<>();
 
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
         super(name, surname, phoneNumber, birthDate);
         this.experience = experience;
-        this.trainees = new HashSet<>();
         addMaster(this);
     }
 
@@ -65,10 +64,9 @@ public class Master extends Worker {
         for (Master trainee : new HashSet<>(this.trainees)) {
             removeTrainee(trainee);
         }
-        Set<Service> servicesCopy = new HashSet<>(servicesSpecialisesIn);
-        servicesSpecialisesIn.clear();
-        for (Service service : servicesCopy) {
-            service.removeMasterSpecializedIn(this);
+        for (Service service : new HashSet<>(servicesSpecialisesIn)) {
+            servicesSpecialisesIn.remove(service);
+            service.removeMasterSpecializedInForRemoval(this);
         }
         masters.remove(this);
     }
@@ -194,6 +192,15 @@ public class Master extends Worker {
         if(service == null) return;
         if(servicesSpecialisesIn.remove(service))
             service.removeMasterSpecializedIn(this);
+        if(servicesSpecialisesIn.isEmpty()) {
+            addServiceSpecialisesIn(service);
+            throw new IllegalStateException("Master should specialise in at least one service");
+        }
+    }
+
+    public void removeServiceSpecialisesInForRemoval(Service service){
+        if(service == null) return;
+        servicesSpecialisesIn.remove(service);
         if(servicesSpecialisesIn.isEmpty()) {
             addServiceSpecialisesIn(service);
             throw new IllegalStateException("Master should specialise in at least one service");
