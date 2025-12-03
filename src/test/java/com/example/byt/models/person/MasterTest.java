@@ -1,5 +1,4 @@
-package com.example.byt.person;
-import com.example.byt.models.person.Master;
+package com.example.byt.models.person;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

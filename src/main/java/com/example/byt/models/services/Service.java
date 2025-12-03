@@ -85,18 +85,15 @@ public class Service implements Serializable {
     }
 
     public void removeService(){
-        for(Material material : materialsUsed){
+        for(Material material : new HashSet<>(materialsUsed)){
             removeMaterialUsed(material);
         }
-
-        for(Promotion promotion : promotionsApplied){
+        for(Promotion promotion : new HashSet<>(promotionsApplied)){
             removePromotionApplied(promotion);
         }
-
-        for(Master master : mastersSpecializedIn){
-            if(master != null && mastersSpecializedIn.remove(master)){
-                master.removeServiceSpecialisesIn(this);
-            }
+        for(Master master : new HashSet<>(mastersSpecializedIn)){
+            mastersSpecializedIn.remove(master);
+            master.removeServiceSpecialisesInForRemoval(this);
         }
         services.remove(this);
     }
@@ -129,6 +126,11 @@ public class Service implements Serializable {
             promotion.removeServiceApplicableTo(this);
     }
 
+    public void removePromotionAppliedForRemoval(Promotion promotion){
+        if(promotion != null)
+            promotionsApplied.remove(promotion);
+    }
+
     public Set<Promotion> getPromotionsApplied() {
         return new HashSet<>(promotionsApplied);
     }
@@ -146,8 +148,18 @@ public class Service implements Serializable {
             master.removeServiceSpecialisesIn(this);
         if(mastersSpecializedIn.isEmpty()) {
             addMasterSpecializedIn(master);
-            throw new IllegalArgumentException("Service must have at least one master specialized in it");
+            throw new IllegalStateException("Service must have at least one master specialized in it");
         }
+    }
+
+    public void removeMasterSpecializedInForRemoval(Master master){
+        if(master == null) return;
+        mastersSpecializedIn.remove(master);
+        if(mastersSpecializedIn.isEmpty()) {
+            addMasterSpecializedIn(master);
+            throw new IllegalStateException("Service must have at least one master specialized in it");
+        }
+
     }
 
     public Set<Master> getMasterSpecializedIn() {

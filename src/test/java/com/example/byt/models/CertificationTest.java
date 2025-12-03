@@ -1,7 +1,5 @@
-package com.example.byt;
+package com.example.byt.models;
 
-import com.example.byt.models.Certification;
-import com.example.byt.models.services.HairService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

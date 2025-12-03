@@ -1,6 +1,5 @@
-package com.example.byt.person;
+package com.example.byt.models.person;
 
-import com.example.byt.models.person.Worker;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
