@@ -1,4 +1,4 @@
-package com.example.byt;
+package com.example.byt.models;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
