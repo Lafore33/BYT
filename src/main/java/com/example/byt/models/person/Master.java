@@ -168,10 +168,6 @@ public class Master extends Worker {
         }
     }
 
-    public void changeManager(Master newManager) {
-        setManager(newManager);
-    }
-
     public void addServiceSpecialisesIn(Service service){
         if(service == null)
             throw new IllegalArgumentException("Service cannot be null");
