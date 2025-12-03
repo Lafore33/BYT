@@ -7,6 +7,7 @@ import com.example.byt.models.person.WorkType;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -91,14 +92,17 @@ public class AppointmentReceptionistAssociationTest {
     }
 
     @Test
-    void testExtentStoresCreatedAppointments() {
-        assertEquals(1, Appointment.getAppointmentList().size());
-    }
+    void testReceptionistAppointmentsAreReturnedAsCopy() {
+        Appointment appointment2 = new Appointment.Builder(LocalDate.now())
+                .paymentMethod(PaymentMethod.CASH)
+                .build();
 
-    @Test
-    void testExtentClearingWorks() {
-        Appointment.clearExtent();
-        assertEquals(0, Appointment.getAppointmentList().size());
-    }
+        appointment.addReceptionist(receptionist);
+        appointment2.addReceptionist(receptionist);
 
+        HashSet<Appointment> appointments = receptionist.getAppointments();
+        appointments.clear();
+
+        Assertions.assertNotEquals(receptionist.getAppointments(), appointments);
+    }
 }

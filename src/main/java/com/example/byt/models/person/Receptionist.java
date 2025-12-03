@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class Receptionist extends Worker {
     @NotNull
     private WorkType workType;
 
-    private List<Appointment> appointments = new ArrayList<>();
+    private HashSet<Appointment> appointments = new HashSet<>();
 
     private static List<Receptionist> receptionists = new ArrayList<>();
 
@@ -27,8 +28,8 @@ public class Receptionist extends Worker {
         addReceptionist(this);
     }
 
-    public List<Appointment> getAppointments() {
-        return appointments;
+    public HashSet<Appointment> getAppointments() {
+        return new HashSet<>(appointments);
     }
 
     public void addAppointment(Appointment appointment) {
