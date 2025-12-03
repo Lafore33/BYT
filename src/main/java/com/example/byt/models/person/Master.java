@@ -22,22 +22,21 @@ public class Master extends Worker {
     private static List<Master> masters = new ArrayList<>();
 
     private Master manager;
-    private Set<Master> trainees;
+    private Set<Master> trainees = new HashSet<>();
 
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
         super(name, surname, phoneNumber, birthDate);
         this.experience = experience;
-        this.trainees = new HashSet<>();
         addMaster(this);
     }
 
-    public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience, Set<Service> servicesSpecialisesIn) {
+    public Master(String name, String surname, String phoneNumber, LocalDate birthDate,
+                  int experience, Set<Service> servicesSpecialisesIn) {
         super(name, surname, phoneNumber, birthDate);
-        if(servicesSpecialisesIn == null || servicesSpecialisesIn.isEmpty()) {
+        if (servicesSpecialisesIn == null || servicesSpecialisesIn.isEmpty()) {
             throw new IllegalArgumentException("Master should specialise in at least one service");
         }
         this.experience = experience;
-        this.trainees = new HashSet<>();
         addMaster(this);
         for (Service service : servicesSpecialisesIn) {
             addServiceSpecialisesIn(service);
@@ -60,7 +59,7 @@ public class Master extends Worker {
 
     public void removeMaster(){
         if (this.manager != null) {
-            removeManager();
+            setManager(null);
         }
         for (Master trainee : new HashSet<>(this.trainees)) {
             removeTrainee(trainee);
@@ -77,29 +76,61 @@ public class Master extends Worker {
         return this.experience >= minExperienceForTop;
     }
 
-    public void setManager(Master manager) {
-        if (manager == this) {
-            throw new IllegalArgumentException("A master cannot manage themselves");
-        }
-        if (manager != null && !manager.isTopMaster()) {
-            throw new IllegalStateException("Only top masters (experience >= " + minExperienceForTop + ") can manage trainees.");
-        }
-        if (this.manager != null) {
-            throw new IllegalStateException("This master already has a manager. Remove current manager first.");
-        }
-        this.manager = manager;
-        if (manager != null && !manager.trainees.contains(this)) {
-            manager.linkTrainee(this);
-        }
+    public static int getMinExperienceForTop(){
+        return minExperienceForTop;
     }
 
-    public void removeManager() {
-        if (this.manager == null) {
+    public Master getManager() {
+        return manager;
+    }
+
+    public Set<Master> getTrainees() {
+        return new HashSet<>(trainees);
+    }
+
+    public boolean hasManager() {
+        return this.manager != null;
+    }
+
+    public boolean hasTrainees() {
+        return !this.trainees.isEmpty();
+    }
+
+    public int getTraineeCount() {
+        return this.trainees.size();
+    }
+
+    public boolean isTrainee(Master master) {
+        return this.trainees.contains(master);
+    }
+
+    public void setManager(Master newManager) {
+        if (newManager == this) {
+            throw new IllegalArgumentException("A master cannot manage themselves");
+        }
+        if (newManager != null && !newManager.isTopMaster()) {
+            throw new IllegalStateException(
+                    "Only top masters (experience >= " + minExperienceForTop + ") can manage trainees."
+            );
+        }
+
+        if (this.manager == newManager) {
             return;
         }
-        Master oldManager = this.manager;
-        this.manager = null;
-        oldManager.unlinkTrainee(this);
+
+        if (this.manager != null) {
+            Master oldManager = this.manager;
+            this.manager = null;
+            oldManager.removeTrainee(this);
+        }
+
+        if (newManager == null) {
+            this.manager = null;
+            return;
+        }
+
+        this.manager = newManager;
+        newManager.addTrainee(this);
     }
 
     public void addTrainee(Master trainee) {
@@ -120,9 +151,10 @@ public class Master extends Worker {
                     "This master already has a different manager. Remove current manager first."
             );
         }
-        linkTrainee(trainee);
-        if (trainee.manager != this) {
-            trainee.manager = this;
+        this.trainees.add(trainee);
+
+        if (trainee.getManager() != this) {
+            trainee.setManager(this);
         }
     }
 
@@ -130,57 +162,15 @@ public class Master extends Worker {
         if (trainee == null || !this.trainees.contains(trainee)) {
             return;
         }
-        unlinkTrainee(trainee);
-        if (trainee.manager == this) {
-            trainee.manager = null;
+        this.trainees.remove(trainee);
+
+        if (trainee.getManager() == this) {
+            trainee.setManager(null);
         }
     }
 
     public void changeManager(Master newManager) {
-        if (newManager == this) {
-            throw new IllegalArgumentException("A master cannot manage themselves.");
-        }
-        if (newManager != null && !newManager.isTopMaster()) {
-            throw new IllegalStateException("Only top masters (experience >= " + minExperienceForTop + ") can manage trainees.");
-        }
-        if (this.manager != null) {
-            removeManager();
-        }
-        if (newManager != null) {
-            setManager(newManager);
-        }
-    }
-
-    private void linkTrainee(Master trainee) {
-        this.trainees.add(trainee);
-    }
-
-    private void unlinkTrainee(Master trainee) {
-        this.trainees.remove(trainee);
-    }
-
-    public Master getManager() {
-        return this.manager;
-    }
-
-    public Set<Master> getTrainees() {
-        return new HashSet<>(this.trainees);
-    }
-
-    public boolean hasManager() {
-        return this.manager != null;
-    }
-
-    public int getTraineeCount() {
-        return this.trainees.size();
-    }
-
-    public boolean hasTrainees() {
-        return !this.trainees.isEmpty();
-    }
-
-    public boolean isTrainee(Master master) {
-        return this.trainees.contains(master);
+        setManager(newManager);
     }
 
     public void addServiceSpecialisesIn(Service service){
@@ -210,10 +200,6 @@ public class Master extends Worker {
 
     public int getExperience() {
         return experience;
-    }
-
-    public static int getMinExperienceForTop(){
-        return minExperienceForTop;
     }
 
     public static void clearExtent() {
