@@ -1,5 +1,6 @@
 package com.example.byt.models;
 
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -10,7 +11,6 @@ import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +35,8 @@ public class Certification {
 
     private static List<Certification> certifications = new ArrayList<>();
 
+    private Master master;
+
     public Certification(String name, String certificationNumber, String description,
                          String organization, LocalDate issueDate, LocalDate expiryDate) {
         this.name = name;
@@ -46,7 +48,6 @@ public class Certification {
         addCertification(this);
     }
 
-
     public Certification(String name, String certificationNumber, String description,
                          String organization, LocalDate issueDate) {
         this.name = name;
@@ -56,8 +57,28 @@ public class Certification {
         setIssueDate(issueDate);
         addCertification(this);
     }
+    public Certification(Master master, String name, String certificationNumber,
+                         String description, String organization,
+                         LocalDate issueDate, LocalDate expiryDate) {
+        this(name, certificationNumber, description, organization, issueDate, expiryDate);
+        if (master == null) {
+            throw new IllegalArgumentException("Master cannot be null");
+        }
+        this.master = master;
+        master.addCertification(this);
+    }
 
-    private static void addCertification(Certification certification) {
+    public Certification(Master master, String name, String certificationNumber,
+                         String description, String organization, LocalDate issueDate) {
+        this(name, certificationNumber, description, organization, issueDate);
+        if (master == null) {
+            throw new IllegalArgumentException("Master cannot be null");
+        }
+        this.master = master;
+        master.addCertification(this);
+    }
+
+    private void addCertification(Certification certification) {
         if (certification == null) {
             throw new NullPointerException("certification cannot be null");
         }
@@ -65,10 +86,17 @@ public class Certification {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
         if (!violations.isEmpty()) {
-            System.out.println("Validation failed, the cetification cannot be added to the list");
+            System.out.println("Validation failed, the certification cannot be added to the list");
             return;
         }
         certifications.add(certification);
+    }
+
+    public void removeFromExtent() {
+        if (this.master != null) {
+            this.master.removeCertification(this.certificationNumber);
+        }
+        certifications.remove(this);
     }
 
     public static List<Certification> getCertificationList() {
@@ -114,6 +142,21 @@ public class Certification {
 
     public LocalDate getExpiryDate() {
         return expiryDate;
+    }
+
+    public Master getMaster() {
+        return master;
+    }
+
+    public void setMaster(Master master) {
+        if (master == null) {
+            throw new IllegalArgumentException("Master cannot be null");
+        }
+        if (this.master != null) {
+            this.master.removeCertification(this.certificationNumber);
+        }
+        this.master = master;
+        master.addCertification(this);
     }
 
     public static void clearExtent() {
