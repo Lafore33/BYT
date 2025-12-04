@@ -93,9 +93,6 @@ public class Certification {
     }
 
     public void removeFromExtent() {
-        if (this.master != null) {
-            this.master.removeCertification(this.certificationNumber);
-        }
         certifications.remove(this);
     }
 
@@ -149,17 +146,12 @@ public class Certification {
     }
 
     public void setMaster(Master master) {
-        if (master == null) {
-            throw new IllegalArgumentException("Master cannot be null");
-        }
-        if (this.master != null) {
-            this.master.removeCertification(this.certificationNumber);
-        }
         this.master = master;
-        master.addCertification(this);
     }
 
     public static void clearExtent() {
         certifications.clear();
     }
+
+
 }

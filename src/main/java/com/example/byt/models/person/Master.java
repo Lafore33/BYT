@@ -252,4 +252,7 @@ public class Master extends Worker {
     public static void clearExtent() {
         masters.clear();
     }
+    public Set<Service> getServiceSpecialisesIn() {
+        return new HashSet<>(servicesSpecialisesIn);
+    }
 }
