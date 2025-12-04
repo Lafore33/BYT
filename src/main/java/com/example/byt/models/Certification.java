@@ -64,6 +64,7 @@ public class Certification {
         if (master == null) {
             throw new IllegalArgumentException("Master cannot be null");
         }
+        this.master = master;
         master.addCertification(this);
     }
 
@@ -73,10 +74,11 @@ public class Certification {
         if (master == null) {
             throw new IllegalArgumentException("Master cannot be null");
         }
+        this.master = master;
         master.addCertification(this);
     }
 
-    private static void addCertification(Certification certification) {
+    private void addCertification(Certification certification) {
         if (certification == null) {
             throw new NullPointerException("certification cannot be null");
         }
@@ -84,17 +86,17 @@ public class Certification {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Certification>> violations = validator.validate(certification);
         if (!violations.isEmpty()) {
-            System.out.println("Validation failed, the cetification cannot be added to the list");
+            System.out.println("Validation failed, the certification cannot be added to the list");
             return;
         }
         certifications.add(certification);
     }
 
-    public static void removeFromExtent(Certification certification) {
-        if (certification == null) {
-            return;
+    public void removeFromExtent() {
+        if (this.master != null) {
+            this.master.removeCertification(this.certificationNumber);
         }
-        certifications.remove(certification);
+        certifications.remove(this);
     }
 
     public static List<Certification> getCertificationList() {
@@ -147,7 +149,14 @@ public class Certification {
     }
 
     public void setMaster(Master master) {
+        if (master == null) {
+            throw new IllegalArgumentException("Master cannot be null");
+        }
+        if (this.master != null) {
+            this.master.removeCertification(this.certificationNumber);
+        }
         this.master = master;
+        master.addCertification(this);
     }
 
     public static void clearExtent() {

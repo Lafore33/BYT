@@ -25,7 +25,6 @@ public class Master extends Worker {
     private Master manager;
     private Set<Master> trainees = new HashSet<>();
 
-    private List<Certification> certifications = new ArrayList<>();
     private Map<String, Certification> certificationsByNumber = new LinkedHashMap<>();
 
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
@@ -72,8 +71,8 @@ public class Master extends Worker {
             servicesSpecialisesIn.remove(service);
             service.removeMasterSpecializedInForRemoval(this);
         }
-        for (Certification certification : new ArrayList<>(certifications)) {
-            removeCertification(certification);
+        for (Certification certification : new ArrayList<>(certificationsByNumber.values())) {
+            removeCertification(certification.getCertificationNumber());
         }
         masters.remove(this);
     }
@@ -171,6 +170,9 @@ public class Master extends Worker {
         if (number == null || number.isBlank()) {
             throw new IllegalArgumentException("Certification number cannot be null or blank.");
         }
+        if (certificationsByNumber.containsValue(certification)) {
+            return;
+        }
         Certification existing = certificationsByNumber.get(number);
         if (existing != null && existing != certification) {
             throw new IllegalStateException("Certification number already used for this Master.");
@@ -178,36 +180,26 @@ public class Master extends Worker {
         if (certification.getMaster() != null && certification.getMaster() != this) {
             throw new IllegalStateException("Certification belongs to another Master.");
         }
-        if (!certifications.contains(certification)) {
-            certifications.add(certification);
-        }
         certificationsByNumber.put(number, certification);
         if (certification.getMaster() != this) {
             certification.setMaster(this);
         }
     }
 
-    public Certification createCertification(String name, String certificationNumber,
-                                             String description, String organization,
-                                             LocalDate issueDate, LocalDate expiryDate) {
-        Certification certification = new Certification(name, certificationNumber, description, organization, issueDate, expiryDate);
-        addCertification(certification);
-        return certification;
-    }
 
-    public void removeCertification(Certification certification) {
-        if (certification == null || !certifications.contains(certification)) {
+    public void removeCertification(String certNumber) {
+        if (certNumber == null) {
             return;
         }
-        certifications.remove(certification);
-        String number = certification.getCertificationNumber();
-        if (number != null && certificationsByNumber.get(number) == certification) {
-            certificationsByNumber.remove(number);
+        Certification certification = certificationsByNumber.get(certNumber);
+        if (certification == null) {
+            return;
         }
+        certificationsByNumber.remove(certNumber);
         if (certification.getMaster() == this) {
             certification.setMaster(null);
         }
-        Certification.removeFromExtent(certification);
+        certification.removeFromExtent();
     }
 
     public Certification getCertificationByNumber(String certificationNumber) {
@@ -215,10 +207,6 @@ public class Master extends Worker {
             throw new IllegalArgumentException("certificationNumber cannot be null");
         }
         return certificationsByNumber.get(certificationNumber);
-    }
-
-    public List<Certification> getCertifications() {
-        return new ArrayList<>(certifications);
     }
 
     public boolean isTopMaster() {
