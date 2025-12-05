@@ -92,7 +92,6 @@ public class Certification {
         certifications.add(certification);
     }
 
-
     public void removeFromExtent() {
         if (this.master != null) {
             this.master.removeCertification(this.certificationNumber);
@@ -163,6 +162,4 @@ public class Certification {
     public static void clearExtent() {
         certifications.clear();
     }
-
-
 }
