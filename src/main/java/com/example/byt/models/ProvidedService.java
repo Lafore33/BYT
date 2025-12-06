@@ -1,4 +1,6 @@
 package com.example.byt.models;
+import com.example.byt.models.appointment.Appointment;
+import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -24,12 +26,20 @@ public class ProvidedService {
     @Min(0)
     private double price;
 
+    private Service service;
+
+    private Appointment appointment;
+
     private static List<ProvidedService> providedServices = new ArrayList<>();
 
     private ProvidedService(Builder builder) {
         this.rating = builder.rating;
         this.comment = builder.comment;
         this.time = builder.time;
+
+        addService(builder.service);
+        addAppointment(builder.appointment);
+
         addProvidedService(this);
     }
 
@@ -46,6 +56,33 @@ public class ProvidedService {
         }
         providedServices.add(providedService);
     }
+
+    public void addService(Service service){
+        if (service == null) {
+            throw new NullPointerException("Service cannot be null");
+        }
+
+        if (this.service == service) {
+            return;
+        }
+
+        this.service = service;
+        service.addProvidedService(this);
+    }
+
+    public void addAppointment(Appointment appointment){
+        if (appointment == null) {
+            throw new NullPointerException("Appointment cannot be null");
+        }
+
+        if (this.appointment == appointment) {
+            return;
+        }
+
+        this.appointment = appointment;
+        appointment.addProvidedService(this);
+    }
+
     public void setRating(Integer rating) {
         this.rating = rating;
     }
@@ -65,13 +102,19 @@ public class ProvidedService {
         @Max(5)
         private Integer rating;
 
+        private Service service;
+
+        private Appointment appointment;
+
         private String comment;
 
         @NotNull
         private LocalDateTime time;
 
-        public Builder(LocalDateTime time){
+        public Builder(LocalDateTime time, Service service, Appointment appointment) {
             this.time = time;
+            this.service = service;
+            this.appointment = appointment;
         }
 
         public Builder rating(Integer rating) {

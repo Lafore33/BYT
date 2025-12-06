@@ -1,6 +1,12 @@
 package com.example.byt.models.appointment;
 
+import com.example.byt.models.AppointmentStatus;
+import com.example.byt.models.HistoryOfStatus;
+import com.example.byt.models.ProvidedService;
+import com.example.byt.models.ServiceInfo;
+import com.example.byt.models.person.Customer;
 import com.example.byt.models.person.Receptionist;
+import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -9,9 +15,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Appointment {
     @NotNull
@@ -23,6 +27,10 @@ public class Appointment {
 
     private Receptionist receptionist;
 
+    private Set<ProvidedService> providedServices = new HashSet<>();
+
+    private HistoryOfStatus historyOfStatus;
+
     @Min(0)
     private double totalPrice;
 
@@ -32,7 +40,11 @@ public class Appointment {
         this.date = builder.date;
         this.notes = builder.notes;
         this.paymentMethod = builder.paymentMethod;
+
+        builder.services.forEach(this::addService);
+        addCustomer(builder.customer);
         addReceptionist(builder.receptionist);
+
         addAppointment(this);
     }
 
@@ -50,10 +62,52 @@ public class Appointment {
         appointments.add(appointment);
     }
 
+    public void addService(Service service, ServiceInfo serviceInfo) {
+        if (service == null) {
+            throw new NullPointerException("Service cannot be null");
+        }
+
+        // when adding a master association, you will change the Builder so it additionally includes Masters
+        ProvidedService providedService = new ProvidedService.Builder(serviceInfo.getTime(), service, this).build();
+    }
+
+    public void addProvidedService(ProvidedService providedService) {
+        if (providedService == null) {
+            throw new NullPointerException("ProvidedService cannot be null");
+        }
+
+        if (providedServices.contains(providedService)) {
+            return;
+        }
+
+        providedServices.add(providedService);
+        providedService.addAppointment(this);
+    }
+
+    public void addCustomer(Customer customer) {
+        if (customer == null) {
+            throw new NullPointerException("Customer cannot be null");
+        }
+
+        HistoryOfStatus historyOfStatus = new HistoryOfStatus(AppointmentStatus.SCHEDULED, LocalDate.now(), customer, this);
+    }
+
+    public void addHistory(HistoryOfStatus historyOfStatus) {
+        if (historyOfStatus == null) {
+            throw new NullPointerException("HistoryOfStatus cannot be null");
+        }
+
+        if (this.historyOfStatus == historyOfStatus) {
+            return;
+        }
+
+        this.historyOfStatus = historyOfStatus;
+        historyOfStatus.addAppointment(this);
+    }
+
     public Receptionist getReceptionist() {
         return receptionist;
     }
-
 
     public void addReceptionist(Receptionist receptionist) {
         if (this.receptionist == receptionist) {
@@ -90,14 +144,23 @@ public class Appointment {
         @NotNull
         private LocalDate date;
 
+        private Customer customer;
+
+        private Map<Service, ServiceInfo> services;
+
         private List<String> notes;
 
         private PaymentMethod paymentMethod;
 
         private Receptionist receptionist;
 
-        public Builder(LocalDate date) {
+        public Builder(LocalDate date, Customer customer, Map<Service, ServiceInfo> services) {
             this.date = date;
+            this.customer = customer;
+            if (services == null || services.isEmpty()) {
+                throw new IllegalArgumentException("services can't be null or empty");
+            }
+            this.services = services;
         }
 
         public Builder notes(List<String> notes) {
