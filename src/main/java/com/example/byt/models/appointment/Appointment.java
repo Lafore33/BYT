@@ -3,6 +3,7 @@ package com.example.byt.models.appointment;
 import com.example.byt.models.AppointmentStatus;
 import com.example.byt.models.HistoryOfStatus;
 import com.example.byt.models.ProvidedService;
+import com.example.byt.models.ServiceInfo;
 import com.example.byt.models.person.Customer;
 import com.example.byt.models.person.Receptionist;
 import com.example.byt.models.services.Service;
@@ -14,11 +15,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Appointment {
     @NotNull
@@ -65,13 +62,13 @@ public class Appointment {
         appointments.add(appointment);
     }
 
-    public void addService(Service service) {
+    public void addService(Service service, ServiceInfo serviceInfo) {
         if (service == null) {
             throw new NullPointerException("Service cannot be null");
         }
 
-        // TODO: time?
-        ProvidedService providedService = new ProvidedService.Builder(LocalDateTime.now(), service, this).build();
+        // when adding a master association, you will change the Builder so it additionally includes Masters
+        ProvidedService providedService = new ProvidedService.Builder(serviceInfo.getTime(), service, this).build();
     }
 
     public void addProvidedService(ProvidedService providedService) {
@@ -149,7 +146,7 @@ public class Appointment {
 
         private Customer customer;
 
-        private Set<Service> services;
+        private Map<Service, ServiceInfo> services;
 
         private List<String> notes;
 
@@ -157,7 +154,7 @@ public class Appointment {
 
         private Receptionist receptionist;
 
-        public Builder(LocalDate date, Customer customer, Set<Service> services) {
+        public Builder(LocalDate date, Customer customer, Map<Service, ServiceInfo> services) {
             this.date = date;
             this.customer = customer;
             if (services == null || services.isEmpty()) {
