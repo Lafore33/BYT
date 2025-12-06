@@ -1,6 +1,7 @@
 package com.example.byt.models.services;
 
 import com.example.byt.models.Material;
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -20,16 +21,16 @@ public class NailService extends Service {
     private static List<NailService> nailServices = new ArrayList<>();
 
     public NailService(int id, String name, double regularPrice, String description,
-                       double duration, NailServiceType type, boolean isCareIncluded) {
-        super(id, name, regularPrice, description, duration);
+                       double duration, Set<Master> masters, NailServiceType type, boolean isCareIncluded) {
+        super(id, name, regularPrice, description, duration, masters);
         this.type = type;
         this.isCareIncluded = isCareIncluded;
         addNailService(this);
     }
 
     public NailService(int id, String name, double regularPrice, String description,
-                       double duration, NailServiceType type, boolean isCareIncluded, Set<Material> materialsUsed) {
-        super(id, name, regularPrice, description, duration, materialsUsed);
+                       double duration, Set<Master> masters, Set<Material> materialsUsed, NailServiceType type, boolean isCareIncluded) {
+        super(id, name, regularPrice, description, duration, masters, materialsUsed);
         this.type = type;
         this.isCareIncluded = isCareIncluded;
         addNailService(this);
@@ -47,12 +48,6 @@ public class NailService extends Service {
             return;
         }
         nailServices.add(nailService);
-    }
-
-    @Override
-    public void removeService() {
-        super.removeService();
-        nailServices.remove(this);
     }
 
     public static List<NailService> getNailServiceList(){

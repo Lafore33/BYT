@@ -1,6 +1,7 @@
 package com.example.byt.models.services;
 
 import com.example.byt.models.Material;
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -16,14 +17,14 @@ public class TwoHandsService extends Service {
     private static List<TwoHandsService> twoHandsServices = new ArrayList<>();
 
     public TwoHandsService(int id, String name, double regularPrice, String description,
-                           double duration) {
-        super(id, name, regularPrice, description, duration);
+                           double duration, Set<Master> masters) {
+        super(id, name, regularPrice, description, duration, masters);
         addTwoHandsService(this);
     }
 
     public TwoHandsService(int id, String name, double regularPrice, String description,
-                           double duration, Set<Material> materialsUsed) {
-        super(id, name, regularPrice, description, duration, materialsUsed);
+                           double duration, Set<Master> masters, Set<Material> materialsUsed) {
+        super(id, name, regularPrice, description, duration, masters, materialsUsed);
         addTwoHandsService(this);
     }
 
@@ -40,12 +41,6 @@ public class TwoHandsService extends Service {
         }
 
         twoHandsServices.add(twoHandsService);
-    }
-
-    @Override
-    public void removeService() {
-        super.removeService();
-        twoHandsServices.remove(this);
     }
 
     public static int getNumOfSpecialistsRequired(){

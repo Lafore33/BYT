@@ -42,13 +42,6 @@ public class Material {
         materials.add(material);
     }
 
-    public void removeMaterial(){
-        for(Service service : new HashSet<>(servicesUsedIn)){
-            removeServiceUsedIn(service);
-        }
-
-        materials.remove(this);
-    }
     public void addServiceUsedIn(Service service){
         if(service == null)
             throw new IllegalArgumentException("Service cannot be null");

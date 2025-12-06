@@ -1,5 +1,6 @@
 package com.example.byt.models.services;
 
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TwoHandsServiceTest {
     private static Validator validator;
+    private static Master master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
     @BeforeAll
     static void setupValidator() {
@@ -39,7 +42,8 @@ public class TwoHandsServiceTest {
                 name,
                 regularPrice,
                 description,
-                duration
+                duration,
+                Set.of(master)
         );
         assertEquals(id, service.getId(), "Incorrect id set in the constructor");
         assertEquals(name, service.getName(), "Incorrect name set in the constructor");
@@ -55,7 +59,8 @@ public class TwoHandsServiceTest {
                 "Massage",
                 80.0,
                 "Full body massage with two hands",
-                60.0
+                60.0,
+                Set.of(master)
         );
 
         Set<ConstraintViolation<TwoHandsService>> violations = validator.validate(service);
@@ -73,7 +78,8 @@ public class TwoHandsServiceTest {
                 "Massage",
                 80.0,
                 "Full body massage with two hands",
-                60.0
+                60.0,
+                Set.of(master)
         );
 
         List<TwoHandsService> listCopy = TwoHandsService.getTwoHandsServiceList();
