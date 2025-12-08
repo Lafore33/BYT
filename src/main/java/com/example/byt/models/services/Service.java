@@ -2,6 +2,7 @@ package com.example.byt.models.services;
 
 import com.example.byt.models.Material;
 import com.example.byt.models.Promotion;
+import com.example.byt.models.ProvidedService;
 import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -39,8 +40,12 @@ public class Service implements Serializable {
     @Max(5)
     private double rating;
 
+    private Set<ProvidedService> providedServices = new HashSet<>();
+
     private Set<Material> materialsUsed = new HashSet<>();
+
     private Set<Promotion> promotionsApplied = new HashSet<>();
+
     private Set<Master> mastersSpecializedIn = new HashSet<>();
 
     // added default constructor for proper deserialization
@@ -91,6 +96,34 @@ public class Service implements Serializable {
         services.add(service);
     }
 
+    public void addProvidedService(ProvidedService providedService) {
+        if (providedService == null){
+            throw new NullPointerException("ProvidedService cannot be null");
+        }
+
+        if (this.providedServices.contains(providedService)) {
+            return;
+        }
+
+        this.providedServices.add(providedService);
+        providedService.addService(this);
+    }
+
+    public void removeProvidedService(ProvidedService providedService) {
+        if (providedService == null){
+            throw new NullPointerException("ProvidedService cannot be null");
+        }
+        if (!this.providedServices.contains(providedService)) {
+            return;
+        }
+
+        this.providedServices.remove(providedService);
+        providedService.removeService(this);
+    }
+
+    public Set<ProvidedService> getProvidedServices() {
+        return new HashSet<>(providedServices);
+    }
 
     public void addMaterialUsed(Material material){
         if(material == null)
@@ -177,6 +210,19 @@ public class Service implements Serializable {
 
     public double getDuration() {
         return duration;
+    }
+
+    public double getRating() {
+        int totalRating = 0;
+        int size = 0;
+        for (ProvidedService providedService : providedServices) {
+            if (providedService.getRating() == null) {
+                continue;
+            }
+            totalRating += providedService.getRating();
+            size++;
+        }
+        return size == 0 ? 0.0 : (double) totalRating / size;
     }
 
     public double getTotalPrice(){

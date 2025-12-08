@@ -1,5 +1,7 @@
 package com.example.byt.models;
 
+import com.example.byt.models.appointment.Appointment;
+import com.example.byt.models.person.Customer;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -17,15 +19,23 @@ public class HistoryOfStatus {
     @NotNull
     private AppointmentStatus status;
 
+    private Customer customer;
+
+    private Appointment appointment;
+
     @NotNull
     @PastOrPresent
     private LocalDate dateOfChangingStatus;
 
     private static List<HistoryOfStatus> historyOfStatuses = new ArrayList<>();
 
-    public HistoryOfStatus(AppointmentStatus status, LocalDate dateOfChangingStatus) {
+    public HistoryOfStatus(AppointmentStatus status, LocalDate dateOfChangingStatus, Customer customer, Appointment appointment) {
         this.status = status;
         this.dateOfChangingStatus = dateOfChangingStatus;
+
+        addCustomer(customer);
+        addAppointment(appointment);
+
         addHistoryOfStatus(this);
     }
 
@@ -41,6 +51,40 @@ public class HistoryOfStatus {
             return;
         }
         historyOfStatuses.add(historyOfStatus);
+    }
+
+    public void addCustomer(Customer customer){
+        if  (customer == null){
+            throw new NullPointerException("Customer cannot be null");
+        }
+
+        if (this.customer == customer){
+            return;
+        }
+
+        this.customer = customer;
+        customer.addHistory(this);
+    }
+
+    public void addAppointment(Appointment appointment){
+        if (appointment == null){
+            throw new NullPointerException("Appointment cannot be null");
+        }
+
+        if (this.appointment == appointment){
+            return;
+        }
+
+        this.appointment = appointment;
+        appointment.addHistory(this);
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public Appointment getAppointment() {
+        return appointment;
     }
 
     public AppointmentStatus getStatus() {
