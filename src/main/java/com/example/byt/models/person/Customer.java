@@ -1,5 +1,6 @@
 package com.example.byt.models.person;
 
+import com.example.byt.models.HistoryOfStatus;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +21,8 @@ public class Customer extends Person {
 
     @NotNull
     private CustomerStatus customerStatus;
+
+    private Set<HistoryOfStatus> historyOfStatuses = new HashSet<>();
 
     private static List<Customer> customers = new ArrayList<>();
 
@@ -48,9 +52,28 @@ public class Customer extends Person {
         }
         customers.add(customer);
     }
+
+    public void addHistory(HistoryOfStatus historyOfStatus) {
+        if (historyOfStatus == null) {
+            throw new NullPointerException("historyOfStatus cannot be null");
+        }
+
+        if (this.historyOfStatuses.contains(historyOfStatus)) {
+            return;
+        }
+
+        this.historyOfStatuses.add(historyOfStatus);
+        historyOfStatus.addCustomer(this);
+    }
+
+    public Set<HistoryOfStatus> getHistoryOfStatuses() {
+        return new HashSet<>(this.historyOfStatuses);
+    }
+
     public void setEmailAddress(String email){
         this.emailAddress = email;
     }
+
     public int getAge() {
         return Period.between(getBirthDate(), LocalDate.now()).getYears();
     }
