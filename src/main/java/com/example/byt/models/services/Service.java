@@ -224,6 +224,19 @@ public class Service implements Serializable {
         return duration;
     }
 
+    public double getRating() {
+        int totalRating = 0;
+        int size = 0;
+        for (ProvidedService providedService : providedServices) {
+            if (providedService.getRating() == null) {
+                continue;
+            }
+            totalRating += providedService.getRating();
+            size++;
+        }
+        return size == 0 ? 0.0 : (double) totalRating / size;
+    }
+
     public double getTotalPrice(){
         double maxDiscount = 0;
         LocalDate today = LocalDate.now();
