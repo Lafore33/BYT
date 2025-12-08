@@ -29,7 +29,7 @@ public class Appointment {
 
     private Set<ProvidedService> providedServices = new HashSet<>();
 
-    private HistoryOfStatus historyOfStatus;
+    private Set<HistoryOfStatus> historyOfStatuses = new HashSet<>();
 
     @Min(0)
     private double totalPrice;
@@ -62,13 +62,13 @@ public class Appointment {
         appointments.add(appointment);
     }
 
-    public void addService(Service service, ServiceInfo serviceInfo) {
-        if (service == null) {
+    public void addService(ServiceInfo serviceInfo) {
+        if (serviceInfo.getService() == null) {
             throw new NullPointerException("Service cannot be null");
         }
 
         // when adding a master association, you will change the Builder so it additionally includes Masters
-        ProvidedService providedService = new ProvidedService.Builder(serviceInfo.getTime(), service, this).build();
+        ProvidedService providedService = new ProvidedService.Builder(serviceInfo.getTime(), serviceInfo.getService(), this).build();
     }
 
     public void addProvidedService(ProvidedService providedService) {
@@ -97,12 +97,25 @@ public class Appointment {
             throw new NullPointerException("HistoryOfStatus cannot be null");
         }
 
-        if (this.historyOfStatus == historyOfStatus) {
+        if (this.historyOfStatuses.contains(historyOfStatus)) {
             return;
         }
 
-        this.historyOfStatus = historyOfStatus;
+        this.historyOfStatuses.add(historyOfStatus);
         historyOfStatus.addAppointment(this);
+    }
+
+    public void removeProvidedService(ProvidedService providedService) {
+        if (providedService == null) {
+            throw new NullPointerException("Provided service cannot be null");
+        }
+
+        if (!providedServices.contains(providedService)) {
+            return;
+        }
+
+        providedServices.remove(providedService);
+        providedService.removeAppointment(this);
     }
 
     public Receptionist getReceptionist() {
@@ -140,13 +153,21 @@ public class Appointment {
         this.paymentMethod = paymentMethod;
     }
 
+    public Set<ProvidedService> getProvidedServices() {
+        return new HashSet<>(providedServices);
+    }
+
+    public Set<HistoryOfStatus> getHistoryOfStatuses() {
+        return new HashSet<>(historyOfStatuses);
+    }
+
     public static class Builder {
         @NotNull
         private LocalDate date;
 
         private Customer customer;
 
-        private Map<Service, ServiceInfo> services;
+        private Set<ServiceInfo> services;
 
         private List<String> notes;
 
@@ -154,7 +175,7 @@ public class Appointment {
 
         private Receptionist receptionist;
 
-        public Builder(LocalDate date, Customer customer, Map<Service, ServiceInfo> services) {
+        public Builder(LocalDate date, Customer customer, Set<ServiceInfo> services) {
             this.date = date;
             this.customer = customer;
             if (services == null || services.isEmpty()) {

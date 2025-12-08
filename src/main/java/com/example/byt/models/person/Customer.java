@@ -1,7 +1,6 @@
 package com.example.byt.models.person;
 
 import com.example.byt.models.HistoryOfStatus;
-import com.example.byt.models.appointment.Appointment;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -54,7 +53,7 @@ public class Customer extends Person {
         customers.add(customer);
     }
 
-    public void addAppointment(HistoryOfStatus historyOfStatus) {
+    public void addHistory(HistoryOfStatus historyOfStatus) {
         if (historyOfStatus == null) {
             throw new NullPointerException("historyOfStatus cannot be null");
         }
@@ -64,6 +63,11 @@ public class Customer extends Person {
         }
 
         this.historyOfStatuses.add(historyOfStatus);
+        historyOfStatus.addCustomer(this);
+    }
+
+    public Set<HistoryOfStatus> getHistoryOfStatuses() {
+        return new HashSet<>(this.historyOfStatuses);
     }
 
     public void setEmailAddress(String email){

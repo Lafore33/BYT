@@ -1,6 +1,7 @@
 package com.example.byt.models;
 
 import com.example.byt.models.person.Master;
+import com.example.byt.models.services.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -9,8 +10,10 @@ import java.util.Set;
 public class ServiceInfo {
     private LocalDateTime time;
     private Set<Master> masters;
+    private Service service;
 
-    public ServiceInfo(LocalDateTime time, Set<Master> masters) {
+    public ServiceInfo(Service service, LocalDateTime time, Set<Master> masters) {
+        this.service = service;
         this.time = time;
         this.masters = masters;
     }
@@ -21,5 +24,9 @@ public class ServiceInfo {
 
     public Set<Master> getMasters() {
         return new HashSet<>(masters);
+    }
+
+    public Service getService() {
+        return service;
     }
 }
