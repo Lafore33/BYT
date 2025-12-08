@@ -102,6 +102,22 @@ public class Service implements Serializable {
         providedService.addService(this);
     }
 
+    public void removeProvidedService(ProvidedService providedService) {
+        if (providedService == null){
+            throw new NullPointerException("ProvidedService cannot be null");
+        }
+        if (!this.providedServices.contains(providedService)) {
+            return;
+        }
+
+        this.providedServices.remove(providedService);
+        providedService.removeService(this);
+    }
+
+    public Set<ProvidedService> getProvidedServices() {
+        return new HashSet<>(providedServices);
+    }
+
     public void removeService(){
         for(Material material : new HashSet<>(materialsUsed)){
             removeMaterialUsed(material);

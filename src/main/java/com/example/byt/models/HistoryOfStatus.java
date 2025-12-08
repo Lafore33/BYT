@@ -63,7 +63,7 @@ public class HistoryOfStatus {
         }
 
         this.customer = customer;
-        customer.addAppointment(this);
+        customer.addHistory(this);
     }
 
     public void addAppointment(Appointment appointment){
@@ -77,6 +77,14 @@ public class HistoryOfStatus {
 
         this.appointment = appointment;
         appointment.addHistory(this);
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public Appointment getAppointment() {
+        return appointment;
     }
 
     public AppointmentStatus getStatus() {

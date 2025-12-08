@@ -83,6 +83,41 @@ public class ProvidedService {
         appointment.addProvidedService(this);
     }
 
+    public void removeAppointment(Appointment appointment){
+        if (appointment == null) {
+            throw new NullPointerException("Appointment cannot be null");
+        }
+
+        if (this.appointment != appointment) {
+            return;
+        }
+
+        this.appointment = null;
+        appointment.removeProvidedService(this);
+        removeService(service);
+    }
+
+    public void removeService(Service service){
+        if (service == null) {
+            throw new NullPointerException("Service cannot be null");
+        }
+
+        if (this.service != service) {
+            return;
+        }
+
+        this.service = null;
+        service.removeProvidedService(this);
+    }
+
+    public Service getService() {
+        return service;
+    }
+
+    public Appointment getAppointment() {
+        return appointment;
+    }
+
     public void setRating(Integer rating) {
         this.rating = rating;
     }
