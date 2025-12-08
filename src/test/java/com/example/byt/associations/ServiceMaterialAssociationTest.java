@@ -1,10 +1,12 @@
 package com.example.byt.associations;
 
 import com.example.byt.models.Material;
+import com.example.byt.models.person.Master;
 import com.example.byt.models.services.Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,14 +16,15 @@ public class ServiceMaterialAssociationTest {
     Service service2;
     Material material1;
     Material material2;
+    private static Master master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
     @BeforeEach
     void setUp(){
         Service.clearExtent();
         Material.clearExtent();
 
-        service1 = new Service(1, "Haircut", 20.0, "Basic haircut", 30.0);
-        service2 = new Service(2, "Hairwash", 20, "Wash", 15);
+        service1 = new Service(1, "Haircut", 20.0, "Basic haircut", 30.0, Set.of(master));
+        service2 = new Service(2, "Hairwash", 20, "Wash", 15, Set.of(master));
         material1 = new Material("Shampoo", "L'Oreal");
         material2 = new Material("Conditioner", "L'Oreal");
     }
@@ -141,30 +144,6 @@ public class ServiceMaterialAssociationTest {
         assertEquals(1, material1.getServicesUsedIn().size());
         assertTrue(material1.getServicesUsedIn().contains(service1));
         assertTrue(service1.getMaterialsUsed().contains(material1));
-    }
-
-    @Test
-    void materialRemovedCleansAllAssociations(){
-        material1.addServiceUsedIn(service1);
-        material1.addServiceUsedIn(service2);
-
-        material1.removeMaterial();
-
-        assertTrue(material1.getServicesUsedIn().isEmpty());
-        assertFalse(service1.getMaterialsUsed().contains(material1));
-        assertFalse(service2.getMaterialsUsed().contains(material1));
-    }
-
-    @Test
-    void serviceRemovedCleansAllAssociations(){
-        service1.addMaterialUsed(material1);
-        service1.addMaterialUsed(material2);
-
-        service1.removeService();
-
-        assertTrue(service1.getMaterialsUsed().isEmpty());
-        assertFalse(material1.getServicesUsedIn().contains(service1));
-        assertFalse(material2.getServicesUsedIn().contains(service1));
     }
 
     @Test

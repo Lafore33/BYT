@@ -56,17 +56,24 @@ public class Service implements Serializable {
     private static List<Service> services = new ArrayList<>();
 
     public Service(int id, String name, double regularPrice, String description,
-                   double duration) {
+                   double duration, Set<Master> masters) {
+        if(masters == null || masters.isEmpty())
+            throw new IllegalArgumentException("Masters cannot be null or empty");
+
         this.id = id;
         this.name = name;
         this.regularPrice = regularPrice;
         this.description = description;
         this.duration = duration;
         addService(this);
+
+        for (Master master : masters) {
+            addMasterSpecializedIn(master);
+        }
     }
 
-    public Service(int id, String name, double regularPrice, String description, double duration, Set<Material> materialsUsed) {
-        this(id, name, regularPrice, description, duration);
+    public Service(int id, String name, double regularPrice, String description, double duration, Set<Master> masters,  Set<Material> materialsUsed) {
+        this(id, name, regularPrice, description, duration, masters);
 
         if (materialsUsed != null) {
             for(Material material : materialsUsed) {
@@ -118,20 +125,6 @@ public class Service implements Serializable {
         return new HashSet<>(providedServices);
     }
 
-    public void removeService(){
-        for(Material material : new HashSet<>(materialsUsed)){
-            removeMaterialUsed(material);
-        }
-        for(Promotion promotion : new HashSet<>(promotionsApplied)){
-            removePromotionApplied(promotion);
-        }
-        for(Master master : new HashSet<>(mastersSpecializedIn)){
-            mastersSpecializedIn.remove(master);
-            master.removeServiceSpecialisesInForRemoval(this);
-        }
-        services.remove(this);
-    }
-
     public void addMaterialUsed(Material material){
         if(material == null)
             throw new IllegalArgumentException("Material cannot be null");
@@ -158,11 +151,6 @@ public class Service implements Serializable {
     public void removePromotionApplied(Promotion promotion){
         if(promotion != null && promotionsApplied.remove(promotion))
             promotion.removeServiceApplicableTo(this);
-    }
-
-    public void removePromotionAppliedForRemoval(Promotion promotion){
-        if(promotion != null)
-            promotionsApplied.remove(promotion);
     }
 
     public Set<Promotion> getPromotionsApplied() {
@@ -248,6 +236,10 @@ public class Service implements Serializable {
         }
 
         return Math.max(regularPrice * (1 - maxDiscount / 100.0), 0);
+    }
+
+    public void removeFromExtent(){
+        services.remove(this);
     }
 
     public static void clearExtent() {

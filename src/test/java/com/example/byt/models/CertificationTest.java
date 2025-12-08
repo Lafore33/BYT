@@ -1,5 +1,6 @@
 package com.example.byt.models;
 
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CertificationTest {
     private static Validator validator;
+    private Master master;
 
     @BeforeAll
     static void setupValidator() {
@@ -26,6 +28,11 @@ class CertificationTest {
         Certification.clearExtent();
     }
 
+    @BeforeEach
+    void setUp() {
+        master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
+    }
+
     @Test
     void constructorSetsValuesCorrectly() {
         String name = "Manicure course";
@@ -35,6 +42,7 @@ class CertificationTest {
         LocalDate issueDate = LocalDate.of(2020, 1, 1);
         LocalDate expiryDate = LocalDate.of(2020, 12, 31);
         Certification certification = new Certification(
+                master,
                 name,
                 certificationNumber,
                 description,
@@ -53,6 +61,7 @@ class CertificationTest {
     @Test
     void validCertificationShouldHaveNoViolations() {
         Certification certification = new Certification(
+                master,
                 "Manicure course",
                 "CERT-123",
                 "Professional manicure course",
@@ -68,6 +77,7 @@ class CertificationTest {
     @Test
     void nullNameShouldFailValidation() {
         Certification certification = new Certification(
+                master,
                 null,
                 "CERT-123",
                 "Description",
@@ -83,6 +93,7 @@ class CertificationTest {
     @Test
     void blankNameShouldFailValidation() {
         Certification certification = new Certification(
+                master,
                 "   ",
                 "CERT-123",
                 "Description",
@@ -98,6 +109,7 @@ class CertificationTest {
     @Test
     void nullCertificationNumberShouldFailValidation() {
         Certification certification = new Certification(
+                master,
                 "Course",
                 null,
                 "Description",
@@ -113,6 +125,7 @@ class CertificationTest {
     @Test
     void blankCertificationNumberShouldFailValidation() {
         Certification certification = new Certification(
+                master,
                 "Course",
                 "   ",
                 "Description",
@@ -128,6 +141,7 @@ class CertificationTest {
     @Test
     void nullDescriptionShouldFailValidation() {
         Certification certification = new Certification(
+                master,
                 "Course",
                 "CERT-123",
                 null,
@@ -143,6 +157,7 @@ class CertificationTest {
     @Test
     void blankDescriptionShouldFailValidation() {
         Certification certification = new Certification(
+                master,
                 "Course",
                 "CERT-123",
                 "   ",
@@ -158,6 +173,7 @@ class CertificationTest {
     @Test
     void nullOrganizationShouldFailValidation() {
         Certification certification = new Certification(
+                master,
                 "Course",
                 "CERT-123",
                 "Description",
@@ -173,6 +189,7 @@ class CertificationTest {
     @Test
     void blankOrganizationShouldFailValidation() {
         Certification certification = new Certification(
+                master,
                 "Course",
                 "CERT-123",
                 "Description","   ",
@@ -188,6 +205,7 @@ class CertificationTest {
     void nullIssueDateShouldThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
             new Certification(
+                    master,
                     "Course",
                     "CERT-123",
                     "Description",
@@ -197,12 +215,15 @@ class CertificationTest {
             );
         }, "IllegalArgumentException expected for null 'issueDate'");
         List<Certification> list = Certification.getCertificationList();
-        assertTrue(list.isEmpty(), "The invalid certification should not be added to the list");
+        assertTrue(list.stream().noneMatch(cert -> "CERT-123".equals(cert.getCertificationNumber())),
+                "The invalid certification should not be in the list");
+
     }
 
     @Test
     void futureIssueDateShouldFailValidation() {
         Certification certification = new Certification(
+                master,
                 "Course",
                 "CERT-123",
                 "Description",
@@ -221,6 +242,7 @@ class CertificationTest {
         LocalDate expiry = issue.minusDays(1);
         assertThrows(IllegalArgumentException.class, () ->
                 new Certification(
+                        master,
                         "Course",
                         "CERT-123",
                         "Description",
@@ -229,13 +251,16 @@ class CertificationTest {
                         expiry
                 ), "Expected IllegalArgumentException when expiryDate is before issueDate");
         List<Certification> list = Certification.getCertificationList();
-        assertTrue(list.isEmpty(), "The invalid certification should not be added to the list");
+        assertTrue(list.stream().noneMatch(cert -> "CERT-123".equals(cert.getCertificationNumber())),
+                "The invalid certification should not be in the list");
+
     }
 
     @Test
     void expiryDateEqualToIssueDateShouldNotThrowException() {
         LocalDate date = LocalDate.now();
         assertDoesNotThrow(() -> new Certification(
+                master,
                 "Course",
                 "CERT-123",
                 "Description",
@@ -251,6 +276,7 @@ class CertificationTest {
         LocalDate issue = LocalDate.now();
         LocalDate expiry = issue.plusDays(30);
         assertDoesNotThrow(() -> new Certification(
+                master,
                 "Course",
                 "CERT-123",
                 "Description",
@@ -266,6 +292,7 @@ class CertificationTest {
         LocalDate issue = LocalDate.now();
         LocalDate expiry = issue.plusDays(30);
         Certification certification = new Certification(
+                master,
                 "Course",
                 "CERT-123",
                 "Description",
@@ -279,6 +306,7 @@ class CertificationTest {
     @Test
     void settingExpiryDateAfterIssueDateShouldNotThrowException() {
         Certification cert = new Certification(
+                master,
                 "Course",
                 "CERT-004",
                 "Description",
@@ -292,6 +320,7 @@ class CertificationTest {
     @Test
     void settingExpiryDateBeforeIssueDateShouldThrowException() {
         Certification cert = new Certification(
+                master,
                 "Course",
                 "CERT-005",
                 "Description",
@@ -306,6 +335,7 @@ class CertificationTest {
     void setIssueDateSetsValuesCorrectly(){
         LocalDate issue = LocalDate.now().minusDays(25);
         Certification certification = new Certification(
+                master,
                 "Course",
                 "CERT-123",
                 "Description",
@@ -319,6 +349,7 @@ class CertificationTest {
     @Test
     void settingIssueDateNullShouldThrowException() {
         Certification cert = new Certification(
+                master,
                 "Course",
                 "CERT-005",
                 "Description",
@@ -331,6 +362,7 @@ class CertificationTest {
     @Test
     void settingIssueDateAfterExpiryDateShouldThrowException() {
         Certification cert = new Certification(
+                master,
                 "Course",
                 "CERT-005",
                 "Description",
@@ -345,6 +377,7 @@ class CertificationTest {
     @Test
     void settingIssueDateBeforeExpiryDateShouldNotThrowException() {
         Certification cert = new Certification(
+                master,
                 "Course",
                 "CERT-005",
                 "Description",
@@ -359,6 +392,7 @@ class CertificationTest {
     @Test
     void getCertificationListShouldReturnCopy() {
         Certification certification = new Certification(
+                master,
                 "Course",
                 "CERT-999",
                 "Description",

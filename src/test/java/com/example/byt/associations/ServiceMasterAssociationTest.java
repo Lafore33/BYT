@@ -21,27 +21,31 @@ public class ServiceMasterAssociationTest {
     void setUp() {
         Service.clearExtent();
         Master.clearExtent();
-
-        service1 = new Service(1, "Haircut", 50, "Basic haircut", 1.0);
-        service2 = new Service(2, "Hair coloring", 80, "Color your hair", 2.0);
-
         master1 = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
         master2 = new Master("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7);
+
+        service1 = new Service(1, "Haircut", 50, "Basic haircut", 1.0, Set.of(master1));
+        service2 = new Service(2, "Hair coloring", 80, "Color your hair", 2.0, Set.of(master1));
     }
 
     @Test
     void masterConstructorWithServicesAddsAssociations(){
         Master master = new Master("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7, Set.of(service1, service2));
 
-        assertEquals(1, service1.getMasterSpecializedIn().size());
         assertTrue(service1.getMasterSpecializedIn().contains(master));
 
-        assertEquals(1, service2.getMasterSpecializedIn().size());
         assertTrue(service2.getMasterSpecializedIn().contains(master));
 
         assertEquals(2, master.getServiceSpecialisesIn().size());
         assertTrue(master.getServiceSpecialisesIn().contains(service1));
         assertTrue(master.getServiceSpecialisesIn().contains(service2));
+    }
+
+    @Test
+    void masterConstructorWithNoServicesAddsDummyService(){
+        Master master = new Master("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7);
+        assertEquals(1, master.getServiceSpecialisesIn().size());
+        assertTrue(master.existsDummyService());
     }
 
     @Test
@@ -63,25 +67,40 @@ public class ServiceMasterAssociationTest {
     }
 
     @Test
-    void addServiceSpecialisesInUpdatesBothSides(){
-        master1.addServiceSpecialisesIn(service1);
+    void serviceConstructorWithNullMastersShouldThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> new Service(1, "Haircut", 50, "Basic haircut", 1.0, null));
+    }
 
-        assertEquals(1, service1.getMasterSpecializedIn().size());
-        assertTrue(service1.getMasterSpecializedIn().contains(master1));
+    @Test
+    void serviceConstructorWithEmptyMastersShouldThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> new Service(1, "Haircut", 50, "Basic haircut", 1.0, Set.of()));
+    }
 
-        assertEquals(1, master1.getServiceSpecialisesIn().size());
-        assertTrue(master1.getServiceSpecialisesIn().contains(service1));
+    @Test
+    void serviceConstructorWithSetMastersContainingNullShouldThrowException(){
+        Set<Master> masters = new HashSet<>();
+        masters.add(null);
+        assertThrows(IllegalArgumentException.class, () -> new Service(1, "Haircut", 50, "Basic haircut", 1.0, masters));
+    }
+
+
+    @Test
+    void addServiceSpecialisesInUpdatesBothSidesAndDeletesDummyService(){
+        master2.addServiceSpecialisesIn(service1);
+
+        assertFalse(master2.existsDummyService());
+
+        assertTrue(service1.getMasterSpecializedIn().contains(master2));
+        assertTrue(master2.getServiceSpecialisesIn().contains(service1));
     }
 
     @Test
     void addMasterSpecialisedInUpdatesBothSides(){
-        service1.addMasterSpecializedIn(master1);
+        service1.addMasterSpecializedIn(master2);
 
-        assertEquals(1, service1.getMasterSpecializedIn().size());
-        assertTrue(service1.getMasterSpecializedIn().contains(master1));
+        assertTrue(service1.getMasterSpecializedIn().contains(master2));
 
-        assertEquals(1, master1.getServiceSpecialisesIn().size());
-        assertTrue(master1.getServiceSpecialisesIn().contains(service1));
+        assertTrue(master2.getServiceSpecialisesIn().contains(service1));
     }
 
     @Test
@@ -89,7 +108,6 @@ public class ServiceMasterAssociationTest {
         assertThrows(IllegalArgumentException.class,
                 () -> master1.addServiceSpecialisesIn(null));
 
-        assertTrue(master1.getServiceSpecialisesIn().isEmpty());
     }
 
     @Test
@@ -97,65 +115,61 @@ public class ServiceMasterAssociationTest {
         assertThrows(IllegalArgumentException.class,
                 () -> service1.addMasterSpecializedIn(null));
 
-        assertTrue(service1.getMasterSpecializedIn().isEmpty());
     }
 
     @Test
     void addDuplicateServiceSpecialisesInDoesNotDuplicate(){
         master1.addServiceSpecialisesIn(service1);
-        master1.addServiceSpecialisesIn(service1);
 
         assertEquals(1, service1.getMasterSpecializedIn().size());
-        assertEquals(1, master1.getServiceSpecialisesIn().size());
+        assertEquals(2, master1.getServiceSpecialisesIn().size());
+    }
+
+    @Test
+    void addDuplicateMasterSpecializedInDoesNotDuplicate(){
+        service1.addMasterSpecializedIn(master1);
+
+        assertEquals(1, service1.getMasterSpecializedIn().size());
+        assertEquals(2, master1.getServiceSpecialisesIn().size());
     }
 
     @Test
     void removeServiceSpecialisesUpdatesBothSides(){
-        //avoid exception in services
-        service1.addMasterSpecializedIn(master2);
-        service2.addMasterSpecializedIn(master2);
 
-        master1.addServiceSpecialisesIn(service1);
-        master1.addServiceSpecialisesIn(service2);
+        master2.addServiceSpecialisesIn(service1);
+        master2.addServiceSpecialisesIn(service2);
 
-        master1.removeServiceSpecialisesIn(service2);
-        assertTrue(master1.getServiceSpecialisesIn().contains(service1));
-        assertFalse(master1.getServiceSpecialisesIn().contains(service2));
+        master2.removeServiceSpecialisesIn(service2);
+        assertTrue(master2.getServiceSpecialisesIn().contains(service1));
+        assertFalse(master2.getServiceSpecialisesIn().contains(service2));
 
-        assertTrue(service1.getMasterSpecializedIn().contains(master1));
-        assertFalse(service2.getMasterSpecializedIn().contains(master1));
+        assertTrue(service1.getMasterSpecializedIn().contains(master2));
+        assertFalse(service2.getMasterSpecializedIn().contains(master2));
 
     }
 
     @Test
     void removeMasterSpecialisedInUpdatesBothSides(){
-        //avoid exception in masters
-        master1.addServiceSpecialisesIn(service2);
-        master2.addServiceSpecialisesIn(service2);
 
-        service1.addMasterSpecializedIn(master1);
         service1.addMasterSpecializedIn(master2);
 
-        service1.removeMasterSpecializedIn(master2);
+        service1.removeMasterSpecializedIn(master1);
 
-        assertTrue(service1.getMasterSpecializedIn().contains(master1));
-        assertFalse(service1.getMasterSpecializedIn().contains(master2));
+        assertTrue(service1.getMasterSpecializedIn().contains(master2));
+        assertFalse(service1.getMasterSpecializedIn().contains(master1));
 
-        assertTrue(master1.getServiceSpecialisesIn().contains(service1));
-        assertFalse(master2.getServiceSpecialisesIn().contains(service1));
+        assertTrue(master2.getServiceSpecialisesIn().contains(service1));
+        assertFalse(master1.getServiceSpecialisesIn().contains(service1));
     }
 
     @Test
     void removeNullServiceSpecialisesInDoesNothing(){
-        master1.addServiceSpecialisesIn(service1);
         master1.removeServiceSpecialisesIn(null);
         assertTrue(master1.getServiceSpecialisesIn().contains(service1));
-        assertEquals(1, master1.getServiceSpecialisesIn().size());
     }
 
     @Test
     void removeNullMasterSpecialisedInDoesNothing(){
-        service1.addMasterSpecializedIn(master1);
         service1.removeMasterSpecializedIn(null);
         assertTrue(service1.getMasterSpecializedIn().contains(master1));
         assertEquals(1, service1.getMasterSpecializedIn().size());
@@ -180,10 +194,9 @@ public class ServiceMasterAssociationTest {
     @Test
     void removeAllMasterSpecialisedInThrowsExceptionAndChangesNothing(){
         //avoid exception in masters
-        master1.addServiceSpecialisesIn(service2);
+        master2.addServiceSpecialisesIn(service1);
         master2.addServiceSpecialisesIn(service2);
 
-        service1.addMasterSpecializedIn(master1);
         service1.addMasterSpecializedIn(master2);
 
         service1.removeMasterSpecializedIn(master2);
@@ -195,8 +208,6 @@ public class ServiceMasterAssociationTest {
 
     @Test
     void removeServiceWhichHasOnlyThisMasterSpecializedInThrowsExceptionAndChangesNothing(){
-        master1.addServiceSpecialisesIn(service1);
-        master1.addServiceSpecialisesIn(service2);
 
         assertThrows(IllegalStateException.class, () -> master1.removeServiceSpecialisesIn(service2));
         assertEquals(2, master1.getServiceSpecialisesIn().size());
@@ -206,7 +217,6 @@ public class ServiceMasterAssociationTest {
 
     @Test
     void removeMasterWhichHasOnlyThisServiceSpecializesInThrowsExceptionAndChangesNothing(){
-        service1.addMasterSpecializedIn(master1);
         service1.addMasterSpecializedIn(master2);
 
         assertThrows(IllegalStateException.class, () -> service1.removeMasterSpecializedIn(master2));
@@ -217,38 +227,31 @@ public class ServiceMasterAssociationTest {
 
     @Test
     void removeServiceThatIsNotInSetDoesNothing(){
-        //to avoid exception in service
-        service2.addMasterSpecializedIn(master2);
+        master2.addServiceSpecialisesIn(service1);
 
-        master1.addServiceSpecialisesIn(service1);
-        master1.removeServiceSpecialisesIn(service2);
+        master2.removeServiceSpecialisesIn(service2);
 
-        assertTrue(master1.getServiceSpecialisesIn().contains(service1));
-        assertFalse(master1.getServiceSpecialisesIn().contains(service2));
-        assertTrue(service1.getMasterSpecializedIn().contains(master1));
-        assertFalse(service2.getMasterSpecializedIn().contains(master1));
-        assertEquals(1, master1.getServiceSpecialisesIn().size());
+        assertTrue(master2.getServiceSpecialisesIn().contains(service1));
+        assertFalse(master2.getServiceSpecialisesIn().contains(service2));
+        assertTrue(service1.getMasterSpecializedIn().contains(master2));
+        assertFalse(service2.getMasterSpecializedIn().contains(master2));
+        assertEquals(1, master2.getServiceSpecialisesIn().size());
     }
 
     @Test
     void removeMasterThatIsNotInSetDoesNothing(){
-        //to avoid exception in master
-        master2.addServiceSpecialisesIn(service2);
+        service2.removeMasterSpecializedIn(master2);
 
-        service1.addMasterSpecializedIn(master1);
-        service1.removeMasterSpecializedIn(master2);
-
-        assertTrue(service1.getMasterSpecializedIn().contains(master1));
-        assertFalse(service1.getMasterSpecializedIn().contains(master2));
-        assertTrue(master1.getServiceSpecialisesIn().contains(service1));
-        assertFalse(master2.getServiceSpecialisesIn().contains(service1));
-        assertEquals(1, service1.getMasterSpecializedIn().size());
+        assertTrue(service2.getMasterSpecializedIn().contains(master1));
+        assertFalse(service2.getMasterSpecializedIn().contains(master2));
+        assertTrue(master1.getServiceSpecialisesIn().contains(service2));
+        assertFalse(master2.getServiceSpecialisesIn().contains(service2));
+        assertEquals(1, service2.getMasterSpecializedIn().size());
 
     }
 
     @Test
     void getServiceSpecialisesInReturnsCopy(){
-        master1.addServiceSpecialisesIn(service1);
         Set<Service> services = master1.getServiceSpecialisesIn();
         services.clear();
         assertTrue(master1.getServiceSpecialisesIn().contains(service1));
@@ -256,27 +259,9 @@ public class ServiceMasterAssociationTest {
 
     @Test
     void getMasterSpecializedInReturnsCopy(){
-        service1.addMasterSpecializedIn(master1);
         Set<Master> masters = service1.getMasterSpecializedIn();
         masters.clear();
         assertTrue(service1.getMasterSpecializedIn().contains(master1));
-    }
-
-    @Test
-    void removeServiceClearsAllAssociations(){
-        //t avoid exception in master
-        master1.addServiceSpecialisesIn(service2);
-        master2.addServiceSpecialisesIn(service2);
-
-        service1.addMasterSpecializedIn(master1);
-        service1.addMasterSpecializedIn(master2);
-
-        service1.removeService();
-
-        assertFalse(master1.getServiceSpecialisesIn().contains(service1));
-        assertFalse(master2.getServiceSpecialisesIn().contains(service1));
-
-        assertTrue(service1.getMasterSpecializedIn().isEmpty());
     }
 
     @Test
@@ -297,19 +282,7 @@ public class ServiceMasterAssociationTest {
     }
 
     @Test
-    void removeServiceWhenMasterHasOnlyThisServiceSpecializesInThrowsExceptionAndChangesNothing(){
-
-        service1.addMasterSpecializedIn(master1);
-
-        assertThrows(IllegalStateException.class, () -> service1.removeService());
-
-        assertTrue(master1.getServiceSpecialisesIn().contains(service1));
-        assertTrue(service1.getMasterSpecializedIn().contains(master1));
-    }
-
-    @Test
     void removeMasterWhenServiceHasOnlyThisServiceSpecializesInThrowsExceptionAndChangesNothing(){
-        master1.addServiceSpecialisesIn(service1);
 
         assertThrows(IllegalStateException.class, () -> master1.removeMaster());
 
