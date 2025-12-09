@@ -322,4 +322,7 @@ public class Master extends Worker {
                 .orElse(null);
     }
 
+    public Map<String, Certification> getCertificationList() {
+        return new LinkedHashMap<>(certificationsByNumber);
+    }
 }
