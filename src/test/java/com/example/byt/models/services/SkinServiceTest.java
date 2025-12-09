@@ -1,5 +1,6 @@
 package com.example.byt.models.services;
 
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SkinServiceTest {
     private static Validator validator;
+    private static Master master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
     @BeforeAll
     static void setupValidator() {
@@ -44,6 +47,7 @@ public class SkinServiceTest {
                 regularPrice,
                 description,
                 duration,
+                Set.of(master),
                 purpose);
         assertEquals(id, service.getId(), "Incorrect id set in constructor");
         assertEquals(name, service.getName(), "Incorrect name set in constructor");
@@ -56,7 +60,7 @@ public class SkinServiceTest {
 
     @Test
     void validSkinServiceShouldHaveNoViolations() {
-        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0, "Hydration");
+        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0, Set.of(master),"Hydration");
         Set<ConstraintViolation<SkinService>> violations = validator.validate(service);
         assertTrue(violations.isEmpty(), "Expected no violations for valid SkinService, but got: " + violations);
         List<SkinService> serviceList = SkinService.getSkinServiceList();
@@ -65,7 +69,7 @@ public class SkinServiceTest {
 
     @Test
     void blankPurposeShouldFailValidation() {
-        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0, "   ");
+        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0, Set.of(master), "   ");
         Set<ConstraintViolation<SkinService>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "purpose"),
                 "Expected violation for blank 'purpose', but got: " + violations);
@@ -75,7 +79,7 @@ public class SkinServiceTest {
 
     @Test
     void nullPurposeShouldFailValidation() {
-        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0, null);
+        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0, Set.of(master), null);
         Set<ConstraintViolation<SkinService>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "purpose"),
                 "Expected violation for null 'purpose', but got: " + violations);
@@ -85,7 +89,7 @@ public class SkinServiceTest {
 
     @Test
     void getServiceListShouldReturnCopy() {
-        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0, "Hydration");
+        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0,Set.of(master), "Hydration");
 
         List<SkinService> listCopy = SkinService.getSkinServiceList();
         listCopy.clear();
@@ -96,8 +100,8 @@ public class SkinServiceTest {
 
     @Test
     void serializationWorksCorrectly() throws IOException, ClassNotFoundException {
-        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0, "Hydration");
-        SkinService service2 = new SkinService(2, "Facial", 60.0, "Deep cleansing", 70.0, "Hydration");
+        SkinService service = new SkinService(1, "Facial", 50.0, "Deep cleansing", 60.0, Set.of(master), "Hydration");
+        SkinService service2 = new SkinService(2, "Facial", 60.0, "Deep cleansing", 70.0, Set.of(master), "Hydration");
 
         SkinService.save();
         assertTrue(Files.exists(Path.of(SkinService.getExtentFile())));

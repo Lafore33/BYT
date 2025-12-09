@@ -1,6 +1,7 @@
 package com.example.byt.models.services;
 
 import com.example.byt.models.Material;
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -21,14 +22,14 @@ public class HairService extends Service {
 
     private static List<HairService> hairServices = new ArrayList<>();
 
-    public HairService(int id, String name, double regularPrice, String description, double duration, HairServiceType type, List<String> hairTypes) {
-        super(id, name, regularPrice, description, duration);
+    public HairService(int id, String name, double regularPrice, String description, double duration, Set<Master> masters, HairServiceType type, List<String> hairTypes) {
+        super(id, name, regularPrice, description, duration, masters);
         this.type = type;
         setHairTypes(hairTypes);
         addHairService(this);
     }
-    public HairService(int id, String name, double regularPrice, String description, double duration, HairServiceType type, List<String> hairTypes, Set<Material> materialsUsed) {
-        super(id, name, regularPrice, description, duration, materialsUsed);
+    public HairService(int id, String name, double regularPrice, String description, double duration, HairServiceType type, List<String> hairTypes, Set<Master> masters, Set<Material> materialsUsed) {
+        super(id, name, regularPrice, description, duration, masters, materialsUsed);
         this.type = type;
         setHairTypes(hairTypes);
         addHairService(this);
@@ -59,12 +60,6 @@ public class HairService extends Service {
             throw new IllegalArgumentException("hairTypes can't contain null or empty elements");
         }
         this.hairTypes = new ArrayList<>(hairTypes);
-    }
-
-    @Override
-    public void removeService() {
-        super.removeService();
-        hairServices.remove(this);
     }
 
     public HairServiceType getType() {

@@ -37,8 +37,9 @@ public class Certification {
 
     private Master master;
 
-    public Certification(String name, String certificationNumber, String description,
-                         String organization, LocalDate issueDate, LocalDate expiryDate) {
+    public Certification(Master master, String name, String certificationNumber,
+                         String description, String organization,
+                         LocalDate issueDate, LocalDate expiryDate) {
         this.name = name;
         this.certificationNumber = certificationNumber;
         this.description = description;
@@ -46,31 +47,22 @@ public class Certification {
         setIssueDate(issueDate);
         setExpiryDate(expiryDate);
         addCertification(this);
+        setMaster(master);
     }
 
-    public Certification(String name, String certificationNumber, String description,
-                         String organization, LocalDate issueDate) {
-        this.name = name;
-        this.certificationNumber = certificationNumber;
-        this.description = description;
-        this.organization = organization;
-        setIssueDate(issueDate);
-        addCertification(this);
-    }
     public Certification(Master master, String name, String certificationNumber,
-                         String description, String organization,
-                         LocalDate issueDate, LocalDate expiryDate) {
-        this(name, certificationNumber, description, organization, issueDate, expiryDate);
+                         String description, String organization, LocalDate issueDate) {
+        this(master, name, certificationNumber, description, organization, issueDate, null);
         if (master == null) {
             throw new IllegalArgumentException("Master cannot be null");
         }
         this.master = master;
         master.addCertification(this);
     }
-
     public Certification(Master master, String name, String certificationNumber,
-                         String description, String organization, LocalDate issueDate) {
-        this(name, certificationNumber, description, organization, issueDate);
+                         String description, String organization,
+                         LocalDate issueDate, LocalDate expiryDate) {
+        this(name, certificationNumber, description, organization, issueDate, expiryDate);
         if (master == null) {
             throw new IllegalArgumentException("Master cannot be null");
         }
@@ -161,5 +153,18 @@ public class Certification {
 
     public static void clearExtent() {
         certifications.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "Certification{" +
+                "name='" + name + '\'' +
+                ", certificationNumber='" + certificationNumber + '\'' +
+                ", description='" + description + '\'' +
+                ", organization='" + organization + '\'' +
+                ", issueDate=" + issueDate +
+                ", expiryDate=" + expiryDate +
+                ", master=" + master +
+                '}';
     }
 }

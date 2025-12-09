@@ -27,10 +27,14 @@ public class Master extends Worker {
 
     private Map<String, Certification> certificationsByNumber = new LinkedHashMap<>();
 
+
+
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
         super(name, surname, phoneNumber, birthDate);
         this.experience = experience;
         addMaster(this);
+        Service dummyService = new Service(0, "Dummy Service", 0, "This is a dummy service", 0, Set.of(this));
+        Certification dummyCertification = new Certification(this, "Dummy", "0", "This is a dummy certification", "Dummy", LocalDate.now());
     }
 
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate,
@@ -139,6 +143,13 @@ public class Master extends Worker {
     public void addServiceSpecialisesIn(Service service){
         if(service == null)
             throw new IllegalArgumentException("Service cannot be null");
+        if(existsDummyService()){
+            Service dummy = getDummyService();
+            if(dummy != null) {
+                servicesSpecialisesIn.remove(dummy);
+                dummy.removeFromExtent();
+            }
+        }
         if(servicesSpecialisesIn.add(service))
             service.addMasterSpecializedIn(this);
     }
@@ -153,13 +164,8 @@ public class Master extends Worker {
         }
     }
 
-    public void removeServiceSpecialisesInForRemoval(Service service){
-        if(service == null) return;
-        servicesSpecialisesIn.remove(service);
-        if(servicesSpecialisesIn.isEmpty()) {
-            addServiceSpecialisesIn(service);
-            throw new IllegalStateException("Master should specialise in at least one service");
-        }
+    public Set<Service> getServiceSpecialisesIn(){
+        return new HashSet<>(servicesSpecialisesIn);
     }
 
     public void addCertification(Certification certification) {
@@ -167,9 +173,7 @@ public class Master extends Worker {
             throw new IllegalArgumentException("Certification cannot be null.");
         }
         String number = certification.getCertificationNumber();
-        if (number == null || number.isBlank()) {
-            throw new IllegalArgumentException("Certification number cannot be null or blank.");
-        }
+
         if (certificationsByNumber.containsValue(certification)) {
             return;
         }
@@ -180,10 +184,18 @@ public class Master extends Worker {
         if (certification.getMaster() != null && certification.getMaster() != this) {
             throw new IllegalStateException("Certification belongs to another Master.");
         }
+
+        if(existsDummyCertification()) {
+            Certification dummy = getDummyCertification();
+            if(dummy != null) {
+                removeCertification(dummy.getCertificationNumber());
+            }
+        }
         certificationsByNumber.put(number, certification);
         if (certification.getMaster() != this) {
             certification.setMaster(this);
         }
+
     }
 
 
@@ -196,9 +208,6 @@ public class Master extends Worker {
             return;
         }
         certificationsByNumber.remove(certNumber);
-        if (certification.getMaster() == this) {
-            certification.setMaster(null);
-        }
         certification.removeFromExtent();
     }
 
@@ -252,7 +261,30 @@ public class Master extends Worker {
     public static void clearExtent() {
         masters.clear();
     }
-    public Set<Service> getServiceSpecialisesIn() {
-        return new HashSet<>(servicesSpecialisesIn);
+    public Service getDummyService(){
+        return servicesSpecialisesIn.stream()
+                .filter(s -> s.getId() == 0 && "Dummy Service".equals(s.getName()))
+                .findFirst()
+                .orElse(null);
     }
+    public boolean existsDummyService() {
+        return servicesSpecialisesIn.stream().anyMatch(s ->
+                s.getId() == 0 && s.getName().equals("Dummy Service")
+        );
+    }
+
+    public boolean existsDummyCertification() {
+        return certificationsByNumber.values().stream()
+                .anyMatch(cert -> "0".equals(cert.getCertificationNumber())
+                        && "Dummy".equals(cert.getName()));
+    }
+
+    public Certification getDummyCertification() {
+        return certificationsByNumber.values().stream()
+                .filter(cert -> "0".equals(cert.getCertificationNumber())
+                        && "Dummy".equals(cert.getName()))
+                .findFirst()
+                .orElse(null);
+    }
+
 }

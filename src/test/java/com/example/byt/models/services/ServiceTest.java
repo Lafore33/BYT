@@ -1,5 +1,6 @@
 package com.example.byt.models.services;
 
+import com.example.byt.models.person.Master;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ServiceTest {
     private static Validator validator;
+    private static Master master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
     @BeforeAll
     static void setupValidator() {
@@ -33,7 +36,7 @@ public class ServiceTest {
         double regularPrice = 20.0;
         String description = "Basic haircut";
         double duration = 30.0;
-        Service service = new Service(id, name, regularPrice, description, duration);
+        Service service = new Service(id, name, regularPrice, description, duration, Set.of(master));
         assertEquals(id, service.getId(), "Incorrect ID set in constructor");
         assertEquals(name, service.getName(), "Incorrect name set in constructor");
         assertEquals(regularPrice, service.getRegularPrice(), "Incorrect regular price set in constructor");
@@ -43,7 +46,7 @@ public class ServiceTest {
 
     @Test
     void validServiceShouldHaveNoViolationsAndShouldBeAddedToList() {
-        Service service = new Service(1, "Haircut", 20.0, "Basic haircut", 30.0);
+        Service service = new Service(1, "Haircut", 20.0, "Basic haircut", 30.0, Set.of(master));
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(violations.isEmpty(), "Expected no validation errors for valid Service, but got: " + violations);
         List<Service> serviceList = Service.getServiceList();
@@ -52,7 +55,7 @@ public class ServiceTest {
 
     @Test
     void negativeIdShouldFailValidation() {
-        Service service = new Service(-1, "Haircut", 20.0, "Basic haircut", 30.0);
+        Service service = new Service(-1, "Haircut", 20.0, "Basic haircut", 30.0, Set.of(master));
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "id"),
                 "Expected violation for field 'id' when negative, but got: " + violations);
@@ -63,7 +66,7 @@ public class ServiceTest {
 
     @Test
     void blankNameShouldFailValidation() {
-        Service service = new Service(1, "   ", 20.0, "Basic haircut", 30.0);
+        Service service = new Service(1, "   ", 20.0, "Basic haircut", 30.0, Set.of(master));
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for blank 'name', but got: " + violations);
@@ -73,7 +76,7 @@ public class ServiceTest {
 
     @Test
     void nullNameShouldFailValidation() {
-        Service service = new Service(1, null, 20.0, "Basic haircut", 30.0);
+        Service service = new Service(1, null, 20.0, "Basic haircut", 30.0, Set.of(master));
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "name"),
                 "Expected violation for null 'name', but got: " + violations);
@@ -83,7 +86,7 @@ public class ServiceTest {
 
     @Test
     void negativeRegularPriceShouldFailValidation() {
-        Service service = new Service(1, "Haircut", -10.0, "Basic haircut", 30.0);
+        Service service = new Service(1, "Haircut", -10.0, "Basic haircut", 30.0, Set.of(master));
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "regularPrice"),
                 "Expected violation for negative 'regularPrice', but got: " + violations);
@@ -93,7 +96,7 @@ public class ServiceTest {
 
     @Test
     void blankDescriptionShouldFailValidation() {
-        Service service = new Service(1, "Haircut", 20.0, "   ", 30.0);
+        Service service = new Service(1, "Haircut", 20.0, "   ", 30.0, Set.of(master));
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "description"),
                 "Expected violation for blank 'description', but got: " + violations);
@@ -103,7 +106,7 @@ public class ServiceTest {
 
     @Test
     void nullDescriptionShouldFailValidation() {
-        Service service = new Service(1, "Haircut", 20.0, null, 30.0);
+        Service service = new Service(1, "Haircut", 20.0, null, 30.0, Set.of(master));
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "description"),
                 "Expected violation for null 'description', but got: " + violations);
@@ -113,7 +116,7 @@ public class ServiceTest {
 
     @Test
     void negativeDurationShouldFailValidation() {
-        Service service = new Service(1, "Haircut", 20.0, "Basic haircut", -5.0);
+        Service service = new Service(1, "Haircut", 20.0, "Basic haircut", -5.0, Set.of(master));
         Set<ConstraintViolation<Service>> violations = validator.validate(service);
         assertTrue(containsViolationFor(violations, "duration"),
                 "Expected violation for negative 'duration', but got: " + violations);
@@ -123,7 +126,7 @@ public class ServiceTest {
 
     @Test
     void getServiceListShouldReturnCopy() {
-        Service service = new Service(1, "Haircut", 20.0, "Basic haircut", 30.0);
+        Service service = new Service(1, "Haircut", 20.0, "Basic haircut", 30.0, Set.of(master));
 
         List<Service> listCopy = Service.getServiceList();
         listCopy.clear();
