@@ -222,12 +222,11 @@ public class ProvidedService {
             return 0.0;
         }
         double basePrice = service.getTotalPrice();
-        double avgExperience = completedByMasters.stream()
-                .mapToInt(Master::getExperience)
-                .average()
-                .orElse(0.0);
-        double experienceMultiplier = 1.0 + (avgExperience * 0.05);
-        return basePrice * experienceMultiplier;
+        boolean hasTopMaster = completedByMasters.stream().anyMatch(Master::isTopMaster);
+        if (hasTopMaster) {
+            return basePrice * 1.2;
+        }
+        return basePrice;
     }
 
 

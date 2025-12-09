@@ -90,9 +90,7 @@ public class Master extends Worker {
             return;
         }
         completedServices.add(providedService);
-        if (!providedService.getCompletedByMasters().contains(this)) {
-            providedService.addMaster(this);
-        }
+        providedService.addMaster(this);
     }
 
     public void removeCompletedService(ProvidedService providedService) {
@@ -103,9 +101,7 @@ public class Master extends Worker {
             return;
         }
         completedServices.remove(providedService);
-        if (providedService.getCompletedByMasters().contains(this)) {
-            providedService.removeMaster(this);
-        }
+        providedService.removeMaster(this);
     }
 
     public void setManager(Master newManager) {
