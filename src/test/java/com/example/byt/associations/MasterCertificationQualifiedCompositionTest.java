@@ -11,148 +11,168 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MasterCertificationQualifiedCompositionTest {
 
-    private Master master;
-    private Master anotherMaster;
+    private Master master1;
+    private Master master2;
 
     @BeforeEach
     void setUp() {
         Master.clearExtent();
         Certification.clearExtent();
-        master = new Master("Yelizaveta", "Gaiduk", "+48555111222", LocalDate.of(2005, 11, 15), 5);
-        anotherMaster = new Master("Dana", "Nazarchuk", "+48550111222", LocalDate.of(1990, 1, 1), 10);
+
+        master1 = new Master("Yelizaveta", "Gaiduk", "+48555111222", LocalDate.of(2005, 11, 15), 5);
+        master2 = new Master("Dana", "Nazarchuk", "+48550111222", LocalDate.of(1990, 1, 1), 10);
     }
 
     @Test
-    void addCertificationAddsQualifiedAssociationAndReverseConnection() {
-        Certification cert = new Certification("Brow Lamination", "CERT-001", "Brow lamination basic", "NoOffence Academy", LocalDate.now());
-        master.addCertification(cert);
-        assertSame(cert, master.getCertificationByNumber("CERT-001"));
-        assertSame(master, cert.getMaster());
+    void certificationConstructorWithMasterCreatesQualifiedAndComposition() {
+        Certification cert = new Certification(master1, "Brow Lamination", "CERT-001", "Basic course", "NoOffence Academy", LocalDate.now());
+
+        assertSame(cert, master1.getCertificationByNumber("CERT-001"));
+        assertSame(master1, cert.getMaster());
         assertTrue(Certification.getCertificationList().contains(cert));
     }
 
     @Test
-    void certificationConstructorWithMasterCreatesCompositionAndQualifiedEntry() {
-        Certification cert = new Certification(master, "Brow Lamination", "CERT-002", "Advanced course", "NoOffence Academy", LocalDate.now());
+    void constructorAddsDummyCertificationAndRemovesItOnRealAdd() {
+        assertTrue(master1.existsDummyCertification());
+        Certification cert = new Certification(master1, "Lamination", "CERT-002", "Advanced", "NoOffence", LocalDate.now());
 
-        assertSame(master, cert.getMaster());
-        assertSame(cert, master.getCertificationByNumber("CERT-002"));
+        assertFalse(master1.existsDummyCertification());
+        assertSame(cert, master1.getCertificationByNumber("CERT-002"));
+    }
+
+    @Test
+    void constructorWithNullMasterThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> new Certification(null, "Name", "X1", "Desc", "Org", LocalDate.now()));
+    }
+
+    @Test
+    void addCertificationUpdatesBothSides() {
+        Certification cert = new Certification(master1, "Course", "CERT-003", "Desc", "Academy", LocalDate.now());
+
+        assertSame(master1, cert.getMaster());
+        assertSame(cert, master1.getCertificationByNumber("CERT-003"));
+    }
+
+    @Test
+    void addNullCertificationThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> master1.addCertification(null));
+    }
+
+    @Test
+    void addCertificationWithDuplicateNumberButDifferentInstanceThrows() {
+        Certification cert1 = new Certification(master1, "CourseA", "CERT-005", "Desc", "Org", LocalDate.now());
+        Certification cert2 = new Certification(master2, "CourseB", "CERT-005", "Desc2", "Org2", LocalDate.now());
+
+        assertThrows(IllegalStateException.class, () -> master1.addCertification(cert2));
+        assertSame(cert1, master1.getCertificationByNumber("CERT-005"));
+    }
+
+    @Test
+    void addCertificationBelongingToAnotherMasterThrowsAndChangesNothing() {
+        Certification cert = new Certification(master2, "Course", "CERT-006", "Desc", "Org", LocalDate.now());
+
+        assertThrows(IllegalStateException.class, () -> master1.addCertification(cert));
+        assertNull(master1.getCertificationByNumber("CERT-006"));
+        assertSame(master2, cert.getMaster());
+    }
+
+    @Test
+    void addDuplicateCertificationDoesNotDuplicate() {
+        Certification cert = new Certification(master1, "Course", "CERT-007", "Desc", "Org", LocalDate.now());
+
+        master1.addCertification(cert);
+
+        assertEquals(cert, master1.getCertificationByNumber("CERT-007"));
+        assertEquals(1, Certification.getCertificationList().stream().filter(c -> c.getCertificationNumber().equals("CERT-007")).count());
+    }
+
+    @Test
+    void getCertificationByNumberReturnsCorrectCertification() {
+        Certification cert = new Certification(master1, "Course", "CERT-008", "Desc", "Org", LocalDate.now());
+
+        assertSame(cert, master1.getCertificationByNumber("CERT-008"));
+    }
+
+    @Test
+    void getCertificationByNumberReturnsNullWhenNotFound() {
+        assertNull(master1.getCertificationByNumber("UNKNOWN"));
+    }
+
+    @Test
+    void getCertificationByNumberNullThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> master1.getCertificationByNumber(null));
+    }
+
+    @Test
+    void getCertificationListReturnsCopy() {
+        Certification cert = new Certification(master1, "Course", "CERT-020", "Desc", "Org", LocalDate.now());
+        var list = Certification.getCertificationList();
+        list.clear();
+        assertFalse(Certification.getCertificationList().isEmpty());
         assertTrue(Certification.getCertificationList().contains(cert));
     }
 
-    @Test
-    void getCertificationByNumberReturnsNullForUnknownNumber() {
-        Certification cert = new Certification(master, "Brow lamination", "CERT-003", "Course", "NoOffence Academy", LocalDate.now());
-
-        assertSame(cert, master.getCertificationByNumber("CERT-003"));
-        assertNull(master.getCertificationByNumber("UNKNOWN"));
-    }
-
-    @Test
-    void getCertificationByNumberWithNullThrowsException() {
-        assertThrows(IllegalArgumentException.class,() -> master.getCertificationByNumber(null));
-    }
-
-    @Test
-    void addNullCertificationThrowsExceptionAndChangesNothing() {
-        assertThrows(IllegalArgumentException.class, () -> master.addCertification(null));
-
-        assertNull(master.getCertificationByNumber("ANY"));
-        assertTrue(Certification.getCertificationList().isEmpty());
-    }
-
-    @Test
-    void addCertificationWithBlankNumberThrowsException() {
-        Certification cert = new Certification("Brow lamination", "", "Course", "NoOffence Academy", LocalDate.now());
-
-        assertThrows(IllegalArgumentException.class, () -> master.addCertification(cert));
-        assertNull(master.getCertificationByNumber(""));
-    }
-
-    @Test
-    void addingSameCertificationInstanceTwiceDoesNotDuplicateQualifiedEntry() {
-        Certification cert = new Certification(master, "Brow lamination", "CERT-004", "Course", "NoOffence Academy", LocalDate.now()
-        );
-
-        master.addCertification(cert);
-        master.addCertification(cert);
-
-        assertSame(cert, master.getCertificationByNumber("CERT-004"));
-        assertEquals(1, Certification.getCertificationList().size());
-    }
-
-    @Test
-    void addingCertificationWithExistingNumberButDifferentInstanceThrowsAndKeepsOriginal() {
-        Certification cert1 = new Certification(master, "Brow lamination", "CERT-005", "Course v1", "NoOffence Academy", LocalDate.now());
-        Certification cert2 = new Certification("Brow lamination", "CERT-005", "Course v2", "NoOffence Academy", LocalDate.now());
-
-        assertThrows(IllegalStateException.class, () -> master.addCertification(cert2));
-        assertSame(cert1, master.getCertificationByNumber("CERT-005"));
-        assertNotSame(cert2, master.getCertificationByNumber("CERT-005"));
-        assertEquals(2, Certification.getCertificationList().size());
-    }
-
-    @Test
-    void addingCertificationBelongingToAnotherMasterThrowsAndDoesNotChangeBinding() {
-        Certification cert = new Certification(anotherMaster, "Brow lamination", "CERT-006", "Course", "NoOffence Academy", LocalDate.now());
-
-        assertThrows(IllegalStateException.class, () -> master.addCertification(cert));
-        assertNull(master.getCertificationByNumber("CERT-006"));
-        assertSame(anotherMaster, cert.getMaster());
-        assertSame(cert, anotherMaster.getCertificationByNumber("CERT-006"));
-    }
-
-    /*@Test
-    void removeCertificationRemovesQualifiedEntryReverseConnectionAndPartFromExtent() {
-        Certification cert = new Certification(master, "Brow lamination", "CERT-007", "Course", "NoOffence Academy", LocalDate.now());
-
-        assertSame(cert, master.getCertificationByNumber("CERT-007"));
-        assertTrue(Certification.getCertificationList().contains(cert));
-        master.removeCertification("CERT-007");
-
-        assertNull(master.getCertificationByNumber("CERT-007"));
-        assertFalse(Certification.getCertificationList().contains(cert));
-        assertNull(cert.getMaster());
-    }*/
 
     @Test
     void removeCertificationWithNullDoesNothing() {
-        Certification cert = new Certification(master, "Brow lamination", "CERT-008", "Course", "NoOffence Academy", LocalDate.now());
+        Certification cert = new Certification(master1, "Course", "CERT-009", "Desc", "Org", LocalDate.now());
 
-        master.removeCertification(null);
-        assertSame(cert, master.getCertificationByNumber("CERT-008"));
+        master1.removeCertification(null);
+
+        assertSame(cert, master1.getCertificationByNumber("CERT-009"));
         assertTrue(Certification.getCertificationList().contains(cert));
-        assertSame(master, cert.getMaster());
     }
 
     @Test
-    void removeCertificationWithUnknownNumberDoesNothing() {
-        Certification cert = new Certification(master, "Brow lamination", "CERT-009", "Course", "NoOffence Academy", LocalDate.now());
+    void removeCertificationWithUnknownDoesNothing() {
+        Certification cert = new Certification(master1, "Course", "CERT-010", "Desc", "Org", LocalDate.now());
 
-        master.removeCertification("UNKNOWN");
+        master1.removeCertification("XXX");
 
-        assertSame(cert, master.getCertificationByNumber("CERT-009"));
+        assertSame(cert, master1.getCertificationByNumber("CERT-010"));
         assertTrue(Certification.getCertificationList().contains(cert));
-        assertSame(master, cert.getMaster());
     }
 
-   /* @Test
-    void removeMasterDeletesAllOwnedCertificationsFromExtentAndBreaksAssociations() {
-        Certification cert1 = new Certification(master, "Brow lamination", "CERT-010", "Course 1", "NoOffence Academy", LocalDate.now());
-        Certification cert2 = new Certification(master, "Brow lamination", "CERT-011", "Course 2", "NoOffence Academy", LocalDate.now());
+    @Test
+    void removeCertificationProperlyRemovesFromExtent() {
+        Certification cert = new Certification(master1, "Course", "CERT-011", "Desc", "Org", LocalDate.now());
 
-        assertTrue(Certification.getCertificationList().contains(cert1));
-        assertTrue(Certification.getCertificationList().contains(cert2));
+        master1.removeCertification("CERT-011");
 
-        master.removeMaster();
+        assertNull(master1.getCertificationByNumber("CERT-011"));
+        assertFalse(Certification.getCertificationList().contains(cert));
+    }
 
+    @Test
+    void removingMasterDeletesAllCertificationsBecauseComposition() {
+        Certification cert1 = new Certification(master1, "CourseA", "CERT-012", "Desc", "Org", LocalDate.now());
+        Certification cert2 = new Certification(master1, "CourseB", "CERT-013", "Desc", "Org", LocalDate.now());
+
+        master2.addServiceSpecialisesIn(master1.getDummyService());
+        master1.removeMaster();
+
+        assertNull(master1.getCertificationByNumber("CERT-012"));
+        assertNull(master1.getCertificationByNumber("CERT-013"));
         assertFalse(Certification.getCertificationList().contains(cert1));
         assertFalse(Certification.getCertificationList().contains(cert2));
-        assertNull(cert1.getMaster());
-        assertNull(cert2.getMaster());
-        assertNull(master.getCertificationByNumber("CERT-010"));
-        assertNull(master.getCertificationByNumber("CERT-011"));
-        assertFalse(Master.getMasterList().contains(master));
-    }*/
+    }
 
+    @Test
+    void setMasterMovesCertificationAndPreservesQualifiedKey() {
+        Certification cert = new Certification(master1, "Course", "CERT-014", "Desc", "Org", LocalDate.now());
+
+        cert.setMaster(master2);
+
+        assertNull(master1.getCertificationByNumber("CERT-014"));
+        assertSame(cert, master2.getCertificationByNumber("CERT-014"));
+        assertSame(master2, cert.getMaster());
+    }
+
+    @Test
+    void setMasterNullThrowsException() {
+        Certification cert = new Certification(master1, "Course", "CERT-015", "Desc", "Org", LocalDate.now());
+
+        assertThrows(IllegalArgumentException.class, () -> cert.setMaster(null));
+    }
 }

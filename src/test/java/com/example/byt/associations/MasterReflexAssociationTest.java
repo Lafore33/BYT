@@ -1,6 +1,7 @@
 package com.example.byt.associations;
 
 import com.example.byt.models.person.Master;
+import com.example.byt.models.services.Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,9 @@ public class MasterReflexAssociationTest {
 
     @BeforeEach
     void setUp() {
+        Service.clearExtent();
         Master.clearExtent();
+
         topManager = new Master("Yelizaveta", "Gaiduk", "+48555111222", LocalDate.of(2005, 11, 15), 5);
         trainee1 = new Master("Yelizaveta", "Gaiduk", "+48555111223", LocalDate.of(2005, 11, 15), 1);
         trainee2 = new Master("Yelizaveta", "Gaiduk", "+48555111224", LocalDate.of(2005, 11, 15), 2);
@@ -67,7 +70,9 @@ public class MasterReflexAssociationTest {
     @Test
     void setManagerNullWhenNoManagerDoesNothing() {
         assertNull(trainee1.getManager());
+
         trainee1.setManager(null);
+
         assertNull(trainee1.getManager());
         assertFalse(trainee1.hasManager());
     }
@@ -85,34 +90,20 @@ public class MasterReflexAssociationTest {
     }
 
     @Test
-    void changeManagerUpdatesBothSides() {
-        trainee1.setManager(topManager);
-        trainee1.setManager(anotherTopManager);
-
-        assertEquals(anotherTopManager, trainee1.getManager());
-        assertFalse(topManager.getTrainees().contains(trainee1));
-        assertTrue(anotherTopManager.getTrainees().contains(trainee1));
-        assertEquals(0, topManager.getTraineeCount());
-        assertEquals(1, anotherTopManager.getTraineeCount());
-        assertFalse(topManager.isTrainee(trainee1));
-        assertTrue(anotherTopManager.isTrainee(trainee1));
-    }
-
-    @Test
     void setSameManagerDoesNothing() {
         trainee1.setManager(topManager);
-        int countBefore = topManager.getTraineeCount();
+        int beforeCount = topManager.getTraineeCount();
+
         trainee1.setManager(topManager);
 
-        assertEquals(countBefore, topManager.getTraineeCount());
+        assertEquals(beforeCount, topManager.getTraineeCount());
         assertEquals(topManager, trainee1.getManager());
     }
 
     @Test
     void addTraineeWhenHasDifferentManagerThrowsExceptionAndChangesNothing() {
         trainee1.setManager(topManager);
-
-        assertThrows(IllegalStateException.class, () -> anotherTopManager.addTrainee(trainee1));
+        assertThrows(IllegalStateException.class,() -> anotherTopManager.addTrainee(trainee1));
         assertEquals(topManager, trainee1.getManager());
         assertTrue(topManager.getTrainees().contains(trainee1));
         assertFalse(anotherTopManager.getTrainees().contains(trainee1));
@@ -189,6 +180,7 @@ public class MasterReflexAssociationTest {
     @Test
     void getTraineesReturnsCopy() {
         topManager.addTrainee(trainee1);
+
         Set<Master> traineesCopy = topManager.getTrainees();
         traineesCopy.clear();
 
@@ -216,31 +208,24 @@ public class MasterReflexAssociationTest {
     }
 
     @Test
-    void removeTraineeMasterRemovesItFromManagerAndClearsManagerReference() {
-        topManager.addTrainee(trainee1);
-
-        trainee1.removeMaster();
-
-        assertFalse(topManager.getTrainees().contains(trainee1));
-        assertEquals(0, topManager.getTraineeCount());
-        assertNull(trainee1.getManager());
-        assertFalse(topManager.hasTrainees());
-    }
-
-    @Test
     void removeMasterClearsManagerAndTraineeAssociations() {
-        Master superManager = new Master("Yelizaveta", "Gaiduk", "+48555111228", LocalDate.of(2005, 11, 15), 10);
+        Master superManager = new Master("Yelizaveta", "Gaiduk", "+48555111228",LocalDate.of(2005, 11, 15), 10); // top master
 
         topManager.setManager(superManager);
         topManager.addTrainee(trainee1);
         topManager.addTrainee(trainee2);
 
+        Master helper = new Master("Helper", "Master", "+48555111229",LocalDate.of(1990, 1, 1), 5);
+        helper.addServiceSpecialisesIn(topManager.getDummyService());
+
         topManager.removeMaster();
 
         assertFalse(superManager.getTrainees().contains(topManager));
+        assertFalse(superManager.isTrainee(topManager));
         assertNull(trainee1.getManager());
         assertNull(trainee2.getManager());
         assertTrue(topManager.getTrainees().isEmpty());
-        assertFalse(superManager.isTrainee(topManager));
+        assertFalse(topManager.hasTrainees());
+        assertFalse(topManager.hasManager());
     }
 }

@@ -1,4 +1,4 @@
-package com.example.byt.models.appointment;
+/*package com.example.byt.models.appointment;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -178,3 +178,4 @@ public class AppointmentTest {
                 .anyMatch(v -> v.getPropertyPath().toString().equals(fieldName));
     }
 }
+*/

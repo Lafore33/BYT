@@ -53,21 +53,6 @@ public class Certification {
     public Certification(Master master, String name, String certificationNumber,
                          String description, String organization, LocalDate issueDate) {
         this(master, name, certificationNumber, description, organization, issueDate, null);
-        if (master == null) {
-            throw new IllegalArgumentException("Master cannot be null");
-        }
-        this.master = master;
-        master.addCertification(this);
-    }
-    public Certification(Master master, String name, String certificationNumber,
-                         String description, String organization,
-                         LocalDate issueDate, LocalDate expiryDate) {
-        this(name, certificationNumber, description, organization, issueDate, expiryDate);
-        if (master == null) {
-            throw new IllegalArgumentException("Master cannot be null");
-        }
-        this.master = master;
-        master.addCertification(this);
     }
 
     private void addCertification(Certification certification) {
