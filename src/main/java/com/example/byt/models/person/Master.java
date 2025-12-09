@@ -287,4 +287,7 @@ public class Master extends Worker {
                 .orElse(null);
     }
 
+    public List<Certification> getCertificationList() {
+        return new ArrayList<>(certificationsByNumber.values());
+    }
 }

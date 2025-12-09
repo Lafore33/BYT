@@ -4,8 +4,8 @@ import com.example.byt.models.Certification;
 import com.example.byt.models.person.Master;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,11 +107,15 @@ public class MasterCertificationQualifiedCompositionTest {
     @Test
     void getCertificationListReturnsCopy() {
         Certification cert = new Certification(master1, "Course", "CERT-020", "Desc", "Org", LocalDate.now());
-        var list = Certification.getCertificationList();
+
+        var list = master1.getCertificationList();
+
         list.clear();
-        assertFalse(Certification.getCertificationList().isEmpty());
-        assertTrue(Certification.getCertificationList().contains(cert));
+
+        assertFalse(master1.getCertificationList().isEmpty());
+        assertTrue(master1.getCertificationList().contains(cert));
     }
+
 
 
     @Test
