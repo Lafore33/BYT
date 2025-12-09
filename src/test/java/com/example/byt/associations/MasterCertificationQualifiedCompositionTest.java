@@ -113,7 +113,7 @@ public class MasterCertificationQualifiedCompositionTest {
         list.clear();
 
         assertFalse(master1.getCertificationList().isEmpty());
-        assertTrue(master1.getCertificationList().contains(cert));
+        assertSame(cert, master1.getCertificationList().get("CERT-020"));
     }
 
 
