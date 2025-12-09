@@ -1,6 +1,7 @@
 package com.example.byt.models.person;
 
 import com.example.byt.models.Certification;
+import com.example.byt.models.ProvidedService;
 import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -27,7 +28,7 @@ public class Master extends Worker {
 
     private Map<String, Certification> certificationsByNumber = new LinkedHashMap<>();
 
-
+    private Set<ProvidedService> completedServices = new HashSet<>();
 
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
         super(name, surname, phoneNumber, birthDate);
@@ -79,6 +80,28 @@ public class Master extends Worker {
             removeCertification(certification.getCertificationNumber());
         }
         masters.remove(this);
+    }
+
+    public void addCompletedService(ProvidedService providedService) {
+        if (providedService == null) {
+            throw new NullPointerException("ProvidedService cannot be null");
+        }
+        if (completedServices.contains(providedService)) {
+            return;
+        }
+        completedServices.add(providedService);
+        providedService.addMaster(this);
+    }
+
+    public void removeCompletedService(ProvidedService providedService) {
+        if (providedService == null) {
+            throw new NullPointerException("ProvidedService cannot be null");
+        }
+        if (!completedServices.contains(providedService)) {
+            return;
+        }
+        completedServices.remove(providedService);
+        providedService.removeMaster(this);
     }
 
     public void setManager(Master newManager) {
@@ -252,6 +275,18 @@ public class Master extends Worker {
 
     public static List<Master> getMasterList() {
         return new ArrayList<>(masters);
+    }
+
+    public Set<ProvidedService> getCompletedServices() {
+        return new HashSet<>(completedServices);
+    }
+
+    public boolean hasCompletedService(ProvidedService providedService) {
+        return completedServices.contains(providedService);
+    }
+
+    public int getCompletedServiceCount() {
+        return completedServices.size();
     }
 
     public int getExperience() {

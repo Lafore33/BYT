@@ -31,9 +31,6 @@ public class Appointment {
 
     private Set<HistoryOfStatus> historyOfStatuses = new HashSet<>();
 
-    @Min(0)
-    private double totalPrice;
-
     private static List<Appointment> appointments = new ArrayList<>();
 
     public Appointment(Builder builder) {
@@ -66,9 +63,16 @@ public class Appointment {
         if (serviceInfo.getService() == null) {
             throw new NullPointerException("Service cannot be null");
         }
+        if (serviceInfo.getMasters() == null || serviceInfo.getMasters().isEmpty()) {
+            throw new IllegalArgumentException("ServiceInfo must include at least one master");
+        }
 
-        // when adding a master association, you will change the Builder so it additionally includes Masters
-        ProvidedService providedService = new ProvidedService.Builder(serviceInfo.getTime(), serviceInfo.getService(), this).build();
+        ProvidedService providedService = new ProvidedService.Builder(
+                serviceInfo.getTime(),
+                serviceInfo.getService(),
+                this,
+                serviceInfo.getMasters()
+        ).build();
     }
 
     public void addProvidedService(ProvidedService providedService) {
@@ -213,6 +217,12 @@ public class Appointment {
 
     public PaymentMethod getPaymentMethod() {
         return paymentMethod;
+    }
+
+    public double getTotalPrice() {
+        return providedServices.stream()
+                .mapToDouble(ProvidedService::getPrice)
+                .sum();
     }
 
     public LocalDate getDate() {

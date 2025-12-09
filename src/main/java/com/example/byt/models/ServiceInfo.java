@@ -13,6 +13,9 @@ public class ServiceInfo {
     private Service service;
 
     public ServiceInfo(Service service, LocalDateTime time, Set<Master> masters) {
+        if (masters == null || masters.isEmpty()) {
+            throw new IllegalArgumentException("ServiceInfo must include at least one master");
+        }
         this.service = service;
         this.time = time;
         this.masters = masters;
