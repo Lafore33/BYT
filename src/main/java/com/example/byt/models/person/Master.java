@@ -281,14 +281,6 @@ public class Master extends Worker {
         return new HashSet<>(completedServices);
     }
 
-    public boolean hasCompletedService(ProvidedService providedService) {
-        return completedServices.contains(providedService);
-    }
-
-    public int getCompletedServiceCount() {
-        return completedServices.size();
-    }
-
     public int getExperience() {
         return experience;
     }

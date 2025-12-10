@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ProvidedServiceAppointmentAssociationTest {
+public class ProvidedServiceAppointmentServiceAssociationTest {
 
     private Customer customer;
     private Master master1;
@@ -58,7 +58,7 @@ public class ProvidedServiceAppointmentAssociationTest {
     }
 
     @Test
-    void constructorAddsAssociationsBothSides() {
+    void constructorAddsAppointmentAssociationBothSides() {
         assertTrue(appointment1.getProvidedServices().contains(providedService));
         assertEquals(appointment1, providedService.getAppointment());
     }
@@ -70,19 +70,19 @@ public class ProvidedServiceAppointmentAssociationTest {
     }
 
     @Test
-    void addProvidedServiceUpdatesBothSides() {
+    void addProvidedServiceToAppointmentUpdatesBothSides() {
         appointment2.addProvidedService(providedService);
 
         assertTrue(appointment2.getProvidedServices().contains(providedService));
     }
 
     @Test
-    void addNullProvidedServiceThrowsException() {
+    void addNullProvidedServiceToAppointmentThrowsException() {
         assertThrows(NullPointerException.class, () -> appointment1.addProvidedService(null));
     }
 
     @Test
-    void addDuplicateProvidedServiceDoesNotDuplicate() {
+    void addDuplicateProvidedServiceToAppointmentDoesNotDuplicate() {
         int sizeBefore = appointment1.getProvidedServices().size();
 
         appointment1.addProvidedService(providedService);
@@ -105,6 +105,19 @@ public class ProvidedServiceAppointmentAssociationTest {
     }
 
     @Test
+    void removeAppointmentUpdatesBothSides() {
+        Appointment oldAppointment = providedService.getAppointment();
+        Service oldService = providedService.getService();
+
+        providedService.removeAppointment(oldAppointment);
+
+        assertNull(providedService.getAppointment());
+        assertNull(providedService.getService());
+        assertFalse(oldAppointment.getProvidedServices().contains(providedService));
+        assertFalse(oldService.getProvidedServices().contains(providedService));
+    }
+
+    @Test
     void removeNullAppointmentThrowsException() {
         assertThrows(NullPointerException.class, () -> providedService.removeAppointment(null));
     }
@@ -117,12 +130,20 @@ public class ProvidedServiceAppointmentAssociationTest {
     }
 
     @Test
-    void removeNullProvidedServiceThrowsException() {
+    void removeProvidedServiceFromAppointmentUpdatesBothSides() {
+        appointment1.removeProvidedService(providedService);
+
+        assertFalse(appointment1.getProvidedServices().contains(providedService));
+        assertNull(providedService.getAppointment());
+    }
+
+    @Test
+    void removeNullProvidedServiceFromAppointmentThrowsException() {
         assertThrows(NullPointerException.class, () -> appointment1.removeProvidedService(null));
     }
 
     @Test
-    void removeProvidedServiceNotInSetDoesNothing() {
+    void removeProvidedServiceNotInAppointmentDoesNothing() {
         ProvidedService psFromAppointment2 = appointment2.getProvidedServices().iterator().next();
         int sizeBefore = appointment1.getProvidedServices().size();
 
@@ -143,10 +164,127 @@ public class ProvidedServiceAppointmentAssociationTest {
     }
 
     @Test
-    void getProvidedServicesReturnsCopy() {
+    void getAppointmentProvidedServicesReturnsCopy() {
         Set<ProvidedService> services = appointment1.getProvidedServices();
         services.clear();
 
         assertFalse(appointment1.getProvidedServices().isEmpty());
+    }
+
+    @Test
+    void constructorAddsServiceAssociationBothSides() {
+        assertTrue(service1.getProvidedServices().contains(providedService));
+        assertEquals(service1, providedService.getService());
+    }
+
+    @Test
+    void constructorWithNullServiceThrowsException() {
+        assertThrows(NullPointerException.class, () ->
+                new ProvidedService.Builder(LocalDateTime.now(), null, appointment1, Set.of(master1)).build());
+    }
+
+    @Test
+    void addProvidedServiceToServiceUpdatesBothSides() {
+        service2.addProvidedService(providedService);
+
+        assertTrue(service2.getProvidedServices().contains(providedService));
+    }
+
+    @Test
+    void addNullProvidedServiceToServiceThrowsException() {
+        assertThrows(NullPointerException.class, () -> service1.addProvidedService(null));
+    }
+
+    @Test
+    void addDuplicateProvidedServiceToServiceDoesNotDuplicate() {
+        int sizeBefore = service1.getProvidedServices().size();
+
+        service1.addProvidedService(providedService);
+
+        assertEquals(sizeBefore, service1.getProvidedServices().size());
+    }
+
+    @Test
+    void addSameServiceDoesNotDuplicate() {
+        int sizeBefore = service1.getProvidedServices().size();
+
+        providedService.addService(service1);
+
+        assertEquals(sizeBefore, service1.getProvidedServices().size());
+    }
+
+    @Test
+    void addNullServiceThrowsException() {
+        assertThrows(NullPointerException.class, () -> providedService.addService(null));
+    }
+
+    @Test
+    void removeServiceUpdatesBothSides() {
+        Service oldService = providedService.getService();
+        Appointment oldAppointment = providedService.getAppointment();
+
+        providedService.removeService(oldService);
+
+        assertNull(providedService.getService());
+        assertNull(providedService.getAppointment());
+        assertFalse(oldService.getProvidedServices().contains(providedService));
+        assertFalse(oldAppointment.getProvidedServices().contains(providedService));
+    }
+
+    @Test
+    void removeNullServiceThrowsException() {
+        assertThrows(NullPointerException.class, () -> providedService.removeService(null));
+    }
+
+    @Test
+    void removeServiceNotLinkedDoesNothing() {
+        providedService.removeService(service2);
+
+        assertEquals(service1, providedService.getService());
+    }
+
+    @Test
+    void removeProvidedServiceFromServiceUpdatesBothSides() {
+        service1.removeProvidedService(providedService);
+
+        assertFalse(service1.getProvidedServices().contains(providedService));
+    }
+
+    @Test
+    void removeNullProvidedServiceFromServiceThrowsException() {
+        assertThrows(NullPointerException.class, () -> service1.removeProvidedService(null));
+    }
+
+    @Test
+    void removeProvidedServiceNotInServiceDoesNothing() {
+        int sizeBefore = service2.getProvidedServices().size();
+
+        service2.removeProvidedService(providedService);
+
+        assertEquals(sizeBefore, service2.getProvidedServices().size());
+    }
+
+    @Test
+    void serviceCanHaveMultipleProvidedServices() {
+        ServiceInfo serviceInfo2 = new ServiceInfo(service1, LocalDateTime.now().plusHours(2), Set.of(master2));
+        new Appointment.Builder(LocalDate.now().plusDays(1), customer, Set.of(serviceInfo2))
+                .receptionist(receptionist)
+                .build();
+
+        assertEquals(2, service1.getProvidedServices().size());
+    }
+
+    @Test
+    void serviceCanHaveZeroProvidedServices() {
+        Service newService = new Service(3, "New Service", 30.0, "New", 20, Set.of(master1));
+        assertTrue(newService.getProvidedServices().isEmpty());
+    }
+
+    @Test
+    void getServiceProvidedServicesReturnsCopy() {
+        Set<ProvidedService> services = service1.getProvidedServices();
+        services.clear();
+
+        assertFalse(service1.getProvidedServices().isEmpty());
     }
 }

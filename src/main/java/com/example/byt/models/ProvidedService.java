@@ -114,28 +114,34 @@ public class ProvidedService {
         if (appointment == null) {
             throw new NullPointerException("Appointment cannot be null");
         }
-
         if (this.appointment != appointment) {
             return;
         }
-
+        Appointment oldAppointment = this.appointment;
+        Service oldService = this.service;
         this.appointment = null;
-        appointment.removeProvidedService(this);
-        removeService(service);
+        this.service = null;
+        oldAppointment.removeProvidedService(this);
+        if (oldService != null) {
+            oldService.removeProvidedService(this);
+        }
     }
 
     public void removeService(Service service){
         if (service == null) {
             throw new NullPointerException("Service cannot be null");
         }
-
         if (this.service != service) {
             return;
         }
-
+        Service oldService = this.service;
+        Appointment oldAppointment = this.appointment;
         this.service = null;
-        appointment.removeProvidedService(this);
-        service.removeProvidedService(this);
+        this.appointment = null;
+        oldService.removeProvidedService(this);
+        if (oldAppointment != null) {
+            oldAppointment.removeProvidedService(this);
+        }
     }
 
     public void removeMaster(Master master) {
