@@ -123,6 +123,16 @@ public class SkinServiceTest {
             assertEquals(savedService.getDuration(), originalService.getDuration());
             assertEquals(savedService.getPurpose(), originalService.getPurpose());
             assertEquals(savedService.getRegularPrice(), originalService.getRegularPrice());
+
+            Set<Master> savedSet = savedService.getMasterSpecializedIn();
+            Set<Master> originalSet = originalService.getMasterSpecializedIn();
+            assertEquals(savedSet.size(), originalSet.size());
+
+            for (Master savedMaster : savedSet) {
+                boolean matchFound = originalSet.stream()
+                        .anyMatch(orig -> Master.compareMasters(savedMaster, orig));
+                assertTrue(matchFound, "Matching master not found in original set");
+            }
         }
     }
 

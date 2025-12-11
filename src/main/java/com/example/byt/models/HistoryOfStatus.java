@@ -9,12 +9,13 @@ import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class HistoryOfStatus {
+public class HistoryOfStatus implements Serializable {
 
     @NotNull
     private AppointmentStatus status;
@@ -28,6 +29,9 @@ public class HistoryOfStatus {
     private LocalDate dateOfChangingStatus;
 
     private static List<HistoryOfStatus> historyOfStatuses = new ArrayList<>();
+
+    private HistoryOfStatus() {
+    }
 
     public HistoryOfStatus(AppointmentStatus status, LocalDate dateOfChangingStatus, Customer customer, Appointment appointment) {
         this.status = status;

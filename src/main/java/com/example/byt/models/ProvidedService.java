@@ -9,13 +9,14 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ProvidedService {
+public class ProvidedService implements Serializable {
 
     @Min(1)
     @Max(5)
@@ -36,6 +37,8 @@ public class ProvidedService {
     private static final int MAX_MASTERS = 2;
 
     private static List<ProvidedService> providedServices = new ArrayList<>();
+
+    private ProvidedService() {}
 
     private ProvidedService(Builder builder) {
         this.rating = builder.rating;

@@ -9,10 +9,11 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Min;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Master extends Worker {
+public class Master extends Worker implements Serializable {
 
     @Min(0)
     private int experience;
@@ -29,6 +30,9 @@ public class Master extends Worker {
     private Map<String, Certification> certificationsByNumber = new LinkedHashMap<>();
 
     private Set<ProvidedService> completedServices = new HashSet<>();
+
+    private Master() {
+    }
 
     public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
         super(name, surname, phoneNumber, birthDate);
@@ -317,4 +321,16 @@ public class Master extends Worker {
     public Map<String, Certification> getCertificationList() {
         return new LinkedHashMap<>(certificationsByNumber);
     }
+
+    public static boolean compareMasters(Master m1, Master m2) {
+        if (m1 == m2) return true;
+        if (m1 == null || m2 == null) return false;
+
+        if (m1.getExperience() != m2.getExperience()) return false;
+        if (!Objects.equals(m1.getName(), m2.getName())) return false;
+        if (!Objects.equals(m1.getSurname(), m2.getSurname())) return false;
+        if (!Objects.equals(m1.getPhoneNumber(), m2.getPhoneNumber())) return false;
+        return Objects.equals(m1.getBirthDate(), m2.getBirthDate());
+    }
+
 }

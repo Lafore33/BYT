@@ -7,6 +7,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Customer extends Person {
+public class Customer extends Person implements Serializable {
 
     @Email
     private String emailAddress;
@@ -25,6 +26,9 @@ public class Customer extends Person {
     private Set<HistoryOfStatus> historyOfStatuses = new HashSet<>();
 
     private static List<Customer> customers = new ArrayList<>();
+
+    private Customer() {
+    }
 
     public Customer(String name, String surname, String phoneNumber, String emailAddress, LocalDate birthDate) {
         super(name, surname, phoneNumber, birthDate);

@@ -9,13 +9,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Promotion {
+public class Promotion implements Serializable {
     @NotBlank
     private String name;
 
@@ -33,6 +34,9 @@ public class Promotion {
     private Set<Service> servicesApplicableTo = new HashSet<>();
 
     private static List<Promotion> promotions = new ArrayList<>();
+
+    private Promotion() {
+    }
 
     public Promotion(String name, String description, double percentage, LocalDate startDate, LocalDate endDate, Set<Service> servicesApplicableTo) {
         if(servicesApplicableTo == null || servicesApplicableTo.isEmpty()){

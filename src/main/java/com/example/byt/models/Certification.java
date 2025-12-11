@@ -9,12 +9,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class Certification {
+public class Certification implements Serializable {
     @NotBlank
     private String name;
 
@@ -36,6 +37,9 @@ public class Certification {
     private static List<Certification> certifications = new ArrayList<>();
 
     private Master master;
+
+    private Certification() {
+    }
 
     public Certification(Master master, String name, String certificationNumber,
                          String description, String organization,

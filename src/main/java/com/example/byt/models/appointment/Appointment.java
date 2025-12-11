@@ -6,18 +6,17 @@ import com.example.byt.models.ProvidedService;
 import com.example.byt.models.ServiceInfo;
 import com.example.byt.models.person.Customer;
 import com.example.byt.models.person.Receptionist;
-import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Appointment {
+public class Appointment implements Serializable {
     @NotNull
     private LocalDate date;
 
@@ -32,6 +31,9 @@ public class Appointment {
     private Set<HistoryOfStatus> historyOfStatuses = new HashSet<>();
 
     private static List<Appointment> appointments = new ArrayList<>();
+
+    private Appointment() {
+    }
 
     public Appointment(Builder builder) {
         this.date = builder.date;
