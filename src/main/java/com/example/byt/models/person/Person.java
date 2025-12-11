@@ -4,9 +4,10 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public abstract class Person {
+public abstract class Person implements Serializable {
 
     @NotBlank
     private String name;
@@ -22,6 +23,8 @@ public abstract class Person {
     @Past
     private LocalDate birthDate;
 
+    protected Person() {
+    }
 
     public Person(String name, String surname, String phoneNumber, LocalDate birthDate) {
         this.name = name;

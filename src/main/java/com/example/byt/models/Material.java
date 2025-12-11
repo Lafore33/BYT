@@ -7,12 +7,13 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotBlank;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Material {
+public class Material implements Serializable {
     @NotBlank
     private String name;
     @NotBlank
@@ -21,6 +22,9 @@ public class Material {
     private Set<Service> servicesUsedIn = new HashSet<>();
 
     private static List<Material> materials = new ArrayList<>();
+
+    private Material() {
+    }
 
     public Material(String name, String producer) {
         this.name = name;

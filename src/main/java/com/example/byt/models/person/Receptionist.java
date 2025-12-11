@@ -7,13 +7,14 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Receptionist extends Worker {
+public class Receptionist extends Worker implements Serializable {
 
     @NotNull
     private WorkType workType;
@@ -21,6 +22,9 @@ public class Receptionist extends Worker {
     private HashSet<Appointment> appointments = new HashSet<>();
 
     private static List<Receptionist> receptionists = new ArrayList<>();
+
+    private Receptionist() {
+    }
 
     public Receptionist(String name, String surname, String phoneNumber, LocalDate birthDate, WorkType workType) {
         super(name, surname, phoneNumber, birthDate);
