@@ -39,7 +39,7 @@ public class Person implements Serializable {
     }
 
 
-    private Person(String name, String surname, String phoneNumber, LocalDate birthDate) {
+    Person(String name, String surname, String phoneNumber, LocalDate birthDate) {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;

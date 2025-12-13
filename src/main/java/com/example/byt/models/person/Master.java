@@ -13,7 +13,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Master extends Worker implements Serializable {
+public class Master implements Serializable {
+    private Worker worker;
 
     @Min(0)
     private int experience;
@@ -34,25 +35,87 @@ public class Master extends Worker implements Serializable {
     private Master() {
     }
 
-    public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
-        super(name, surname, phoneNumber, birthDate);
+    public Master(Worker worker, int experience) {
+        if (worker == null) {
+            throw new NullPointerException("Worker cannot be null");
+        }
+        if (worker.isMaster()) {
+            throw new IllegalStateException("Worker is already a Master");
+        }
+        if (worker.isReceptionist()) {
+            throw new IllegalStateException("Worker is already a Receptionist. Use changeToMaster() first.");
+        }
+        this.worker = worker;
         this.experience = experience;
+        worker.setMasterRole(this);
         addMaster(this);
         Service dummyService = new Service(0, "Dummy Service", 0, "This is a dummy service", 0, Set.of(this));
         Certification dummyCertification = new Certification(this, "Dummy", "0", "This is a dummy certification", "Dummy", LocalDate.now());
     }
 
-    public Master(String name, String surname, String phoneNumber, LocalDate birthDate,
-                  int experience, Set<Service> servicesSpecialisesIn) {
-        super(name, surname, phoneNumber, birthDate);
+    public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
+        this(new Worker(name, surname, phoneNumber, birthDate), experience);
+    }
+
+    public Master(Worker worker, int experience, Set<Service> servicesSpecialisesIn) {
+        if (worker == null) {
+            throw new NullPointerException("Worker cannot be null");
+        }
+        if (worker.isMaster()) {
+            throw new IllegalStateException("Worker is already a Master");
+        }
+        if (worker.isReceptionist()) {
+            throw new IllegalStateException("Worker is already a Receptionist. Use changeToMaster() first.");
+        }
         if (servicesSpecialisesIn == null || servicesSpecialisesIn.isEmpty()) {
             throw new IllegalArgumentException("Master should specialise in at least one service");
         }
+        this.worker = worker;
         this.experience = experience;
+        worker.setMasterRole(this);
         addMaster(this);
         for (Service service : servicesSpecialisesIn) {
             addServiceSpecialisesIn(service);
         }
+    }
+
+    public Master(String name, String surname, String phoneNumber, LocalDate birthDate,
+                  int experience, Set<Service> servicesSpecialisesIn) {
+        this(new Worker(name, surname, phoneNumber, birthDate), experience, servicesSpecialisesIn);
+    }
+
+    public Receptionist changeToReceptionist(WorkType workType) {
+        if (workType == null) {
+            throw new IllegalArgumentException("WorkType cannot be null");
+        }
+        Worker worker = this.worker;
+        removeMaster();
+        return new Receptionist(worker, workType);
+    }
+
+
+    public Worker getWorker() {
+        return worker;
+    }
+
+    public String getName() {
+        return worker.getName();
+    }
+
+    public String getSurname() {
+        return worker.getSurname();
+    }
+
+    public String getPhoneNumber() {
+        return worker.getPhoneNumber();
+    }
+
+    public LocalDate getBirthDate() {
+        return worker.getBirthDate();
+    }
+
+    public Person getPerson() {
+        return worker.getPerson();
     }
 
     private static void addMaster(Master master){
@@ -82,6 +145,9 @@ public class Master extends Worker implements Serializable {
         }
         for (Certification certification : new ArrayList<>(certificationsByNumber.values())) {
             removeCertification(certification.getCertificationNumber());
+        }
+        if (worker != null) {
+            worker.clearMasterRole();
         }
         masters.remove(this);
     }
@@ -222,9 +288,7 @@ public class Master extends Worker implements Serializable {
         if (certification.getMaster() != this) {
             certification.setMaster(this);
         }
-
     }
-
 
     public void removeCertification(String certNumber) {
         if (certNumber == null) {
@@ -249,7 +313,7 @@ public class Master extends Worker implements Serializable {
         return this.experience >= minExperienceForTop;
     }
 
-    public static int getMinExperienceForTop(){
+    public static int getMinExperienceForTop() {
         return minExperienceForTop;
     }
 
@@ -332,5 +396,4 @@ public class Master extends Worker implements Serializable {
         if (!Objects.equals(m1.getPhoneNumber(), m2.getPhoneNumber())) return false;
         return Objects.equals(m1.getBirthDate(), m2.getBirthDate());
     }
-
 }
