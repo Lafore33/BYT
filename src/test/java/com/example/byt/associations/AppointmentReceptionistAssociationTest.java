@@ -6,10 +6,7 @@ import com.example.byt.models.ProvidedService;
 import com.example.byt.models.ServiceInfo;
 import com.example.byt.models.appointment.Appointment;
 import com.example.byt.models.appointment.PaymentMethod;
-import com.example.byt.models.person.Customer;
-import com.example.byt.models.person.Master;
-import com.example.byt.models.person.Receptionist;
-import com.example.byt.models.person.WorkType;
+import com.example.byt.models.person.*;
 import com.example.byt.models.services.Service;
 import org.junit.jupiter.api.*;
 
@@ -42,7 +39,7 @@ public class AppointmentReceptionistAssociationTest {
 
         master = new Master("Mike", "Smith", "444555666", LocalDate.of(1985, 3, 20), 5);
         service = new Service(1, "Haircut", 50.0, "Basic haircut", 30.0, Set.of(master));
-        customer = new Customer("John", "Doe", "111222333", "john@example.com", LocalDate.of(1990, 5, 15));
+        customer = Person.createCustomer("John", "Doe", "111222333", "john@example.com", LocalDate.of(1990, 5, 15));
         receptionist = new Receptionist("Anna", "Smith", "12345", LocalDate.of(1990, 1, 1), WorkType.FULL_TIME);
 
         ServiceInfo serviceInfo = new ServiceInfo(service, LocalDateTime.now(), Set.of(master));

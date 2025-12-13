@@ -3,10 +3,7 @@ package com.example.byt.associations;
 import com.example.byt.models.ProvidedService;
 import com.example.byt.models.ServiceInfo;
 import com.example.byt.models.appointment.Appointment;
-import com.example.byt.models.person.Customer;
-import com.example.byt.models.person.Master;
-import com.example.byt.models.person.Receptionist;
-import com.example.byt.models.person.WorkType;
+import com.example.byt.models.person.*;
 import com.example.byt.models.services.FourHandsService;
 import com.example.byt.models.services.Service;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +39,7 @@ public class ProvidedServiceMasterAssociationTest {
         Receptionist.clearExtent();
         Appointment.clearExtent();
 
-        customer = new Customer("John", "Doe", "123456789", LocalDate.of(1990, 1, 1));
+        customer = Person.createCustomer("John", "Doe", "123456789", LocalDate.of(1990, 1, 1));
         master1 = new Master("Mike", "Johnson", "555555555", LocalDate.of(1980, 3, 20), 5);
         master2 = new Master("Sarah", "Williams", "666666666", LocalDate.of(1985, 6, 15), 4);
         master3 = new Master("Tom", "Davis", "777777777", LocalDate.of(1982, 9, 25), 3);
