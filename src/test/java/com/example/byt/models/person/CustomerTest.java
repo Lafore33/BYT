@@ -35,7 +35,7 @@ public class CustomerTest {
         String phoneNumber = "+123456789";
         String emailAddress = "john@example.com";
         LocalDate dateOfBirth = LocalDate.of(2000, 1, 1);
-        Customer customer = new Customer(name, surname, phoneNumber, emailAddress, dateOfBirth);
+        Customer customer = Person.createCustomer(name, surname, phoneNumber, emailAddress, dateOfBirth);
         assertEquals(name, customer.getName(), "Incorrect customer name set in the constructor");
         assertEquals(surname, customer.getSurname(), "Incorrect customer surname set in the constructor");
         assertEquals(phoneNumber, customer.getPhoneNumber(), "Incorrect customer phone number set in the constructor");
@@ -48,7 +48,7 @@ public class CustomerTest {
         String surname = "Doe";
         String phoneNumber = "+123456789";
         LocalDate dateOfBirth = LocalDate.of(2000, 1, 1);
-        Customer customer = new Customer(name, surname, phoneNumber, dateOfBirth);
+        Customer customer = Person.createCustomer(name, surname, phoneNumber, dateOfBirth);
         assertEquals(name, customer.getName(), "Incorrect customer name set in the constructor");
         assertEquals(surname, customer.getSurname(), "Incorrect customer surname set in the constructor");
         assertEquals(phoneNumber, customer.getPhoneNumber(), "Incorrect customer phone number set in the constructor");
@@ -58,14 +58,14 @@ public class CustomerTest {
     @Test
     void customerDefaultStatusIsGood() {
         LocalDate birthDate = LocalDate.of(2000, 1, 1);
-        Customer customer = new Customer("Test", "User", "111", birthDate);
+        Customer customer = Person.createCustomer("Test", "User", "111", birthDate);
         assertEquals(CustomerStatus.GOOD, customer.getCustomerStatus());
     }
 
     @Test
     void validCustomerHasNoViolations() {
         LocalDate birthDate = LocalDate.of(2000, 1, 1);
-        Customer customer = new Customer("John", "Doe", "+123456789",
+        Customer customer = Person.createCustomer("John", "Doe", "+123456789",
                 "john@example.com", birthDate);
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
         assertTrue(violations.isEmpty(),
@@ -77,7 +77,7 @@ public class CustomerTest {
     @Test
     void invalidCustomerEmailProducesViolation() {
         LocalDate birthDate = LocalDate.of(2000, 1, 1);
-        Customer customer = new Customer("John", "Doe", "+123456789",
+        Customer customer = Person.createCustomer("John", "Doe", "+123456789",
                 "not-an-email", birthDate);
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
         assertTrue(containsViolationFor(violations, "emailAddress"),
@@ -89,7 +89,7 @@ public class CustomerTest {
     @Test
     void blankCustomerEmailProducesViolation() {
         LocalDate birthDate = LocalDate.of(2000, 1, 1);
-        Customer customer = new Customer("John", "Doe", "123456789",
+        Customer customer = Person.createCustomer("John", "Doe", "123456789",
                 " ", birthDate);
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
         assertTrue(containsViolationFor(violations, "emailAddress"),
@@ -101,13 +101,13 @@ public class CustomerTest {
     @Test
     void ageIsCalculatedCorrectly() {
         LocalDate birthDate = LocalDate.now().minusYears(25).minusDays(1);
-        Customer customer = new Customer("Age", "Test", "555", birthDate);
+        Customer customer = Person.createCustomer("Age", "Test", "555", birthDate);
         assertEquals(25, customer.getAge());
     }
 
     @Test
     void getCustomerListShouldReturnCopy() {
-        Customer customer = new Customer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
+        Customer customer = Person.createCustomer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
 
         List<Customer> listCopy = Customer.getCustomerList();
         listCopy.clear();
@@ -118,7 +118,7 @@ public class CustomerTest {
 
     @Test
     void setEmailAddressSetsValuesCorrectly() {
-        Customer customer = new Customer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
+        Customer customer = Person.createCustomer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
         String email = "exmple@example.com";
         customer.setEmailAddress(email);
         assertEquals(email, customer.getEmailAddress());
@@ -126,7 +126,7 @@ public class CustomerTest {
 
     @Test
     void settingCorrectEmailPassValidation(){
-        Customer customer = new Customer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
+        Customer customer = Person.createCustomer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
         String email = "exmple@example.com";
         customer.setEmailAddress(email);
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
@@ -135,7 +135,7 @@ public class CustomerTest {
 
     @Test
     void settingInvalidEmailFailsValidation(){
-        Customer customer = new Customer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
+        Customer customer = Person.createCustomer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
         String email = "not-email";
         customer.setEmailAddress(email);
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
@@ -144,7 +144,7 @@ public class CustomerTest {
 
     @Test
     void settingBlankEmailFailsValidation(){
-        Customer customer = new Customer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
+        Customer customer = Person.createCustomer("Test", "User", "111", LocalDate.now().minusYears(25).minusDays(1));
         String email = " ";
         customer.setEmailAddress(email);
         Set<ConstraintViolation<Customer>> violations = validator.validate(customer);

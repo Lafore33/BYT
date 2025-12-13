@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Customer extends Person implements Serializable {
+public class Customer implements Serializable {
 
     @Email
     private String emailAddress;
@@ -26,19 +26,26 @@ public class Customer extends Person implements Serializable {
     private Set<HistoryOfStatus> historyOfStatuses = new HashSet<>();
 
     private static List<Customer> customers = new ArrayList<>();
+    private Person person;
 
-    private Customer() {
+    protected Customer() {
     }
 
-    public Customer(String name, String surname, String phoneNumber, String emailAddress, LocalDate birthDate) {
-        super(name, surname, phoneNumber, birthDate);
+    protected Customer(Person person, String emailAddress) {
+        if(person == null) {
+            throw new NullPointerException("Person cannot be null");
+        }
+        this.person = person;
         this.emailAddress = emailAddress;
         this.customerStatus = CustomerStatus.GOOD;
         addCustomer(this);
     }
 
-    public Customer(String name, String surname, String phoneNumber, LocalDate birthDate) {
-        super(name, surname, phoneNumber, birthDate);
+    public Customer(Person person) {
+        if(person == null) {
+            throw new NullPointerException("Person cannot be null");
+        }
+        this.person = person;
         this.customerStatus = CustomerStatus.GOOD;
         addCustomer(this);
     }
@@ -55,6 +62,12 @@ public class Customer extends Person implements Serializable {
             return;
         }
         customers.add(customer);
+    }
+    protected static void removeFromExtent(Customer customer) {
+        if(customer == null) {
+            return;
+        }
+        customers.remove(customer);
     }
 
     public void addHistory(HistoryOfStatus historyOfStatus) {
@@ -79,7 +92,7 @@ public class Customer extends Person implements Serializable {
     }
 
     public int getAge() {
-        return Period.between(getBirthDate(), LocalDate.now()).getYears();
+        return Period.between(person.getBirthDate(), LocalDate.now()).getYears();
     }
 
     public CustomerStatus getCustomerStatus() {
@@ -91,6 +104,26 @@ public class Customer extends Person implements Serializable {
 
     public static List<Customer> getCustomerList() {
         return new ArrayList<>(customers);
+    }
+
+    public String getName() {
+        return person.getName();
+    }
+
+    public String getSurname() {
+        return person.getSurname();
+    }
+
+    public String getPhoneNumber() {
+        return person.getPhoneNumber();
+    }
+
+    public LocalDate getBirthDate() {
+        return person.getBirthDate();
+    }
+
+    public Person getPerson() {
+        return person;
     }
 
     public static void clearExtent() {

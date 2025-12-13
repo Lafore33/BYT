@@ -6,12 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class WorkerTest {
 
-    private static class TestWorker extends Worker {
-        public TestWorker(String name, String surname, String phoneNumber, LocalDate birthDate) {
-            super(name, surname, phoneNumber, birthDate);
-        }
-    }
-
     @Test
     void constructorSetsValuesCorrectly() {
         String name = "Yelizaveta";
@@ -19,7 +13,7 @@ class WorkerTest {
         String phoneNumber = "+48123456789";
         LocalDate birthDate = LocalDate.now().minusYears(25);
 
-        TestWorker worker = new TestWorker(
+        Worker worker = Person.createWorker(
                 name,
                 surname,
                 phoneNumber,
