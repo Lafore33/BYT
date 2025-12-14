@@ -11,20 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class TwoHandsService extends Service {
+public class TwoHandsService {
+
+    private Service service;
     private final static int numOfSpecialistsRequired = 1;
 
     private static List<TwoHandsService> twoHandsServices = new ArrayList<>();
 
-    public TwoHandsService(int id, String name, double regularPrice, String description,
-                           double duration, Set<Master> masters) {
-        super(id, name, regularPrice, description, duration, masters);
-        addTwoHandsService(this);
-    }
-
-    public TwoHandsService(int id, String name, double regularPrice, String description,
-                           double duration, Set<Master> masters, Set<Material> materialsUsed) {
-        super(id, name, regularPrice, description, duration, masters, materialsUsed);
+    protected TwoHandsService(Service service) {
+        this.service = service;
         addTwoHandsService(this);
     }
 
@@ -50,7 +45,19 @@ public class TwoHandsService extends Service {
         return new ArrayList<>(twoHandsServices);
     }
 
+    public void removeFromExtent(){
+        Service service = this.service;
+        this.service = null;
+
+        if (service != null) service.removeRelatedService();
+        twoHandsServices.remove(this);
+    }
+
     public static void clearExtent() {
         twoHandsServices.clear();
+    }
+
+    public Service getService() {
+        return service;
     }
 }

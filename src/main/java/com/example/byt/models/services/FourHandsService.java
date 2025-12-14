@@ -12,21 +12,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class FourHandsService extends Service {
+public class FourHandsService {
+
     private boolean isExpressService;
     private final static int numOfSpecialistsRequired = 2;
+    private Service service;
     private static List<FourHandsService> fourHandsServices = new ArrayList<>();
 
-    public FourHandsService(int id, String name, double regularPrice, String description,
-                            double duration, Set<Master> masters, boolean isExpressService) {
-        super(id, name, regularPrice, description, duration, masters);
+    protected FourHandsService(Service service, boolean isExpressService) {
+        this.service = service;
         this.isExpressService = isExpressService;
-        addFourHandsService(this);
-    }
-    public FourHandsService(int id, String name, double regularPrice, String description,
-                            double duration, Set<Master> masters, Set<Material> materialsUsed, boolean isExpressService) {
-        super(id, name, regularPrice, description, duration, masters, materialsUsed);
-        this.isExpressService = isExpressService;
+
         addFourHandsService(this);
     }
 
@@ -55,7 +51,19 @@ public class FourHandsService extends Service {
         return isExpressService;
     }
 
+    public void removeFromExtent(){
+        Service service = this.service;
+        this.service = null;
+
+        if (service != null) service.removeRelatedService();
+        fourHandsServices.remove(this);
+    }
+
     public static void clearExtent() {
         fourHandsServices.clear();
+    }
+
+    public Service getService() {
+        return service;
     }
 }
