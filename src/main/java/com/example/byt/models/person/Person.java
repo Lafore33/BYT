@@ -142,7 +142,34 @@ public class Person implements Serializable {
         person.customer = customer;
         person.worker = worker;
         return person;
+    }
 
+    public static Worker addWorkerToCustomer(Customer customer) {
+        Person person = customer.getPerson();
+        if(person.isWorker()){
+            throw new IllegalStateException("Worker is already added");
+        }
+        Worker worker = new Worker(person);
+        person.worker = worker;
+        return worker;
+    }
+
+    public static Customer addCustomerToWorker(Worker worker){
+        Person person = worker.getPerson();
+        if(person.isCustomer())
+            throw new IllegalStateException("Customer is already added");
+        Customer customer = new Customer(person);
+        person.customer = customer;
+        return customer;
+    }
+
+    public static Customer addCustomerToWorker(Worker worker, String email){
+        Person person = worker.getPerson();
+        if(person.isCustomer())
+            throw new IllegalStateException("Customer is already added");
+        Customer customer = new Customer(person, email);
+        person.customer = customer;
+        return customer;
     }
 
     public String getName() {
@@ -175,5 +202,13 @@ public class Person implements Serializable {
 
     public Customer getCustomer(){
         return customer;
+    }
+
+    public static void clearExtent(){
+        people.clear();
+    }
+
+    public static List<Person> getPersonList() {
+        return new ArrayList<>(people);
     }
 }

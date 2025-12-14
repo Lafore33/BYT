@@ -52,4 +52,12 @@ public class Worker implements Serializable {
         return person;
     }
 
+    public static void clearExtent(){
+        workers.clear();
+    }
+
+    public static List<Worker> getWorkerList() {
+        return new ArrayList<>(workers);
+    }
+
 }
