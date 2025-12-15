@@ -35,7 +35,7 @@ class ReceptionistTest {
         WorkType type = WorkType.FULL_TIME;
         LocalDate birthDate = LocalDate.now().minusYears(25);
 
-        Receptionist receptionist = Worker.createReceptionist(name, surname, phoneNumber, birthDate, type).getReceptionist();
+        Receptionist receptionist = Worker.createReceptionist(name, surname, phoneNumber, birthDate, type);
 
         assertEquals(name, receptionist.getWorker().getName(), "Incorrect name set in constructor");
         assertEquals(surname, receptionist.getWorker().getSurname(), "Incorrect surname set in constructor");
@@ -47,25 +47,28 @@ class ReceptionistTest {
     @Test
     void validReceptionistPassesValidation() {
         LocalDate birthDate = LocalDate.now().minusYears(25);
-        Receptionist receptionist = Worker.createReceptionist("Yelizaveta", "Gaiduk", "+48123456789", birthDate, WorkType.FULL_TIME).getReceptionist();
+        Receptionist receptionist = Worker.createReceptionist("Yelizaveta", "Gaiduk", "+48123456789", birthDate, WorkType.FULL_TIME);
 
         Set<ConstraintViolation<Receptionist>> violations = validator.validate(receptionist);
         assertTrue(violations.isEmpty(),"Valid receptionist should have no validation violations");
         assertTrue(Receptionist.getReceptionistList().contains(receptionist), "Valid receptionist must be added to extent");
     }
+
     @Test
     void nullWorkTypeFailsValidation() {
         LocalDate birthDate = LocalDate.now().minusYears(25);
+        Receptionist receptionist = Worker.createReceptionist("Yelizaveta", "Gaiduk", "+48123456789", birthDate, null);
 
-        assertThrows(NullPointerException.class, () -> {
-            Worker.createReceptionist("Yelizaveta", "Gaiduk", "+48123456789", birthDate, null);
-        }, "Null workType should throw NullPointerException");
+        Set<ConstraintViolation<Receptionist>> violations = validator.validate(receptionist);
+
+        assertFalse(violations.isEmpty(),"Receptionist with null workType should fail validation");
+        assertFalse(Receptionist.getReceptionistList().contains(receptionist), "Invalid receptionist must not be added to extent");
     }
 
     @Test
     void getReceptionistListShouldReturnCopy() {
         LocalDate birthDate = LocalDate.now().minusYears(25);
-        Receptionist receptionist = Worker.createReceptionist("Yelizaveta", "Gaiduk", "+48123456789", birthDate, WorkType.FULL_TIME).getReceptionist();
+        Receptionist receptionist = Worker.createReceptionist("Yelizaveta", "Gaiduk", "+48123456789", birthDate, WorkType.FULL_TIME);
 
         List<Receptionist> listCopy = Receptionist.getReceptionistList();
         listCopy.clear();

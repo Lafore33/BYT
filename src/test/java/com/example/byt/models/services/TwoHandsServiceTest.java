@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TwoHandsServiceTest {
     private static Validator validator;
-    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5).getMaster();
+    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
 
     @BeforeAll

@@ -44,10 +44,10 @@ public class HistoryOfStatusTest {
         Certification.clearExtent();
         ProvidedService.clearExtent();
 
-        master = Worker.createMaster("Mike", "Smith", "444555666", LocalDate.of(1985, 3, 20), 5).getMaster();
+        master = Worker.createMaster("Mike", "Smith", "444555666", LocalDate.of(1985, 3, 20), 5);
         service = new Service(1, "Haircut", 50.0, "Basic haircut", 30.0, Set.of(master));
         customer = Person.createCustomer("John", "Doe", "111222333", "john@example.com", LocalDate.of(1990, 5, 15));
-        receptionist = Worker.createReceptionist("Anna", "Brown", "777888999", LocalDate.of(1992, 7, 10), WorkType.FULL_TIME).getReceptionist();
+        receptionist = Worker.createReceptionist("Anna", "Brown", "777888999", LocalDate.of(1992, 7, 10), WorkType.FULL_TIME);
         ServiceInfo serviceInfo = new ServiceInfo(service, LocalDateTime.now(), Set.of(master));
         appointment = new Appointment.Builder(LocalDate.now(), customer, Set.of(serviceInfo)).receptionist(receptionist).build();
     }

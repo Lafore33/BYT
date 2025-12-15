@@ -17,7 +17,7 @@ public class ServicePromotionAssociationTest {
     Service service2;
     Promotion promotion1;
     Promotion promotion2;
-    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5).getMaster();
+    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
     @BeforeEach
     public void setUp() {

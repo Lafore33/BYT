@@ -193,17 +193,13 @@ public class ProvidedService implements Serializable {
         if (service == null) {
             return;
         }
-
         if (!master.getServiceSpecialisesIn().contains(service)) {
-            Worker worker = master.getWorker();
-
             throw new IllegalArgumentException(
-                    "Master " + worker.getName() + " " + worker.getSurname()
+                    "Master " + master.getName() + " " + master.getSurname()
                             + " does not specialize in service " + service.getName()
             );
         }
     }
-
 
     public Service getService() {
         return service;

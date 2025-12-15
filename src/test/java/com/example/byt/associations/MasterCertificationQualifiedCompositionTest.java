@@ -20,8 +20,8 @@ public class MasterCertificationQualifiedCompositionTest {
         Master.clearExtent();
         Certification.clearExtent();
 
-        master1 = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111222", LocalDate.of(2005, 11, 15), 5).getMaster();
-        master2 = Worker.createMaster("Dana", "Nazarchuk", "+48550111222", LocalDate.of(1990, 1, 1), 10).getMaster();
+        master1 = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111222", LocalDate.of(2005, 11, 15), 5);
+        master2 = Worker.createMaster("Dana", "Nazarchuk", "+48550111222", LocalDate.of(1990, 1, 1), 10);
     }
 
     @Test

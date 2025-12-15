@@ -35,7 +35,7 @@ class MasterTest {
         LocalDate dateOfBirth = LocalDate.now().minusYears(25);
         int experience = 5;
 
-        Master master = Worker.createMaster(name, surname, phoneNumber, dateOfBirth, experience).getMaster();
+        Master master = Worker.createMaster(name, surname, phoneNumber, dateOfBirth, experience);
 
         assertEquals(name, master.getWorker().getName(), "Incorrect name set in constructor");
         assertEquals(surname, master.getWorker().getSurname(), "Incorrect surname set in constructor");
@@ -46,7 +46,7 @@ class MasterTest {
 
     @Test
     void validMasterShouldHaveNoViolations() {
-        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456789", LocalDate.now().minusYears(25), 5).getMaster();
+        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456789", LocalDate.now().minusYears(25), 5);
 
         Set<ConstraintViolation<Master>> violations = validator.validate(master);
         assertTrue(violations.isEmpty(),"Valid master should have no validation violations");
@@ -55,7 +55,7 @@ class MasterTest {
 
     @Test
     void zeroExperienceShouldBeValid() {
-        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456789", LocalDate.now().minusYears(25), 0).getMaster();
+        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456789", LocalDate.now().minusYears(25), 0);
 
         Set<ConstraintViolation<Master>> violations = validator.validate(master);
         assertTrue(violations.isEmpty(),"Zero experience should be valid");
@@ -64,7 +64,7 @@ class MasterTest {
 
     @Test
     void negativeExperienceShouldFailValidation() {
-        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456789", LocalDate.now().minusYears(25), -1).getMaster();
+        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456789", LocalDate.now().minusYears(25), -1);
 
         Set<ConstraintViolation<Master>> violations = validator.validate(master);
         assertTrue(containsViolationFor(violations, "experience"),"Expected violation for negative experience");
@@ -78,7 +78,7 @@ class MasterTest {
 
     @Test
     void getMasterListShouldReturnCopy() {
-        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456777", LocalDate.now().minusYears(25), 3).getMaster();
+        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456777", LocalDate.now().minusYears(25), 3);
 
         List<Master> listCopy = Master.getMasterList();
         listCopy.clear();

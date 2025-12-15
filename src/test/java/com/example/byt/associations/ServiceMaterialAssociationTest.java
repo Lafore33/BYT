@@ -17,7 +17,7 @@ public class ServiceMaterialAssociationTest {
     Service service2;
     Material material1;
     Material material2;
-    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5).getMaster();
+    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
     @BeforeEach
     void setUp(){

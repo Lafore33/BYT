@@ -1,9 +1,12 @@
 package com.example.byt.models.person;
 
+import com.example.byt.models.services.Service;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Worker implements Serializable {
 
@@ -13,32 +16,54 @@ public class Worker implements Serializable {
     private Receptionist receptionist;
 
     private static List<Worker> workers = new ArrayList<>();
+    protected Worker() {
+    }
 
     protected Worker(Person person) {
         if(person == null){
             throw new NullPointerException("Person cannot be null");
         }
         this.person = person;
-        workers.add(this);
+        addWorker(this);
+    }
+    private static void addWorker(Worker worker) {
+        workers.add(worker);
     }
 
-    public static Worker createMaster(
+    public static Master createMaster(
             String name,
             String surname,
             String phoneNumber,
             LocalDate birthDate,
-            int experience) {
+            int experience
+    ) {
         Worker worker = Person.createWorker(
                 name,
                 surname,
                 phoneNumber,
                 birthDate
         );
-        worker.assignMaster(experience);
-        return worker;
+        return assignMaster(worker, experience);
+    }
+    public static Master createMaster(
+            String name,
+            String surname,
+            String phoneNumber,
+            LocalDate birthDate,
+            int experience,
+            Set<Service> services
+    ) {
+        Worker worker = Person.createWorker(
+                name,
+                surname,
+                phoneNumber,
+                birthDate
+        );
+        return assignMaster(worker, experience, services);
     }
 
-    public static Worker createReceptionist(
+
+    public static Receptionist createReceptionist(
             String name,
             String surname,
             String phoneNumber,
@@ -51,25 +76,46 @@ public class Worker implements Serializable {
                 phoneNumber,
                 birthDate
         );
-        worker.assignInitialReceptionist(workType);
-        return worker;
+        return assignInitialReceptionist(worker, workType);
     }
 
-
-
-    private void assignMaster(int experience) {
-        if (this.master != null || this.receptionist != null) {
+    public static Master assignMaster(Worker worker, int experience) {
+        if (worker == null) {
+            throw new NullPointerException("Worker cannot be null");
+        }
+        if (worker.master != null || worker.receptionist != null) {
             throw new IllegalStateException("Worker already has a role");
         }
-        this.master = new Master(this, experience);
+        worker.master = new Master(worker, experience);
+        return worker.master;
     }
-
-    private void assignInitialReceptionist(WorkType workType) {
-        if (this.master != null || this.receptionist != null) {
+    public static Master assignMaster(
+            Worker worker,
+            int experience,
+            Set<Service> services
+    ) {
+        if (worker == null) {
+            throw new NullPointerException("Worker cannot be null");
+        }
+        if (worker.master != null || worker.receptionist != null) {
             throw new IllegalStateException("Worker already has a role");
         }
-        this.receptionist = new Receptionist(this, workType);
+
+        worker.master = new Master(worker, experience, services);
+        return worker.master;
     }
+
+    public static Receptionist assignInitialReceptionist(Worker worker, WorkType workType) {
+        if (worker == null) {
+            throw new NullPointerException("Worker cannot be null");
+        }
+        if (worker.master != null || worker.receptionist != null) {
+            throw new IllegalStateException("Worker already has a role");
+        }
+        worker.receptionist = new Receptionist(worker, workType);
+        return worker.receptionist;
+    }
+
     public boolean isMaster() {
         return master != null;
     }
@@ -125,6 +171,17 @@ public class Worker implements Serializable {
     }
 
     protected static void removeFromExtent(Worker worker) {
+        if (worker == null) {
+            return;
+        }
+        if (worker.master != null) {
+            worker.master.removeMaster();
+            worker.master = null;
+        }
+        if (worker.receptionist != null) {
+            worker.receptionist.removeReceptionist();
+            worker.receptionist = null;
+        }
         workers.remove(worker);
     }
 }

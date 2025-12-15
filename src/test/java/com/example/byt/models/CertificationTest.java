@@ -31,7 +31,7 @@ class CertificationTest {
 
     @BeforeEach
     void setUp() {
-        master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5).getMaster();
+        master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
     }
 
     @Test

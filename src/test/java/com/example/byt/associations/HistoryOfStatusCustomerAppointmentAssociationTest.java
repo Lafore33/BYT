@@ -36,9 +36,9 @@ public class HistoryOfStatusCustomerAppointmentAssociationTest {
 
         customer1 = Person.createCustomer("John", "Doe", "123456789", LocalDate.of(1990, 1, 1));
         customer2 = Person.createCustomer("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 15));
-        master = Worker.createMaster("Mike", "Johnson", "555555555", LocalDate.of(1980, 3, 20), 5).getMaster();
+        master = Worker.createMaster("Mike", "Johnson", "555555555", LocalDate.of(1980, 3, 20), 5);
         service = new Service(1, "Haircut", 50.0, "Basic haircut", 30, Set.of(master));
-        receptionist = Worker.createReceptionist("Anna", "Brown", "777888999", LocalDate.of(1992, 7, 10), WorkType.FULL_TIME).getReceptionist();
+        receptionist = Worker.createReceptionist("Anna", "Brown", "777888999", LocalDate.of(1992, 7, 10), WorkType.FULL_TIME);
 
         ServiceInfo serviceInfo1 = new ServiceInfo(service, LocalDateTime.now(), Set.of(master));
         appointment1 = new Appointment.Builder(LocalDate.now(), customer1, Set.of(serviceInfo1))

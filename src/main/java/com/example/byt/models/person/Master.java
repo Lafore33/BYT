@@ -54,7 +54,7 @@ public class Master  implements Serializable {
         );
     }
 
-    public Master(Worker worker, int experience, Set<Service> servicesSpecialisesIn) {
+    protected Master(Worker worker, int experience, Set<Service> servicesSpecialisesIn) {
         if (worker == null) {
             throw new NullPointerException("Worker cannot be null");
         }
@@ -238,7 +238,6 @@ public class Master  implements Serializable {
 
     }
 
-
     public void removeCertification(String certNumber) {
         if (certNumber == null) {
             return;
@@ -341,17 +340,28 @@ public class Master  implements Serializable {
 
         if (m1.getExperience() != m2.getExperience()) return false;
 
-        Worker w1 = m1.getWorker();
-        Worker w2 = m2.getWorker();
-
-        if (!Objects.equals(w1.getName(), w2.getName())) return false;
-        if (!Objects.equals(w1.getSurname(), w2.getSurname())) return false;
-        if (!Objects.equals(w1.getPhoneNumber(), w2.getPhoneNumber())) return false;
-        return Objects.equals(w1.getBirthDate(), w2.getBirthDate());
+        if (!Objects.equals(m1.getName(), m2.getName())) return false;
+        if (!Objects.equals(m1.getSurname(), m2.getSurname())) return false;
+        if (!Objects.equals(m1.getPhoneNumber(), m2.getPhoneNumber())) return false;
+        return Objects.equals(m1.getBirthDate(), m2.getBirthDate());
     }
 
     public Worker getWorker() {
         return worker;
     }
+    public String getName() {
+        return worker.getName();
+    }
 
+    public String getSurname() {
+        return worker.getSurname();
+    }
+
+    public String getPhoneNumber() {
+        return worker.getPhoneNumber();
+    }
+
+    public LocalDate getBirthDate() {
+        return worker.getBirthDate();
+    }
 }

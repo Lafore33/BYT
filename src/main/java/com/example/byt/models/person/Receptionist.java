@@ -8,7 +8,6 @@ import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,9 +28,6 @@ public class Receptionist implements Serializable {
     protected Receptionist(Worker worker, WorkType workType) {
         if (worker == null) {
             throw new NullPointerException("Worker cannot be null");
-        }
-        if (workType == null) {
-            throw new NullPointerException("WorkType cannot be null");
         }
         this.worker = worker;
         this.workType = workType;
@@ -83,4 +79,23 @@ public class Receptionist implements Serializable {
     public Worker getWorker() {
         return worker;
     }
+    public void removeAppointment(Appointment appointment) {
+        if (appointment == null) {
+            throw new NullPointerException("Appointment cannot be null");
+        }
+        if (!appointments.contains(appointment)) {
+            return;
+        }
+        appointments.remove(appointment);
+        appointment.removeReceptionist(this);
+    }
+
+    public void removeReceptionist() {
+        for (Appointment appointment : new HashSet<>(appointments)) {
+            removeAppointment(appointment);
+        }
+        receptionists.remove(this);
+    }
+
+
 }
