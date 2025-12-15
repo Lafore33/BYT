@@ -37,7 +37,7 @@ public class TwoHandsServiceTest {
         String description = "Full body massage with two hands";
         double regularPrice = 80.0;
         double duration = 60.0;
-        TwoHandsService service = new TwoHandsService(
+        TwoHandsService service = Service.createTwoHandsService(
                 id,
                 name,
                 regularPrice,
@@ -45,16 +45,16 @@ public class TwoHandsServiceTest {
                 duration,
                 Set.of(master)
         );
-        assertEquals(id, service.getId(), "Incorrect id set in the constructor");
-        assertEquals(name, service.getName(), "Incorrect name set in the constructor");
-        assertEquals(description, service.getDescription(), "Incorrect description set in the constructor");
-        assertEquals(duration, service.getDuration(), "Incorrect duration set in the constructor");
-        assertEquals(regularPrice, service.getRegularPrice(), "Incorrect regular price set in the constructor");
+        assertEquals(id, service.getService().getId(), "Incorrect id set in the constructor");
+        assertEquals(name, service.getService().getName(), "Incorrect name set in the constructor");
+        assertEquals(description, service.getService().getDescription(), "Incorrect description set in the constructor");
+        assertEquals(duration, service.getService().getDuration(), "Incorrect duration set in the constructor");
+        assertEquals(regularPrice, service.getService().getRegularPrice(), "Incorrect regular price set in the constructor");
     }
 
     @Test
     void validTwoHandsServiceShouldHaveNoViolations() {
-        TwoHandsService service = new TwoHandsService(
+        TwoHandsService service = Service.createTwoHandsService(
                 1,
                 "Massage",
                 80.0,
@@ -73,7 +73,7 @@ public class TwoHandsServiceTest {
 
     @Test
     void getServiceListShouldReturnCopy() {
-        TwoHandsService service = new TwoHandsService(
+        TwoHandsService service = Service.createTwoHandsService(
                 1,
                 "Massage",
                 80.0,
