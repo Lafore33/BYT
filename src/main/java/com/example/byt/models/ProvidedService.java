@@ -183,7 +183,7 @@ public class ProvidedService implements Serializable {
     }
 
     private int getRequiredMasterCount() {
-        if (service instanceof FourHandsService) {
+        if (service.getRelatedService() instanceof FourHandsService) {
             return FourHandsService.getNumOfSpecialistsRequired();
         }
         return MIN_MASTERS;

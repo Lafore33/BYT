@@ -47,9 +47,10 @@ public class ProvidedServiceMasterAssociationTest {
 
         service1 = new Service(1, "Haircut", 50.0, "Basic haircut", 30, Set.of(master1, master2, master3));
         service2 = new Service(2, "Coloring", 100.0, "Hair coloring", 60, Set.of(master1, master2));
-        fourHandsService = new FourHandsService(3, "Four Hands Massage", 200.0, "Luxury massage", 90, Set.of(master1, master2, master3), false);
 
+        fourHandsService = Service.createFourHandsService(3, "Four Hands Massage", 200.0, "Luxury massage", 90, Set.of(master1, master2, master3), false);
         receptionist = Worker.createReceptionist("Anna", "Brown", "777888999", LocalDate.of(1992, 7, 10), WorkType.FULL_TIME);
+
 
         ServiceInfo serviceInfo = new ServiceInfo(service1, LocalDateTime.now(), Set.of(master1));
         appointment = new Appointment.Builder(LocalDate.now(), customer, Set.of(serviceInfo))
