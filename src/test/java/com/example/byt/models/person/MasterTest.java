@@ -1,4 +1,5 @@
 package com.example.byt.models.person;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -34,29 +35,19 @@ class MasterTest {
         LocalDate dateOfBirth = LocalDate.now().minusYears(25);
         int experience = 5;
 
-        Master master = new Master(
-                name,
-                surname,
-                phoneNumber,
-                dateOfBirth,
-                experience
-        );
-        assertEquals(name, master.getName(), "Incorrect name set in constructor");
-        assertEquals(surname, master.getSurname(), "Incorrect surname set in constructor");
-        assertEquals(phoneNumber, master.getPhoneNumber(), "Incorrect phone number set in constructor");
-        assertEquals(dateOfBirth, master.getBirthDate(), "Incorrect birth date set in constructor");
+        Master master = Worker.createMaster(name, surname, phoneNumber, dateOfBirth, experience).getMaster();
+
+        assertEquals(name, master.getWorker().getName(), "Incorrect name set in constructor");
+        assertEquals(surname, master.getWorker().getSurname(), "Incorrect surname set in constructor");
+        assertEquals(phoneNumber, master.getWorker().getPhoneNumber(), "Incorrect phone number set in constructor");
+        assertEquals(dateOfBirth, master.getWorker().getBirthDate(), "Incorrect birth date set in constructor");
         assertEquals(experience, master.getExperience(), "Incorrect experience set in constructor");
     }
 
     @Test
     void validMasterShouldHaveNoViolations() {
-        Master master = new Master(
-                "Yelizaveta",
-                "Gaiduk",
-                "+48123456789",
-                LocalDate.now().minusYears(25),
-                5
-        );
+        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456789", LocalDate.now().minusYears(25), 5).getMaster();
+
         Set<ConstraintViolation<Master>> violations = validator.validate(master);
         assertTrue(violations.isEmpty(),"Valid master should have no validation violations");
         assertTrue(Master.getMasterList().contains(master),"Valid object must be added to extent");
@@ -64,13 +55,8 @@ class MasterTest {
 
     @Test
     void zeroExperienceShouldBeValid() {
-        Master master = new Master(
-                "Yelizaveta",
-                "Gaiduk",
-                "+48123456789",
-                LocalDate.now().minusYears(25),
-                0
-        );
+        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456789", LocalDate.now().minusYears(25), 0).getMaster();
+
         Set<ConstraintViolation<Master>> violations = validator.validate(master);
         assertTrue(violations.isEmpty(),"Zero experience should be valid");
         assertTrue(Master.getMasterList().contains(master),"Valid master should be added to extent");
@@ -78,13 +64,8 @@ class MasterTest {
 
     @Test
     void negativeExperienceShouldFailValidation() {
-        Master master = new Master(
-                "Yelizaveta",
-                "Gaiduk",
-                "+48123456789",
-                LocalDate.now().minusYears(25),
-                -1
-        );
+        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456789", LocalDate.now().minusYears(25), -1).getMaster();
+
         Set<ConstraintViolation<Master>> violations = validator.validate(master);
         assertTrue(containsViolationFor(violations, "experience"),"Expected violation for negative experience");
         assertFalse(Master.getMasterList().contains(master),"Invalid master must NOT be added to extent");
@@ -97,14 +78,10 @@ class MasterTest {
 
     @Test
     void getMasterListShouldReturnCopy() {
-        Master master = new Master(
-                "Yelizaveta",
-                "Gaiduk",
-                "+48123456777",
-                LocalDate.now().minusYears(25),
-                3
-        );
-        List<Master> listCopy = Master.getMasterList();listCopy.clear();
+        Master master = Worker.createMaster("Yelizaveta", "Gaiduk", "+48123456777", LocalDate.now().minusYears(25), 3).getMaster();
+
+        List<Master> listCopy = Master.getMasterList();
+        listCopy.clear();
         List<Master> originalList = Master.getMasterList();
         assertTrue(originalList.contains(master),"Original list must NOT be modified when copy is cleared");
     }

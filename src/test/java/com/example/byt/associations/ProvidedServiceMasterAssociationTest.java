@@ -40,16 +40,16 @@ public class ProvidedServiceMasterAssociationTest {
         Appointment.clearExtent();
 
         customer = Person.createCustomer("John", "Doe", "123456789", LocalDate.of(1990, 1, 1));
-        master1 = new Master("Mike", "Johnson", "555555555", LocalDate.of(1980, 3, 20), 5);
-        master2 = new Master("Sarah", "Williams", "666666666", LocalDate.of(1985, 6, 15), 4);
-        master3 = new Master("Tom", "Davis", "777777777", LocalDate.of(1982, 9, 25), 3);
-        masterNotSpecialized = new Master("Bob", "Wilson", "888888888", LocalDate.of(1988, 12, 1), 2);
+        master1 = Worker.createMaster("Mike", "Johnson", "555555555", LocalDate.of(1980, 3, 20), 5).getMaster();
+        master2 = Worker.createMaster("Sarah", "Williams", "666666666", LocalDate.of(1985, 6, 15), 4).getMaster();
+        master3 = Worker.createMaster("Tom", "Davis", "777777777", LocalDate.of(1982, 9, 25), 3).getMaster();
+        masterNotSpecialized = Worker.createMaster("Bob", "Wilson", "888888888", LocalDate.of(1988, 12, 1), 2).getMaster();
 
         service1 = new Service(1, "Haircut", 50.0, "Basic haircut", 30, Set.of(master1, master2, master3));
         service2 = new Service(2, "Coloring", 100.0, "Hair coloring", 60, Set.of(master1, master2));
         fourHandsService = new FourHandsService(3, "Four Hands Massage", 200.0, "Luxury massage", 90, Set.of(master1, master2, master3), false);
 
-        receptionist = new Receptionist("Anna", "Brown", "777888999", LocalDate.of(1992, 7, 10), WorkType.FULL_TIME);
+        receptionist = Worker.createReceptionist("Anna", "Brown", "777888999", LocalDate.of(1992, 7, 10), WorkType.FULL_TIME).getReceptionist();
 
         ServiceInfo serviceInfo = new ServiceInfo(service1, LocalDateTime.now(), Set.of(master1));
         appointment = new Appointment.Builder(LocalDate.now(), customer, Set.of(serviceInfo))

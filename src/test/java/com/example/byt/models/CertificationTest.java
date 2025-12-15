@@ -1,6 +1,7 @@
 package com.example.byt.models;
 
 import com.example.byt.models.person.Master;
+import com.example.byt.models.person.Worker;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -30,7 +31,7 @@ class CertificationTest {
 
     @BeforeEach
     void setUp() {
-        master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
+        master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5).getMaster();
     }
 
     @Test

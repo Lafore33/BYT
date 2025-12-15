@@ -36,11 +36,11 @@ public class ProvidedServiceAppointmentServiceAssociationTest {
         Appointment.clearExtent();
 
         customer = Person.createCustomer("John", "Doe", "123456789", LocalDate.of(1990, 1, 1));
-        master1 = new Master("Mike", "Johnson", "555555555", LocalDate.of(1980, 3, 20), 5);
-        master2 = new Master("Sarah", "Williams", "666666666", LocalDate.of(1985, 6, 15), 4);
+        master1 = Worker.createMaster("Mike", "Johnson", "555555555", LocalDate.of(1980, 3, 20), 5).getMaster();
+        master2 = Worker.createMaster("Sarah", "Williams", "666666666", LocalDate.of(1985, 6, 15), 4).getMaster();
         service1 = new Service(1, "Haircut", 50.0, "Basic haircut", 30, Set.of(master1, master2));
         service2 = new Service(2, "Coloring", 100.0, "Hair coloring", 60, Set.of(master1, master2));
-        receptionist = new Receptionist("Anna", "Brown", "777888999", LocalDate.of(1992, 7, 10), WorkType.FULL_TIME);
+        receptionist = Worker.createReceptionist("Anna", "Brown", "777888999", LocalDate.of(1992, 7, 10), WorkType.FULL_TIME).getReceptionist();
 
         ServiceInfo serviceInfo1 = new ServiceInfo(service1, LocalDateTime.now(), Set.of(master1));
         appointment1 = new Appointment.Builder(LocalDate.now(), customer, Set.of(serviceInfo1))

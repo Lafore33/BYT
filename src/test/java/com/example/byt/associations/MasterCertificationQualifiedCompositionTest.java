@@ -2,6 +2,7 @@ package com.example.byt.associations;
 
 import com.example.byt.models.Certification;
 import com.example.byt.models.person.Master;
+import com.example.byt.models.person.Worker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
@@ -19,8 +20,8 @@ public class MasterCertificationQualifiedCompositionTest {
         Master.clearExtent();
         Certification.clearExtent();
 
-        master1 = new Master("Yelizaveta", "Gaiduk", "+48555111222", LocalDate.of(2005, 11, 15), 5);
-        master2 = new Master("Dana", "Nazarchuk", "+48550111222", LocalDate.of(1990, 1, 1), 10);
+        master1 = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111222", LocalDate.of(2005, 11, 15), 5).getMaster();
+        master2 = Worker.createMaster("Dana", "Nazarchuk", "+48550111222", LocalDate.of(1990, 1, 1), 10).getMaster();
     }
 
     @Test

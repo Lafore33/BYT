@@ -37,10 +37,10 @@ public class AppointmentReceptionistAssociationTest {
         HistoryOfStatus.clearExtent();
         ProvidedService.clearExtent();
 
-        master = new Master("Mike", "Smith", "444555666", LocalDate.of(1985, 3, 20), 5);
+        master = Worker.createMaster("Mike", "Smith", "444555666", LocalDate.of(1985, 3, 20), 5).getMaster();
         service = new Service(1, "Haircut", 50.0, "Basic haircut", 30.0, Set.of(master));
         customer = Person.createCustomer("John", "Doe", "111222333", "john@example.com", LocalDate.of(1990, 5, 15));
-        receptionist = new Receptionist("Anna", "Smith", "12345", LocalDate.of(1990, 1, 1), WorkType.FULL_TIME);
+        receptionist = Worker.createReceptionist("Anna", "Smith", "12345", LocalDate.of(1990, 1, 1), WorkType.FULL_TIME).getReceptionist();
 
         ServiceInfo serviceInfo = new ServiceInfo(service, LocalDateTime.now(), Set.of(master));
         serviceInfos = Set.of(serviceInfo);
@@ -49,7 +49,7 @@ public class AppointmentReceptionistAssociationTest {
 
     @Test
     void testAddReceptionistSetsReverseReference() {
-        Receptionist newReceptionist = new Receptionist("Jane", "Doe", "99999", LocalDate.of(1992, 2, 2), WorkType.FULL_TIME);
+        Receptionist newReceptionist = Worker.createReceptionist("Jane", "Doe", "99999", LocalDate.of(1992, 2, 2), WorkType.FULL_TIME).getReceptionist();
         ServiceInfo serviceInfo = new ServiceInfo(service, LocalDateTime.now().plusHours(1), Set.of(master));
         Appointment newAppointment = new Appointment.Builder(LocalDate.now(), customer, Set.of(serviceInfo))
                 .paymentMethod(PaymentMethod.CASH)
@@ -61,7 +61,7 @@ public class AppointmentReceptionistAssociationTest {
 
     @Test
     void testReceptionistAddAppointmentSetsReverseReference() {
-        Receptionist newReceptionist = new Receptionist("Jane", "Doe", "99999", LocalDate.of(1992, 2, 2), WorkType.FULL_TIME);
+        Receptionist newReceptionist = Worker.createReceptionist("Jane", "Doe", "99999", LocalDate.of(1992, 2, 2), WorkType.FULL_TIME).getReceptionist();
         ServiceInfo serviceInfo = new ServiceInfo(service, LocalDateTime.now().plusHours(1), Set.of(master));
         Appointment newAppointment = new Appointment.Builder(LocalDate.now(), customer, Set.of(serviceInfo))
                 .paymentMethod(PaymentMethod.CASH)
@@ -73,11 +73,7 @@ public class AppointmentReceptionistAssociationTest {
 
     @Test
     void testCannotAssignTwoDifferentReceptionists() {
-        Receptionist second = new Receptionist(
-                "Misha", "Koutun", "99999",
-                LocalDate.of(2006, 4, 15),
-                WorkType.PART_TIME
-        );
+        Receptionist second = Worker.createReceptionist("Misha", "Koutun", "99999", LocalDate.of(2006, 4, 15), WorkType.PART_TIME).getReceptionist();
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> appointment.addReceptionist(second)

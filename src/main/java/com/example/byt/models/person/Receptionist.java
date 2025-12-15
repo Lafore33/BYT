@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Receptionist extends Worker implements Serializable {
+public class Receptionist implements Serializable {
 
     @NotNull
     private WorkType workType;
@@ -22,12 +22,18 @@ public class Receptionist extends Worker implements Serializable {
     private HashSet<Appointment> appointments = new HashSet<>();
 
     private static List<Receptionist> receptionists = new ArrayList<>();
-
+    private Worker worker;
     private Receptionist() {
     }
 
-    public Receptionist(String name, String surname, String phoneNumber, LocalDate birthDate, WorkType workType) {
-        super(name, surname, phoneNumber, birthDate);
+    protected Receptionist(Worker worker, WorkType workType) {
+        if (worker == null) {
+            throw new NullPointerException("Worker cannot be null");
+        }
+        if (workType == null) {
+            throw new NullPointerException("WorkType cannot be null");
+        }
+        this.worker = worker;
         this.workType = workType;
         addReceptionist(this);
     }
@@ -72,5 +78,9 @@ public class Receptionist extends Worker implements Serializable {
 
     public static void clearExtent() {
         receptionists.clear();
+    }
+
+    public Worker getWorker() {
+        return worker;
     }
 }

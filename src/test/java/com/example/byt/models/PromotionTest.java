@@ -1,6 +1,7 @@
 package com.example.byt.models;
 
 import com.example.byt.models.person.Master;
+import com.example.byt.models.person.Worker;
 import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -17,8 +18,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PromotionTest {
-    private static Master master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
-    private static Service service = new Service(1, "Haircut", 100, "Basic", 30, Set.of(master));
+    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5).getMaster();    private static Service service = new Service(1, "Haircut", 100, "Basic", 30, Set.of(master));
 
     private static Validator validator;
 
