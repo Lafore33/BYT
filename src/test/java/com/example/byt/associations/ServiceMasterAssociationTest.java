@@ -1,6 +1,8 @@
 package com.example.byt.associations;
 
 import com.example.byt.models.person.Master;
+import com.example.byt.models.person.Person;
+import com.example.byt.models.person.Worker;
 import com.example.byt.models.services.Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,8 +23,8 @@ public class ServiceMasterAssociationTest {
     void setUp() {
         Service.clearExtent();
         Master.clearExtent();
-        master1 = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
-        master2 = new Master("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7);
+        master1 = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
+        master2 = Worker.createMaster("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7);
 
         service1 = new Service(1, "Haircut", 50, "Basic haircut", 1.0, Set.of(master1));
         service2 = new Service(2, "Hair coloring", 80, "Color your hair", 2.0, Set.of(master1));
@@ -30,7 +32,8 @@ public class ServiceMasterAssociationTest {
 
     @Test
     void masterConstructorWithServicesAddsAssociations(){
-        Master master = new Master("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7, Set.of(service1, service2));
+        Worker worker = Person.createWorker("Jane", "Smith", "987654322", LocalDate.of(1985, 5, 20));
+        Master master = Worker.assignMaster(worker, 7, Set.of(service1, service2));
 
         assertTrue(service1.getMasterSpecializedIn().contains(master));
 
@@ -43,27 +46,30 @@ public class ServiceMasterAssociationTest {
 
     @Test
     void masterConstructorWithNoServicesAddsDummyService(){
-        Master master = new Master("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7);
+        Master master = Worker.createMaster("Jane", "Smith", "987654322", LocalDate.of(1985, 5, 20), 7);
         assertEquals(1, master.getServiceSpecialisesIn().size());
         assertTrue(master.existsDummyService());
     }
 
     @Test
     void masterConstructorWithNullServicesShouldThrowException(){
-        assertThrows(IllegalArgumentException.class, () -> new Master("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7, null));
+        Worker worker = Person.createWorker("Jane", "Smith", "987654322", LocalDate.of(1985, 5, 20));
+        assertThrows(IllegalArgumentException.class, () -> Worker.assignMaster(worker, 7, null));
     }
 
     @Test
     void masterConstructorWithEmptyServicesShouldThrowException(){
-        assertThrows(IllegalArgumentException.class, () -> new Master("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7, Set.of()));
+        Worker worker = Person.createWorker("Jane", "Smith", "987654322", LocalDate.of(1985, 5, 20));
+        assertThrows(IllegalArgumentException.class, () -> Worker.assignMaster(worker, 7, Set.of()));
     }
 
     @Test
     void masterConstructorWithSetContainingNullServiceShouldThrowsException(){
+        Worker worker = Person.createWorker("Jane", "Smith", "987654322", LocalDate.of(1985, 5, 20));
         Set<Service> services = new HashSet<>();
         services.add(null);
         services.add(service1);
-        assertThrows(IllegalArgumentException.class, () -> new Master("Jane", "Smith", "987654321", LocalDate.of(1985, 5, 20), 7, services));
+        assertThrows(IllegalArgumentException.class, () -> Worker.assignMaster(worker, 7, services));
     }
 
     @Test

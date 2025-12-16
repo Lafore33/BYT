@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Master extends Worker implements Serializable {
+public class Master  implements Serializable {
 
     @Min(0)
     private int experience;
@@ -31,23 +31,37 @@ public class Master extends Worker implements Serializable {
 
     private Set<ProvidedService> completedServices = new HashSet<>();
 
+    private Worker worker;
     private Master() {
     }
 
-    public Master(String name, String surname, String phoneNumber, LocalDate birthDate, int experience) {
-        super(name, surname, phoneNumber, birthDate);
+    protected Master(Worker worker, int experience) {
+        if (worker == null) {
+            throw new NullPointerException("Worker cannot be null");
+        }
+        this.worker = worker;
         this.experience = experience;
         addMaster(this);
-        Service dummyService = new Service(0, "Dummy Service", 0, "This is a dummy service", 0, Set.of(this));
-        Certification dummyCertification = new Certification(this, "Dummy", "0", "This is a dummy certification", "Dummy", LocalDate.now());
+
+        Service dummyService = new Service(
+                0, "Dummy Service", 0,
+                "This is a dummy service", 0, Set.of(this)
+        );
+
+        Certification dummyCertification = new Certification(
+                this, "Dummy", "0",
+                "This is a dummy certification", "Dummy", LocalDate.now()
+        );
     }
 
-    public Master(String name, String surname, String phoneNumber, LocalDate birthDate,
-                  int experience, Set<Service> servicesSpecialisesIn) {
-        super(name, surname, phoneNumber, birthDate);
+    protected Master(Worker worker, int experience, Set<Service> servicesSpecialisesIn) {
+        if (worker == null) {
+            throw new NullPointerException("Worker cannot be null");
+        }
         if (servicesSpecialisesIn == null || servicesSpecialisesIn.isEmpty()) {
             throw new IllegalArgumentException("Master should specialise in at least one service");
         }
+        this.worker = worker;
         this.experience = experience;
         addMaster(this);
         for (Service service : servicesSpecialisesIn) {
@@ -85,7 +99,6 @@ public class Master extends Worker implements Serializable {
         }
         masters.remove(this);
     }
-
     public void addCompletedService(ProvidedService providedService) {
         if (providedService == null) {
             throw new NullPointerException("ProvidedService cannot be null");
@@ -225,7 +238,6 @@ public class Master extends Worker implements Serializable {
 
     }
 
-
     public void removeCertification(String certNumber) {
         if (certNumber == null) {
             return;
@@ -327,10 +339,29 @@ public class Master extends Worker implements Serializable {
         if (m1 == null || m2 == null) return false;
 
         if (m1.getExperience() != m2.getExperience()) return false;
+
         if (!Objects.equals(m1.getName(), m2.getName())) return false;
         if (!Objects.equals(m1.getSurname(), m2.getSurname())) return false;
         if (!Objects.equals(m1.getPhoneNumber(), m2.getPhoneNumber())) return false;
         return Objects.equals(m1.getBirthDate(), m2.getBirthDate());
     }
 
+    public Worker getWorker() {
+        return worker;
+    }
+    public String getName() {
+        return worker.getName();
+    }
+
+    public String getSurname() {
+        return worker.getSurname();
+    }
+
+    public String getPhoneNumber() {
+        return worker.getPhoneNumber();
+    }
+
+    public LocalDate getBirthDate() {
+        return worker.getBirthDate();
+    }
 }

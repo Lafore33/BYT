@@ -168,6 +168,18 @@ public class Appointment implements Serializable {
         return new HashSet<>(historyOfStatuses);
     }
 
+    public void removeReceptionist(Receptionist receptionist) {
+        if (receptionist == null) {
+            throw new NullPointerException("Receptionist cannot be null");
+        }
+        if (this.receptionist != receptionist) {
+            return;
+        }
+        this.receptionist = null;
+        receptionist.removeAppointment(this);
+    }
+
+
     public static class Builder {
         @NotNull
         private LocalDate date;

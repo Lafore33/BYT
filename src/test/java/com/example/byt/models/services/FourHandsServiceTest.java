@@ -1,6 +1,7 @@
 package com.example.byt.models.services;
 
 import com.example.byt.models.person.Master;
+import com.example.byt.models.person.Worker;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FourHandsServiceTest {
     private static Validator validator;
-    private static Master master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
+    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
     @BeforeAll
     static void setupValidator() {
