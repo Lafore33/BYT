@@ -1,6 +1,7 @@
 package com.example.byt.models;
 import com.example.byt.models.appointment.Appointment;
 import com.example.byt.models.person.Master;
+import com.example.byt.models.person.Worker;
 import com.example.byt.models.services.FourHandsService;
 import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
@@ -182,7 +183,7 @@ public class ProvidedService implements Serializable {
     }
 
     private int getRequiredMasterCount() {
-        if (service instanceof FourHandsService) {
+        if (service.getRelatedService() instanceof FourHandsService) {
             return FourHandsService.getNumOfSpecialistsRequired();
         }
         return MIN_MASTERS;
@@ -194,9 +195,8 @@ public class ProvidedService implements Serializable {
         }
         if (!master.getServiceSpecialisesIn().contains(service)) {
             throw new IllegalArgumentException(
-                    "Master '" + master.getName() + " " + master.getSurname() +
-                            "' does not specialize in service '" + service.getName() + "'. " +
-                            "Only masters who specialize in the service can complete it."
+                    "Master " + master.getName() + " " + master.getSurname()
+                            + " does not specialize in service " + service.getName()
             );
         }
     }

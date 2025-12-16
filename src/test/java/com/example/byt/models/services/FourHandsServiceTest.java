@@ -1,6 +1,7 @@
 package com.example.byt.models.services;
 
 import com.example.byt.models.person.Master;
+import com.example.byt.models.person.Worker;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FourHandsServiceTest {
     private static Validator validator;
-    private static Master master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
+    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
     @BeforeAll
     static void setupValidator() {
@@ -37,7 +38,7 @@ public class FourHandsServiceTest {
         String description = "Relaxing full body massage";
         double duration = 60.0;
         boolean isExpressService = true;
-        FourHandsService service = new FourHandsService(
+        FourHandsService service = Service.createFourHandsService(
                 id,
                 name,
                 regularPrice,
@@ -46,18 +47,18 @@ public class FourHandsServiceTest {
                 Set.of(master),
                 isExpressService
         );
-        assertEquals(id, service.getId(), "Incorrect id set in the constructor");
-        assertEquals(name, service.getName(), "Incorrect name set in the constructor");
-        assertEquals(regularPrice, service.getRegularPrice(), "Incorrect regular price set in the constructor");
-        assertEquals(description, service.getDescription(), "Incorrect description set in the constructor");
-        assertEquals(duration, service.getDuration(), "Incorrect duration set in the constructor");
+        assertEquals(id, service.getService().getId(), "Incorrect id set in the constructor");
+        assertEquals(name, service.getService().getName(), "Incorrect name set in the constructor");
+        assertEquals(regularPrice, service.getService().getRegularPrice(), "Incorrect regular price set in the constructor");
+        assertEquals(description, service.getService().getDescription(), "Incorrect description set in the constructor");
+        assertEquals(duration, service.getService().getDuration(), "Incorrect duration set in the constructor");
         assertEquals(isExpressService, service.isExpressService(), "Incorrect isExpressService set in the constructor");
 
     }
 
     @Test
     void validFourHandsServiceShouldHaveNoViolations() {
-        FourHandsService service = new FourHandsService(
+        FourHandsService service = Service.createFourHandsService(
                 1,
                 "Full Body Massage",
                 120.0,
@@ -77,7 +78,7 @@ public class FourHandsServiceTest {
 
     @Test
     void getServiceListShouldReturnCopy() {
-        FourHandsService service = new FourHandsService(
+        FourHandsService service = Service.createFourHandsService(
                 1,
                 "Full Body Massage",
                 120.0,

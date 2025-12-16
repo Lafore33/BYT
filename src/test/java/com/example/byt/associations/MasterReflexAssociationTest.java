@@ -1,6 +1,7 @@
 package com.example.byt.associations;
 
 import com.example.byt.models.person.Master;
+import com.example.byt.models.person.Worker;
 import com.example.byt.models.services.Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,12 +25,12 @@ public class MasterReflexAssociationTest {
         Service.clearExtent();
         Master.clearExtent();
 
-        topManager = new Master("Yelizaveta", "Gaiduk", "+48555111222", LocalDate.of(2005, 11, 15), 5);
-        trainee1 = new Master("Yelizaveta", "Gaiduk", "+48555111223", LocalDate.of(2005, 11, 15), 1);
-        trainee2 = new Master("Yelizaveta", "Gaiduk", "+48555111224", LocalDate.of(2005, 11, 15), 2);
-        anotherTopManager = new Master("Yelizaveta", "Gaiduk", "+48555111225", LocalDate.of(2005, 11, 15), 4);
-        nonTop1 = new Master("Yelizaveta", "Gaiduk", "+48555111226", LocalDate.of(2005, 11, 15), 1);
-        nonTop2 = new Master("Yelizaveta", "Gaiduk", "+48555111227", LocalDate.of(2005, 11, 15), 2);
+        topManager = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111222", LocalDate.of(2005, 11, 15), 5);
+        trainee1 = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111223", LocalDate.of(2005, 11, 15), 1);
+        trainee2 = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111224", LocalDate.of(2005, 11, 15), 2);
+        anotherTopManager = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111225", LocalDate.of(2005, 11, 15), 4);
+        nonTop1 = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111226", LocalDate.of(2005, 11, 15), 1);
+        nonTop2 = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111227", LocalDate.of(2005, 11, 15), 2);
     }
 
     @Test
@@ -209,13 +210,13 @@ public class MasterReflexAssociationTest {
 
     @Test
     void removeMasterClearsManagerAndTraineeAssociations() {
-        Master superManager = new Master("Yelizaveta", "Gaiduk", "+48555111228",LocalDate.of(2005, 11, 15), 10); // top master
+        Master superManager = Worker.createMaster("Yelizaveta", "Gaiduk", "+48555111228", LocalDate.of(2005, 11, 15), 10);
 
         topManager.setManager(superManager);
         topManager.addTrainee(trainee1);
         topManager.addTrainee(trainee2);
 
-        Master helper = new Master("Helper", "Master", "+48555111229",LocalDate.of(1990, 1, 1), 5);
+        Master helper = Worker.createMaster("Helper", "Master", "+48555111229", LocalDate.of(1990, 1, 1), 5);
         helper.addServiceSpecialisesIn(topManager.getDummyService());
 
         topManager.removeMaster();

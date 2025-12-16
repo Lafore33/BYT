@@ -2,6 +2,7 @@ package com.example.byt.associations;
 
 import com.example.byt.models.Promotion;
 import com.example.byt.models.person.Master;
+import com.example.byt.models.person.Worker;
 import com.example.byt.models.services.Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ public class ServicePromotionAssociationTest {
     Service service2;
     Promotion promotion1;
     Promotion promotion2;
-    private static Master master = new Master("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
+    private static Master master = Worker.createMaster("John", "Doe", "123456789", LocalDate.of(1990, 1, 1), 5);
 
     @BeforeEach
     public void setUp() {

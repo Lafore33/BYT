@@ -6,6 +6,7 @@ import com.example.byt.models.ProvidedService;
 import com.example.byt.models.ServiceInfo;
 import com.example.byt.models.person.Customer;
 import com.example.byt.models.person.Receptionist;
+import com.example.byt.models.services.Service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -71,7 +72,7 @@ public class Appointment implements Serializable {
 
         ProvidedService providedService = new ProvidedService.Builder(
                 serviceInfo.getTime(),
-                serviceInfo.getService(),
+                (Service) serviceInfo.getService(),
                 this,
                 serviceInfo.getMasters()
         ).build();
@@ -166,6 +167,18 @@ public class Appointment implements Serializable {
     public Set<HistoryOfStatus> getHistoryOfStatuses() {
         return new HashSet<>(historyOfStatuses);
     }
+
+    public void removeReceptionist(Receptionist receptionist) {
+        if (receptionist == null) {
+            throw new NullPointerException("Receptionist cannot be null");
+        }
+        if (this.receptionist != receptionist) {
+            return;
+        }
+        this.receptionist = null;
+        receptionist.removeAppointment(this);
+    }
+
 
     public static class Builder {
         @NotNull

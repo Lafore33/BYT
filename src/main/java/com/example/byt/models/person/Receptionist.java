@@ -8,13 +8,12 @@ import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Receptionist extends Worker implements Serializable {
+public class Receptionist implements Serializable {
 
     @NotNull
     private WorkType workType;
@@ -22,12 +21,15 @@ public class Receptionist extends Worker implements Serializable {
     private HashSet<Appointment> appointments = new HashSet<>();
 
     private static List<Receptionist> receptionists = new ArrayList<>();
-
+    private Worker worker;
     private Receptionist() {
     }
 
-    public Receptionist(String name, String surname, String phoneNumber, LocalDate birthDate, WorkType workType) {
-        super(name, surname, phoneNumber, birthDate);
+    protected Receptionist(Worker worker, WorkType workType) {
+        if (worker == null) {
+            throw new NullPointerException("Worker cannot be null");
+        }
+        this.worker = worker;
         this.workType = workType;
         addReceptionist(this);
     }
@@ -73,4 +75,27 @@ public class Receptionist extends Worker implements Serializable {
     public static void clearExtent() {
         receptionists.clear();
     }
+
+    public Worker getWorker() {
+        return worker;
+    }
+    public void removeAppointment(Appointment appointment) {
+        if (appointment == null) {
+            throw new NullPointerException("Appointment cannot be null");
+        }
+        if (!appointments.contains(appointment)) {
+            return;
+        }
+        appointments.remove(appointment);
+        appointment.removeReceptionist(this);
+    }
+
+    public void removeReceptionist() {
+        for (Appointment appointment : new HashSet<>(appointments)) {
+            removeAppointment(appointment);
+        }
+        receptionists.remove(this);
+    }
+
+
 }

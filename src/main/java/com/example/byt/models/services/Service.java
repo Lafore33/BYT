@@ -40,6 +40,8 @@ public class Service implements Serializable {
     @Max(5)
     private double rating;
 
+    private Object relatedService;
+
     private Set<ProvidedService> providedServices = new HashSet<>();
 
     private Set<Material> materialsUsed = new HashSet<>();
@@ -239,7 +241,77 @@ public class Service implements Serializable {
     }
 
     public void removeFromExtent(){
+        if (relatedService != null) {
+            if (relatedService instanceof FourHandsService) {
+                ((FourHandsService) relatedService).removeFromExtent();
+            } else if (relatedService instanceof TwoHandsService) {
+                ((TwoHandsService) relatedService).removeFromExtent();
+            }
+        }
         services.remove(this);
+    }
+
+    private void setRelatedService(Object relatedService) {
+        if (relatedService != null && !(relatedService instanceof FourHandsService)
+                && !(relatedService instanceof TwoHandsService)) {
+            throw new IllegalArgumentException("relatedService has incompatible type");
+        }
+        this.relatedService = relatedService;
+    }
+
+    protected void removeRelatedService() {
+
+        Object relatedService = this.relatedService;
+        this.relatedService = null;
+
+        if (relatedService == null) return;
+
+        if (relatedService instanceof FourHandsService) {
+            ((FourHandsService) relatedService).removeFromExtent();
+        } else if (relatedService instanceof TwoHandsService) {
+            ((TwoHandsService) relatedService).removeFromExtent();
+        }
+    }
+
+    public Object getRelatedService() {
+        return relatedService;
+    }
+
+    public static FourHandsService createFourHandsService(int id, String name, double regularPrice, String description,
+                                              double duration, Set<Master> masters, boolean isExpressService) {
+        Service service = new Service(id, name, regularPrice, description, duration, masters);
+        return Service.createFourHandsService(service, isExpressService);
+
+    }
+
+    public static FourHandsService createFourHandsService(int id, String name, double regularPrice, String description,
+                                                          double duration, Set<Master> masters, boolean isExpressService, Set<Material> materialsUsed) {
+        Service service = new Service(id, name, regularPrice, description, duration, masters, materialsUsed);
+        return Service.createFourHandsService(service, isExpressService);
+    }
+
+    private static FourHandsService createFourHandsService(Service service, boolean isExpressService) {
+        FourHandsService fourHandsService = new FourHandsService(service, isExpressService);
+        service.setRelatedService(fourHandsService);
+        return fourHandsService;
+    }
+
+    public static TwoHandsService createTwoHandsService(int id, String name, double regularPrice, String description,
+                                                          double duration, Set<Master> masters) {
+        Service service = new Service(id, name, regularPrice, description, duration, masters);
+        return Service.createTwoHandsService(service);
+    }
+
+    public static TwoHandsService createTwoHandsService(int id, String name, double regularPrice, String description,
+                                                          double duration, Set<Master> masters, Set<Material> materialsUsed) {
+        Service service = new Service(id, name, regularPrice, description, duration, masters, materialsUsed);
+        return Service.createTwoHandsService(service);
+    }
+
+    private static TwoHandsService createTwoHandsService(Service service) {
+        TwoHandsService twoHandsService = new TwoHandsService(service);
+        service.setRelatedService(twoHandsService);
+        return twoHandsService;
     }
 
     public static void clearExtent() {
