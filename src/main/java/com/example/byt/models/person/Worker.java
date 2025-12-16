@@ -16,6 +16,7 @@ public class Worker implements Serializable {
     private Receptionist receptionist;
 
     private static List<Worker> workers = new ArrayList<>();
+
     protected Worker() {
     }
 
@@ -26,6 +27,7 @@ public class Worker implements Serializable {
         this.person = person;
         addWorker(this);
     }
+
     private static void addWorker(Worker worker) {
         workers.add(worker);
     }
@@ -184,4 +186,12 @@ public class Worker implements Serializable {
         }
         workers.remove(worker);
     }
+    public static void clearExtent(){
+        workers.clear();
+    }
+
+    public static List<Worker> getWorkerList() {
+        return new ArrayList<>(workers);
+    }
+
 }
