@@ -218,7 +218,7 @@ public class ProvidedServiceMasterAssociationTest {
 
     @Test
     void fourHandsServiceWithOneMasterThrowsException() {
-        ServiceInfo serviceInfo = new ServiceInfo(fourHandsService, LocalDateTime.now(), Set.of(master1));
+        ServiceInfo serviceInfo = new ServiceInfo(fourHandsService.getService(), LocalDateTime.now(), Set.of(master1));
 
         assertThrows(IllegalArgumentException.class, () ->
                 new Appointment.Builder(LocalDate.now().plusDays(10), customer, Set.of(serviceInfo))
@@ -228,7 +228,7 @@ public class ProvidedServiceMasterAssociationTest {
 
     @Test
     void fourHandsServiceWithTwoMastersIsValid() {
-        ServiceInfo serviceInfo = new ServiceInfo(fourHandsService, LocalDateTime.now(), Set.of(master1, master2));
+        ServiceInfo serviceInfo = new ServiceInfo(fourHandsService.getService(), LocalDateTime.now(), Set.of(master1, master2));
         Appointment fourHandsAppointment = new Appointment.Builder(LocalDate.now().plusDays(10), customer, Set.of(serviceInfo))
                 .receptionist(receptionist)
                 .build();
